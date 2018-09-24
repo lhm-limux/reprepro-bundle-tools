@@ -11,11 +11,17 @@
 import os
 import sys
 
-PROJECT_DIR = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../..")
-sys.path.insert(0, PROJECT_DIR + "/apt-repos/")
-sys.path.insert(0, PROJECT_DIR + "/tools/")
+PROJECT_DIR = os.getcwd()
+local_apt_repos = os.path.join(PROJECT_DIR, "apt-repos")
+if os.path.isdir(local_apt_repos):
+    sys.path.insert(0, local_apt_repos)
 import apt_repos
 from apt_repos import RepoSuite, PackageField, QueryResult
+
+HERE = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/..")
+if os.path.isdir(os.path.join(HERE, "reprepro_bundle")):
+    sys.path.insert(0, HERE)
+
 
 class BundleError (Exception):
     def __init__(self, message):

@@ -7,10 +7,10 @@ import apt_pkg
 import getpass
 import apt_repos
 
-from reprepro_bundle import PROJECT_DIR, BundleError
-from DeploymentStatus import DeploymentStatus
-from PackageStatus import PackageStatus
-from Package import Package
+from reprepro_bundle import PROJECT_DIR,BundleError
+from reprepro_bundle.PackageStatus import PackageStatus
+from reprepro_bundle.DeploymentStatus import DeploymentStatus
+from reprepro_bundle.Package import Package
 from apt_repos import PackageField
 from jinja2 import Environment, FileSystemLoader
 
@@ -129,7 +129,7 @@ class Bundle():
             returns the path of the template folder that provides the template files
             for the creation of new BundleConfig.
         '''
-        return os.path.join(self.basedir, "templates", self.distribution)
+        return os.path.join(self.basedir, "templates", "bundle", self.distribution)
 
     def getBlacklistFile(self):
         return os.path.join(self.__confDir, self._blacklist)

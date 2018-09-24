@@ -4,8 +4,8 @@ import logging
 import apt_pkg
 import re
 import reprepro_bundle
-from PackageStatus import PackageStatus
-from PackageExistence import PackageExistence
+from reprepro_bundle.PackageStatus import PackageStatus
+from reprepro_bundle.PackageExistence import PackageExistence
 
 logger = logging.getLogger(__name__)
 

@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+# wrapper for calling ./apt_repos_cli.py with the following tasks:
+# - set correct PYTHONPATH if this wrapper is called via
+#   bin/apt-repos in this source folder
+# - suppress some unwanted stdout-output created by underlying
+#   apt-libs
+#
+HERE=$(dirname $(realpath $0))
+if [ -d $HERE/../reprepro_bundle ]; then
+  export PYTHONPATH="$(realpath $HERE/..)"
+fi
+
+exec python3 -m reprepro_bundle.BundleCLI $@

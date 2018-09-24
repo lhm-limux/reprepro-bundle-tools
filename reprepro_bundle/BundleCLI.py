@@ -27,9 +27,9 @@ import apt_repos
 CANCEL_REMARK = "# Note: clean this file completely to CANCEL this current '{action}' action\n"
 
 from reprepro_bundle import BundleError
-from Bundle import Bundle
-from DeploymentStatus import DeploymentStatus
-from UpdateRule import UpdateRule
+from reprepro_bundle.UpdateRule import UpdateRule
+from reprepro_bundle.DeploymentStatus import DeploymentStatus
+from reprepro_bundle.Bundle import Bundle
 
 progname = "bundle"
 logger = logging.getLogger(progname)
