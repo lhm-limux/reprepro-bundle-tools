@@ -1,0 +1,3 @@
+[submodule "test/apt-repos"]
+	path = test/apt-repos
+	url = https://github.com/lhm-limux/apt-repos.git

@@ -1,0 +1,18 @@
+[
+    "--------------------------------------------------------",
+    {
+      "Repository" : "Main Ubuntu Repository",
+      "Prefix" : "ubuntu",
+      "Url" : "http://archive.ubuntu.com/ubuntu/",
+      "Suites" : [ 
+          { "Suite" : "bionic", "Tags" : [ "bionic-supplier" ] },
+          { "Suite" : "bionic-backports", "Tags" : [] },
+          { "Suite" : "bionic-proposed", "Tags" : [] },
+          { "Suite" : "bionic-security", "Tags" : [ "bionic-supplier" ] },
+          { "Suite" : "bionic-updates", "Tags" : [ "bionic-supplier" ] }
+      ],
+      "Architectures" : [ "i386", "amd64" ],
+      "TrustedGPG" : "./gpg/ubuntu.gpg"
+    },
+    "--------------------------------------------------------"
+]

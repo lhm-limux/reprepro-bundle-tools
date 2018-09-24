@@ -1,0 +1,13 @@
+Bundlename: {{ bundleName }}
+BasedOn: {{ baseBundleName }}
+Distribution: {{ release }}
+Target: plus
+Creator: {{ creator }}
+Releasenotes: <Subject>
+ .
+ <Details>
+ .
+ __DYNAMIC_PACKAGE_LIST__
+ .
+
+

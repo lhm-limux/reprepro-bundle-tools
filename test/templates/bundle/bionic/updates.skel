@@ -1,0 +1,13 @@
+Name: {{ ruleName }}
+Method: {{ repoUrl }}
+Suite: {{ suiteName }}
+Components: {{ components }}
+#UDebComponents: {{ udebComponents }}
+UDebComponents:
+Architectures: {{ architectures }} source
+VerifyRelease: {{ publicKeys }}
+GetInRelease: no
+FilterSrcList: purge {{ filterListFile }}{% if blacklistFile is string() %}
+FilterList: install {{ blacklistFile }}{% endif %}
+DownloadListsAs: .gz
+
