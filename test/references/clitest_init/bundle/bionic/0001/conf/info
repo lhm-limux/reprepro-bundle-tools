@@ -1,0 +1,12 @@
+Bundlename: bionic/0001
+BasedOn: NEW
+Distribution: bionic
+Target: plus
+Creator: chlu
+Releasenotes: <Subject>
+ .
+ <Details>
+ .
+ __DYNAMIC_PACKAGE_LIST__
+ .
+

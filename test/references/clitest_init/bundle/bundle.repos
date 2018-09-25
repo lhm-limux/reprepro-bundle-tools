@@ -1,0 +1,7 @@
+[{
+    "Oid": "bundle-repositories-bionic",
+    "Suites":
+    ["--------",
+    { "Suite": "bionic/0001", "Url": "bionic/0001", "Tags": [ "staging" ] },
+    "---------"]
+}]
