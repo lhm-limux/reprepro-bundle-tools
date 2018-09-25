@@ -17,9 +17,10 @@ T = function testcase {\
 	( \
           set -x; \
           $$@ >resources/$$name.res 2>&1 || ret=$$?; \
-	  test $$ret = $$retExp || exit 1; \
-          diff -u resources/$$name.res resources/$$name.ref || exit 1; \
-          diff -u -r repo/bundle/*/*/conf resources/$$name/bundle/*/*/conf || exit 1; \
+          test $$ret = $$retExp || exit 1; \
+          sed -i 's~$(CURDIR)~__TEST_FOLDER__~' resources/$$name.res; \
+          diff -u resources/$$name.ref resources/$$name.res || exit 1; \
+          diff -u -r resources/$$name/bundle/*/*/conf repo/bundle/*/*/conf || exit 1; \
         ) && echo "TEST OK: $$name" || { echo "TEST FAILED: $$name"; $(CONTINUE); }; \
         echo ""; $(HR); \
     }; testcase
@@ -27,10 +28,15 @@ T = function testcase {\
 
 main: bundle_tests git_diff_results
 
-bundle_tests: clean 
-	@$(T) bundle_init 0   $(BUNDLE) init bionic --no-clean-commit
-	@$(T) bundle_apply1 0 $(BUNDLE) apply bionic/0001
-	@$(T) bundle_edit 0   $(BUNDLE) edit bionic/0001
+bundle_tests: clean prepare_config
+	@$(T) bundle_init 0   $(BUNDLE) init mybionic --no-clean-commit
+	@$(T) bundle_apply1 0 $(BUNDLE) apply mybionic/0001
+	@$(T) bundle_edit 0   $(BUNDLE) edit mybionic/0001
+	@$(T) bundle_apply2 0 $(BUNDLE) apply mybionic/0001
+
+prepare_config:
+	sed 's~__TEST_FOLDER__~$(CURDIR)~' resources/bundle.repos >.apt-repos/bundle.repos
+	@$(HR)
 
 clean:
 	rm -Rf repo

@@ -1,0 +1,12 @@
+[
+   {
+    "Repository" : "Bundle-Repositories for mybionic",
+    "Oid" : "bundle-repositories-mybionic",
+    "Prefix" : "bundle",
+    "Tags" : [ "mybionic" ],
+    "Codename" : "mybionic",
+    "Url" : "file://__TEST_FOLDER__/repo/bundle/",
+    "Trusted" : true,
+    "Architectures" : [ "i386", "amd64" ]
+   }
+]

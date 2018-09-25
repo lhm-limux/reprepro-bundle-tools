@@ -1,6 +1,13 @@
 INFO[bundle]: You are now using bundle 'mybionic/0001'
 INFO[apt_repos]: Using basedir '.apt-repos'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://__TEST_FOLDER__/repo/bundle/)
+INFO[bundle]: Adding Update-Rules for suite ubuntu:bionic with 1 entries
+INFO[apt_repos.Repository]: Scanning Repository 'Main Ubuntu Repository' (http://archive.ubuntu.com/ubuntu/)
+INFO[reprepro_bundle.Bundle]: Creating config files for bundle 'mybionic/0001'
+Calculating packages to get...
+Getting packages...
+Installing (and possibly deleting) packages...
+Exporting indices...
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://__TEST_FOLDER__/repo/bundle/)
 INFO[bundle]: Setting reference-suites to 'mybionic-reference:,bundle:mybionic/0001'
 INFO[apt_repos.Repository]: Scanning Repository 'Main Ubuntu Repository' (http://archive.ubuntu.com/ubuntu/)
@@ -14,6 +21,6 @@ INFO[reprepro_bundle.Bundle]: Updating and Querying suite bundle:mybionic/0001
 INFO[reprepro_bundle.Bundle]: Updating and Querying suite ubuntu:bionic
 INFO[reprepro_bundle.Bundle]: Updating and Querying suite ubuntu:bionic-security
 INFO[reprepro_bundle.Bundle]: Updating and Querying suite ubuntu:bionic-updates
-INFO[bundle]: Adding Update-Rules for suite ubuntu:bionic with 1 entries
-INFO[apt_repos.Repository]: Scanning Repository 'Main Ubuntu Repository' (http://archive.ubuntu.com/ubuntu/)
+INFO[bundle]: Adding Update-Rules for suite bundle:mybionic/0001 with 1 entries
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://__TEST_FOLDER__/repo/bundle/)
 INFO[reprepro_bundle.Bundle]: Creating config files for bundle 'mybionic/0001'
