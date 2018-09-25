@@ -2,9 +2,9 @@
 # Distribution template for my own bionic distribution
 ###########################################################################
 Origin: MyOwnDistri
-Label: bionic/0001
-Suite: bionic/0001
-Codename: bionic
+Label: mybionic/0001
+Suite: mybionic/0001
+Codename: mybionic
 Version: 18.04
 Description: Bundle with additional sources and binary packages for my own bionic distribution
 Architectures: i386 amd64 source

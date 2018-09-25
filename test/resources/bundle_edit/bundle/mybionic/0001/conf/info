@@ -1,6 +1,6 @@
-Bundlename: bionic/0001
+Bundlename: mybionic/0001
 BasedOn: NEW
-Distribution: bionic
+Distribution: mybionic
 Target: plus
 Creator: chlu
 Releasenotes: <Subject>

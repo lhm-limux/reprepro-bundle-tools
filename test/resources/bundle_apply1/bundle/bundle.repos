@@ -1,7 +1,7 @@
 [{
-    "Oid": "bundle-repositories-bionic",
+    "Oid": "bundle-repositories-mybionic",
     "Suites":
     ["--------",
-    { "Suite": "bionic/0001", "Url": "bionic/0001", "Tags": [ "staging" ] },
+    { "Suite": "mybionic/0001", "Url": "mybionic/0001", "Tags": [ "staging" ] },
     "---------"]
 }]
