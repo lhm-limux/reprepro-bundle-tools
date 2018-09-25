@@ -1,0 +1,17 @@
+###########################################################################
+# Distribution template for my own bionic distribution
+###########################################################################
+Origin: MyOwnDistri
+Label: bionic/0001
+Suite: bionic/0001
+Codename: bionic
+Version: 18.04
+Description: Bundle with additional sources and binary packages for my own bionic distribution
+Architectures: i386 amd64 source
+Components: main restricted universe multiverse partner
+UDebComponents: main restricted universe multiverse partner
+Contents: .gz .bz2
+UDebIndices: Packages Release . .gz
+Tracking: minimal
+ReadOnly: No
+Update: - from-ubuntu-bionic
