@@ -1,6 +1,5 @@
 SHELL := bash
 BUNDLE := ../bin/bundle
-REF := references
 
 IS_GIT_TREE := (which git && git ls-files --error-unmatch) >/dev/null 2>&1
 CONTINUE := true
@@ -13,14 +12,14 @@ T = function testcase {\
         local name=$$1; shift; \
         local retExp=$$1; shift; \
         echo "STARTING TEST $$name"; \
-	test -x references/batch_editor_$$name && { export EDITOR=references/batch_editor_$$name; echo "setting EDITOR=$$EDITOR"; }; \
+	test -x resources/batch_editor_$$name && { export EDITOR=resources/batch_editor_$$name; echo "setting EDITOR=$$EDITOR"; }; \
 	ret=0; \
 	( \
           set -x; \
-          $$@ >references/$$name.res 2>&1 || ret=$$?; \
+          $$@ >resources/$$name.res 2>&1 || ret=$$?; \
 	  test $$ret = $$retExp || exit 1; \
-          diff -u references/$$name.res references/$$name.ref || exit 1; \
-          diff -u -r repo/bundle/*/*/conf references/$$name/bundle/*/*/conf || exit 1; \
+          diff -u resources/$$name.res resources/$$name.ref || exit 1; \
+          diff -u -r repo/bundle/*/*/conf resources/$$name/bundle/*/*/conf || exit 1; \
         ) && echo "TEST OK: $$name" || { echo "TEST FAILED: $$name"; $(CONTINUE); }; \
         echo ""; $(HR); \
     }; testcase
@@ -35,7 +34,7 @@ bundle_tests: clean
 
 clean:
 	rm -Rf repo
-	rm -f $(REF)/*.res
+	rm -f resources/*.res
 	@$(HR)
 
 
@@ -51,10 +50,10 @@ endif
 ifeq (yes,$(shell $(IS_GIT_TREE) && echo yes))
   git_diff_results:
 	@echo "Using git diff to compare results and references"
-	bash -c 'for i in references/*.res; do \
+	bash -c 'for i in resources/*.res; do \
 		cp $$i $${i/.res/.ref}; \
 	done'
-	git diff --quiet --exit-code references/*.ref
+	git diff --quiet --exit-code resources/*.ref
 	@echo "FINISHED SUCCESSFULLY"
 else
   git_diff_results:
