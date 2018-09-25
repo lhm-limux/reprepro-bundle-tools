@@ -1,7 +1,6 @@
 SHELL := bash
 BUNDLE := ../bin/bundle
 REF := references
-USE_BATCH_EDITOR := export EDITOR='references/batch_editor'
 
 IS_GIT_TREE := (which git && git ls-files --error-unmatch) >/dev/null 2>&1
 CONTINUE := true
@@ -14,6 +13,7 @@ T = function testcase {\
         local name=$$1; shift; \
         local retExp=$$1; shift; \
         echo "STARTING TEST $$name"; \
+	test -x references/batch_editor_$$name && { export EDITOR=references/batch_editor_$$name; echo "setting EDITOR=$$EDITOR"; }; \
 	ret=0; \
 	( \
           set -x; \
@@ -31,8 +31,7 @@ main: bundle_tests git_diff_results
 bundle_tests: clean 
 	@$(T) bundle_init 0   $(BUNDLE) init bionic --no-clean-commit
 	@$(T) bundle_apply1 0 $(BUNDLE) apply bionic/0001
-	@$(USE_BATCH_EDITOR)_1; \
-	       $(T) bundle_edit 0 $(BUNDLE) edit bionic/0001
+	@$(T) bundle_edit 0   $(BUNDLE) edit bionic/0001
 
 clean:
 	rm -Rf repo
