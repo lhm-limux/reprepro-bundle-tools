@@ -5,7 +5,7 @@
     "Prefix" : "bundle",
     "Tags" : [ "mybionic" ],
     "Codename" : "mybionic",
-    "Url" : "file://__TEST_FOLDER__/repo/bundle/",
+    "Url" : "file://{PWD}/repo/bundle/",
     "Trusted" : true,
     "Architectures" : [ "i386", "amd64" ]
    }
