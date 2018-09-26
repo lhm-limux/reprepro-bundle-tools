@@ -32,10 +32,10 @@ T = function testcase {\
 main: bundle_tests git_diff_results
 
 bundle_tests: clean
-	@$(T) bundle_init 0   $(BUNDLE) init mybionic --no-clean-commit
-	@$(T) bundle_apply1 0 $(BUNDLE) apply mybionic/0001
-	@$(T) bundle_edit 0   $(BUNDLE) edit mybionic/0001
-	@$(T) bundle_apply2 0 $(BUNDLE) apply mybionic/0001
+	@$(T) bundle_01_init  0 $(BUNDLE) init mybionic --no-clean-commit
+	@$(T) bundle_02_apply 0 $(BUNDLE) apply mybionic/0001
+	@$(T) bundle_03_edit  0 $(BUNDLE) edit mybionic/0001
+	@$(T) bundle_04_apply 0 $(BUNDLE) apply mybionic/0001
 
 clean:
 	rm -Rf repo

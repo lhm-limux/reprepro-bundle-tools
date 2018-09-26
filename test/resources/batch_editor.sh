@@ -6,7 +6,7 @@ function batch_editor.sh {
   echo "Usage: ln -s $0 batch_editor_X; ./batch_editor_X file_to_edit"
 }
 
-function bundle_edit {
+function bundle_03_edit {
   sed -i "s/# ADD_NEW           SRC+BIN  OF 0ad / ADD_NEW           SRC+BIN  OF 0ad /" "$1"
 }
 
