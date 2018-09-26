@@ -7,9 +7,9 @@ function batch_editor.sh {
 }
 
 function bundle_edit {
-  sed -i "s/# ADD_NEW           SRC+BIN  OF 0ad / ADD_NEW           SRC+BIN  OF 0ad /" $@
+  sed -i "s/# ADD_NEW           SRC+BIN  OF 0ad / ADD_NEW           SRC+BIN  OF 0ad /" "$1"
 }
 
 cmd=$(basename $0)
 cmd=${cmd/batch_editor_/}
-${cmd} $@
+${cmd} "$@"

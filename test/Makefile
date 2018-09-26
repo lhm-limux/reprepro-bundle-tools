@@ -1,5 +1,6 @@
 SHELL := bash
 BUNDLE := ../bin/bundle
+REPO_RSYNC := rsync -a --delete --exclude dists --exclude lists --exclude db --exclude pool
 
 IS_GIT_TREE := (which git && git ls-files --error-unmatch) >/dev/null 2>&1
 CONTINUE := true
@@ -11,16 +12,18 @@ HR=echo "========================================================="
 T = function testcase {\
         local name=$$1; shift; \
         local retExp=$$1; shift; \
+        local pwdUrl=$$(pwd | sed "s/ /%20/g"); \
+        mkdir -p repo; \
         echo "STARTING TEST $$name"; \
-	test -x resources/batch_editor_$$name && { export EDITOR=resources/batch_editor_$$name; echo "setting EDITOR=$$EDITOR"; }; \
-	ret=0; \
-	( \
+        test -x resources/batch_editor_$$name && { export EDITOR=resources/batch_editor_$$name; echo "setting EDITOR=$$EDITOR"; }; \
+        ret=0; \
+        ( \
           set -x; \
-          $$@ >resources/$$name.res 2>&1 || ret=$$?; \
+          $$@ >repo/cmd.log 2>&1 || ret=$$?; \
           test $$ret = $$retExp || exit 1; \
-          sed -i 's~$(CURDIR)~{PWD}~' resources/$$name.res; \
-          diff -u resources/$$name.ref resources/$$name.res || exit 1; \
-          diff -u -r resources/$$name/bundle/*/*/conf repo/bundle/*/*/conf || exit 1; \
+          $(REPO_RSYNC) repo/ resources/$${name}.res; \
+          sed -i "s~$$pwdUrl~…TESTDIR…~" $$(find resources/$$name.res -type f); \
+          diff -u -r resources/$$name.ref resources/$$name.res || exit 1; \
         ) && echo "TEST OK: $$name" || { echo "TEST FAILED: $$name"; $(CONTINUE); }; \
         echo ""; $(HR); \
     }; testcase
@@ -36,7 +39,7 @@ bundle_tests: clean
 
 clean:
 	rm -Rf repo
-	rm -f resources/*.res
+	rm -Rf resources/*.res
 	@$(HR)
 
 
@@ -52,9 +55,9 @@ endif
 ifeq (yes,$(shell $(IS_GIT_TREE) && echo yes))
   git_diff_results:
 	@echo "Using git diff to compare results and references"
-	bash -c 'for i in resources/*.res; do \
-		cp $$i $${i/.res/.ref}; \
-	done'
+	for i in resources/*.res; do \
+		$(REPO_RSYNC) $$i/ $${i/.res/.ref}; \
+	done
 	git diff --quiet --exit-code resources/*.ref
 	@echo "FINISHED SUCCESSFULLY"
 else

@@ -1,5 +1,5 @@
 Name: from-bundle-mybionic-0001
-Method: file:///home/chlu/reprepro-bundle-tools/test/repo/bundle/mybionic/0001/
+Method: file://…TESTDIR…/repo/bundle/mybionic/0001/
 Suite: mybionic
 Components: main restricted universe multiverse partner
 #UDebComponents: main restricted universe multiverse partner
