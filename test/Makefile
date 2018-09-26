@@ -36,6 +36,7 @@ bundle_tests: clean
 	@$(T) bundle_02_apply 0 $(BUNDLE) apply mybionic/0001
 	@$(T) bundle_03_edit  0 $(BUNDLE) edit mybionic/0001
 	@$(T) bundle_04_apply 0 $(BUNDLE) apply mybionic/0001
+	@$(T) bundle_05_meta  0 $(BUNDLE) meta mybionic/0001
 
 clean:
 	rm -Rf repo

@@ -1,0 +1,16 @@
+# Note: clean this file completely to CANCEL this current 'meta' action
+
+= BUNDLE-METADATA =
+Bundlename: mybionic/0001
+BasedOn: NEW
+Distribution: mybionic
+Target: plus
+Creator: chlu
+
+= RELEASENOTES =
+<Subject>
+
+<Details>
+
+__DYNAMIC_PACKAGE_LIST__
+
