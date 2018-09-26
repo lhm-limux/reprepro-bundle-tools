@@ -445,7 +445,7 @@ def edit_meta(bundle, cancel_remark=None):
     with tempfile.NamedTemporaryFile(mode='r+') as tmp:
         infofileToEditformat(bundle.getInfoFile(), tmp, cancel_remark)
         if editFile(tmp.name):
-            editformatToInfofile(tmp, bundle.getInfoFile())
+            editformatToInfofile(tmp.name, bundle.getInfoFile())
             return bundle.getInfoFile()
         else:
             logger.info("Aborting as empty metadata file recognized!")
@@ -477,57 +477,57 @@ def getGitRepoUrl(alias, default):
     return default
 
 
-def infofileToEditformat(infile, out, cancel_remark=None):
+def infofileToEditformat(infile, out_fh, cancel_remark=None):
     '''
         converts the info file (which is in the apt_pkg.TagFile-format) into a
         more human editor-format. We don't want to bother our developers with
         details of multiline format.
     '''
     if cancel_remark:
-        print(cancel_remark, file=out)
-    print("= Bundle-Metadata =".upper(), file=out)
+        print(cancel_remark, file=out_fh)
+    print("= Bundle-Metadata =".upper(), file=out_fh)
     if True:
         tagfile = apt_pkg.TagFile(infile)
         for section in tagfile:
             for key in section.keys():
                 if key == "Releasenotes":
                     continue
-                print("{}: {}".format(key, section[key]), file=out)
+                print("{}: {}".format(key, section[key]), file=out_fh)
             if "Releasenotes" in section:
-                print("\n= Releasenotes =".upper(), file=out)
+                print("\n= Releasenotes =".upper(), file=out_fh)
                 lines = section["Releasenotes"]
                 for line in lines.split("\n"):
                     line = re.sub(r"^ ", "", line)
                     line = re.sub(r"^\.$", "", line)
-                    print(line, file=out)
-    out.flush()
+                    print(line, file=out_fh)
+    out_fh.flush()
     
 
 def editformatToInfofile(infile, outfile):
     '''
         converts back from the above human editor-format to TagFile format
     '''
-    infile.seek(0)
-    with open(outfile, "w") as out:
-        block = 0
-        for line in infile.readlines():
-            line = re.sub(r"\n$", "", line)
-            if line == "= BUNDLE-METADATA =":
-                block = 1
-                continue
-            elif line == "= RELEASENOTES =":
-                block = 2
-                print("Releasenotes:", end='', file=out)
-                continue
-            elif block == 1:
-                if line == "":
+    with open(infile, "r") as in_fh:
+        with open(outfile, "w") as out:
+            block = 0
+            for line in in_fh.readlines():
+                line = re.sub(r"\n$", "", line)
+                if line == "= BUNDLE-METADATA =":
+                    block = 1
                     continue
-                print(line, file=out)
-            elif block == 2:
-                line = re.sub(r"^$", ".", line)
-                line = re.sub(r"^", r" ", line)
-                print(line, file=out)
-        print("", file=out, flush=True)
+                elif line == "= RELEASENOTES =":
+                    block = 2
+                    print("Releasenotes:", end='', file=out)
+                    continue
+                elif block == 1:
+                    if line == "":
+                        continue
+                    print(line, file=out)
+                elif block == 2:
+                    line = re.sub(r"^$", ".", line)
+                    line = re.sub(r"^", r" ", line)
+                    print(line, file=out)
+            print("", file=out, flush=True)
 
 
 def editFile(filepath):
