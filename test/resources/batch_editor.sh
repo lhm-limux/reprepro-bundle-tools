@@ -16,6 +16,12 @@ function bundle_05_meta {
   cat "$1" >repo/editor.out
 }
 
+function bundle_07_black {
+  cat "$1" >repo/editor.in
+  sed -i "s/# 0ad/ 0ad/" "$1"
+  cat "$1" >repo/editor.out
+}
+
 cmd=$(basename $0)
 cmd=${cmd/batch_editor_/}
 

@@ -14,6 +14,7 @@ T = function testcase {\
         local retExp=$$1; shift; \
         local pwdUrl=$$(pwd | sed "s/ /%20/g"); \
         mkdir -p repo; \
+        rm -f repo/editor.*; \
         echo "STARTING TEST $$name"; \
         test -x resources/batch_editor_$$name && { export EDITOR=resources/batch_editor_$$name; echo "setting EDITOR=$$EDITOR"; }; \
         ret=0; \
@@ -38,6 +39,9 @@ bundle_tests: clean
 	@$(T) bundle_04_apply 0 $(BUNDLE) apply mybionic/0001
 	@$(T) bundle_05_meta  0 $(BUNDLE) meta mybionic/0001
 	@$(T) bundle_06_show  0 $(BUNDLE) show mybionic/0001
+	@$(T) bundle_07_black 0 $(BUNDLE) black mybionic/0001
+	@$(T) bundle_08_apply 0 $(BUNDLE) apply mybionic/0001
+	@$(T) bundle_09_show  0 $(BUNDLE) show mybionic/0001
 
 clean:
 	rm -Rf repo
