@@ -33,15 +33,18 @@ T = function testcase {\
 main: bundle_tests git_diff_results
 
 bundle_tests: clean
-	@$(T) bundle_01_init  0 $(BUNDLE) init mybionic --no-clean-commit
-	@$(T) bundle_02_apply 0 $(BUNDLE) apply mybionic/0001
-	@$(T) bundle_03_edit  0 $(BUNDLE) edit mybionic/0001
-	@$(T) bundle_04_apply 0 $(BUNDLE) apply mybionic/0001
-	@$(T) bundle_05_meta  0 $(BUNDLE) meta mybionic/0001
-	@$(T) bundle_06_show  0 $(BUNDLE) show mybionic/0001
-	@$(T) bundle_07_black 0 $(BUNDLE) black mybionic/0001
-	@$(T) bundle_08_apply 0 $(BUNDLE) apply mybionic/0001
-	@$(T) bundle_09_show  0 $(BUNDLE) show mybionic/0001
+	@$(T) bundle_01_init         0 $(BUNDLE) init mybionic --no-clean-commit
+	@$(T) bundle_02_apply        0 $(BUNDLE) apply mybionic/0001
+	@$(T) bundle_03_edit         0 $(BUNDLE) edit mybionic/0001
+	@$(T) bundle_04_apply        0 $(BUNDLE) apply mybionic/0001
+	@$(T) bundle_05_meta         0 $(BUNDLE) meta mybionic/0001
+	@$(T) bundle_06_show         0 $(BUNDLE) show mybionic/0001
+	@$(T) bundle_07_black        0 $(BUNDLE) black mybionic/0001
+	@$(T) bundle_08_apply        0 $(BUNDLE) apply mybionic/0001
+	@$(T) bundle_09_show         0 $(BUNDLE) show mybionic/0001
+	@$(T) bundle_10_edit_cancel  0 $(BUNDLE) edit mybionic/0001
+	@$(T) bundle_11_meta_cancel  0 $(BUNDLE) meta mybionic/0001
+	@$(T) bundle_12_black_cancel 0 $(BUNDLE) black mybionic/0001
 
 clean:
 	rm -Rf repo

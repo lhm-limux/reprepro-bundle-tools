@@ -22,6 +22,27 @@ function bundle_07_black {
   cat "$1" >repo/editor.out
 }
 
+function cancel {
+  echo "Creating empty edit-result in order to cancel the current action"
+  echo -n "" >"$1"
+}
+
+function bundle_10_edit_cancel {
+  cancel "$1"
+}
+
+function bundle_11_meta_cancel {
+  cat "$1" >repo/editor.in
+  cancel "$1"
+  cat "$1" >repo/editor.out
+}
+
+function bundle_12_black_cancel {
+  cat "$1" >repo/editor.in
+  cancel "$1"
+  cat "$1" >repo/editor.out
+}
+
 cmd=$(basename $0)
 cmd=${cmd/batch_editor_/}
 
