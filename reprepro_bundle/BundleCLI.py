@@ -307,17 +307,16 @@ def cmd_clone(args):
     print(bundle.getOwnSuiteName())
     with choose_commit_context(None, args, "CLONED bundle '{srcBundleName} --> '{bundleName}'".format(srcBundleName=bundle.bundleName, bundleName="{bundleName}"), bundle.distribution) as (newBundle, git_add):
         git_add.append(create_reprepro_config(newBundle))
-        git_add.append(newBundle.registerSuitesFileForAptRepos())
-        
         shutil.copy(bundle.getInfoFile(), newBundle.getInfoFile())
         git_add.append(newBundle.updateInfofile(bundle.bundleName))
-        
         srcSuiteName = bundle.getOwnSuiteName()
         args.supplier_suites = srcSuiteName
         args.highlighted_suites = srcSuiteName
         args.add_from = srcSuiteName
         args.reference_suites = None
         git_add.append(update_sources_control_list(newBundle, args))
+        git_add.append(updateReposConfig())
+
 
 
 def cmd_bundles(args):
