@@ -35,6 +35,7 @@ T = function testcase {\
 main: bundle_workflow bundle_help git_diff_results
 
 bundle_workflow: clean
+  #columns: @$(T) testcase-name expRet syncArgs cmd…
 	@$(T) bundle_01_init         0 "" $(BUNDLE) init mybionic --no-clean-commit
 	@$(T) bundle_02_apply        0 "" $(BUNDLE) apply mybionic/0001
 	@$(T) bundle_03_edit         0 "" $(BUNDLE) edit mybionic/0001
@@ -57,6 +58,7 @@ bundle_workflow: clean
 	@$(T) bundle_17_list         0 "" $(BUNDLE) list mybionic/0002
 
 bundle_help:
+  #columns: @$(T) testcase-name expRet syncArgs cmd…
 	@$(T) bundle_help_00  1 $(NO_DEEP) $(BUNDLE)
 	@$(T) bundle_help_01  0 $(NO_DEEP) $(BUNDLE) -h
 	@$(T) bundle_help_02  0 $(NO_DEEP) $(BUNDLE) -h init
