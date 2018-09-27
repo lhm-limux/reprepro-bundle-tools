@@ -1,0 +1,3 @@
+usage: bundle [-h] [-d]
+              {init,edit,blacklist,black,meta,show,list,ls,seal,apply,clone,bundles,lsb,update-repos-config,repos}
+              ...

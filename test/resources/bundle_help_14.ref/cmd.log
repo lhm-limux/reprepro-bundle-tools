@@ -1,0 +1,18 @@
+usage: bundle bundles [-h] [-l] [-r] [-e] [bundleNameFilter]
+
+Subcommand bundles: list available bundles.
+
+optional arguments:
+  -h, --help        show this help message and exit
+
+sub command 'bundles' specific options:
+  -l, --long        Provide a long listing containing more information.
+  -r, --readonly    Just print bundles that are marked readonly (that are
+                    already sealed).
+  -e, --editable    Just print bundles that are marked editable (that are not
+                    sealed).
+  bundleNameFilter  The bundleNameFilter is either an empty string or a string
+                    value. In case of an empty string is provided, all
+                    available bundles are matched. In case of a string value,
+                    only bundles with their bundle name containing the string
+                    are matched.

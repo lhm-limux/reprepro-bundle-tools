@@ -1,0 +1,76 @@
+usage: bundle edit [-h] [--own-suite OWN_SUITE] [--no-apt-update]
+                   [--supplier-suites SUPPLIER_SUITES]
+                   [--reference-suites REFERENCE_SUITES]
+                   [--highlighted-suites HIGHLIGHTED_SUITES]
+                   [--add-from ADD_FROM] [--upgrade-from UPGRADE_FROM]
+                   [--batch] [--commit] [--clean-commit]
+                   [--git-repo-url GIT_REPO_URL] [--git-branch GIT_BRANCH]
+                   bundleName
+
+Subcommand edit: Add / Remove/ Upgrade/ Downgrade packages to/in the bundle by
+editing an automatically prepared list of available packages.
+
+positional arguments:
+  bundleName            The bundleName is a value in the format
+                        <distribution>[/<bundleID>] that points to the path in
+                        the folder repo/bundle/ in which the bundle is stored.
+                        Is is possible to just provide the <distribution>
+                        part. In this case, there will be a new bundle (with a
+                        newly incremented bundleID) created for this
+                        distribution. To support command line completion, it
+                        is also allowed to specify the full path relative to
+                        the projects root in the form
+                        repo/bundle/<distribution>[/<bundleID>].
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --own-suite OWN_SUITE
+                        Suite-Selectors that defines the own suite (the suite
+                        of this bundle). The default value is
+                        'bundle:{bundle}'.
+
+advanced suites control parameters:
+  --no-apt-update       Skip download of packages list.
+  --supplier-suites SUPPLIER_SUITES
+                        Comma separated list of Suite-Selectors that define
+                        the supplier-suites to track. The default value is
+                        '{distribution}-supplier:,user-{user}:{distribution}'.
+  --reference-suites REFERENCE_SUITES
+                        Comma separated list of Suite-Selectors that define
+                        the reference suites which hold the current state that
+                        we refer on. The default value is
+                        '{distribution}-reference:,bundle:{bundle}'.
+  --highlighted-suites HIGHLIGHTED_SUITES
+                        Comma separated list of Suite-Selectors that define
+                        suites whose entries should be put on top of the
+                        sources_control.list. The default value is
+                        'bundle:{bundle}'.
+
+sub command 'edit' specific options:
+  --add-from ADD_FROM   Comma separated list of Suite-Selectors that define
+                        suites whose (all) packages are automatically
+                        activated for being added.
+  --upgrade-from UPGRADE_FROM
+                        Comma separated list of Suite-Selectors that define
+                        suites whose (upgradable) packages are automatically
+                        upgraded if they already exist in the reference-
+                        suites.
+  --batch               Run in batch mode which means without user
+                        interaction.
+
+additional arguments for git-commit management:
+  --commit              Commit changed files to the (local) project git-
+                        repository.
+  --clean-commit        Create a clone of the current git-repository into a
+                        temporary folder, automatically commit changes there
+                        and immediately push back the changes to the git
+                        server.
+  --git-repo-url GIT_REPO_URL
+                        GIT-Repository URL used to clone the repository during
+                        --list-update-auto-commit. The default is the origin
+                        of the current git repository that contains the
+                        bundle-script: 'ssh://christoph.lutz@git.tvc.muenchen.
+                        de/srv/git/software/reprepro-bundle-tools.git'
+  --git-branch GIT_BRANCH
+                        GIT-Repository branch used to pull and push during
+                        --list-update-auto-commit. The default is 'test'.

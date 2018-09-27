@@ -1,0 +1,25 @@
+usage: bundle update-repos-config [-h] [--commit] [--clean-commit]
+                                  [--git-repo-url GIT_REPO_URL]
+                                  [--git-branch GIT_BRANCH]
+
+Subcommand update-repos-config: updates the file repo/bundle/bundle.repos
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+additional arguments for git-commit management:
+  --commit              Commit changed files to the (local) project git-
+                        repository.
+  --clean-commit        Create a clone of the current git-repository into a
+                        temporary folder, automatically commit changes there
+                        and immediately push back the changes to the git
+                        server.
+  --git-repo-url GIT_REPO_URL
+                        GIT-Repository URL used to clone the repository during
+                        --list-update-auto-commit. The default is the origin
+                        of the current git repository that contains the
+                        bundle-script: 'ssh://christoph.lutz@git.tvc.muenchen.
+                        de/srv/git/software/reprepro-bundle-tools.git'
+  --git-branch GIT_BRANCH
+                        GIT-Repository branch used to pull and push during
+                        --list-update-auto-commit. The default is 'test'.

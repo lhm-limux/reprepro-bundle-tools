@@ -1,0 +1,45 @@
+usage: bundle [-h] [-d]
+              {init,edit,blacklist,black,meta,show,list,ls,seal,apply,clone,bundles,lsb,update-repos-config,repos}
+              ...
+
+This tool can be used to merge packages from different sources (so called
+supplier-suites) into a separate apt repository (managed by reprepro in the
+background), the so called "bundle". It provides an easy to use workflow for
+adding new bundles, and selecting packages, Upgrades and Downgrades that
+should be applied to the bundle and sealing a bundle for deployment.
+Additionally each bundle could be provided with metadata that could be usefull
+to automate deployment processes.
+
+positional arguments:
+  {init,edit,blacklist,black,meta,show,list,ls,seal,apply,clone,bundles,lsb,update-repos-config,repos}
+                        choose one of these subcommands
+    init                Subcommand init: Reserves a new bundle ID and creates
+                        a new empty bundle for the given distribution
+    edit                Subcommand edit: Add / Remove/ Upgrade/ Downgrade
+                        packages to/in the bundle by editing an automatically
+                        prepared list of available packages.
+    blacklist (black)   Subcommand blacklist: Edit the bundle's blacklist to
+                        mark particular binary packages contained in a source
+                        package as blacklisted. Blacklisted packages will not
+                        be added to the bundle.
+    meta                Subcommand meta: Edit the bundle's metadata
+    show                Subcommand show: Give an overview about the bundle
+                        mata-data and it's content.
+    list (ls)           Subcommand list: List the content - the packages - of
+                        a bundle.
+    seal                Subcommand seal: Mark the bundle as ReadOnly and
+                        change a suite's tag from 'staging' to 'deploy'.
+    apply               Subcommand apply: Use reprepro to update the bundle -
+                        This action typically runs on the reprepro server and
+                        not locally (besides for testing purposes)
+    clone               Subcommand clone: Clones the bundle bundleName into a
+                        new bundle (with an automatically created number) for
+                        the same distribution.
+    bundles (lsb)       Subcommand bundles: list available bundles.
+    update-repos-config (repos)
+                        Subcommand update-repos-config: updates the file
+                        repo/bundle/bundle.repos
+
+optional arguments:
+  -h, --help            Show a (subcommand specific) help message
+  -d, --debug           Show debug messages.
