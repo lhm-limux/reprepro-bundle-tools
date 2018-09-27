@@ -1,0 +1,22 @@
+usage: bundle list [-h] [--own-suite OWN_SUITE] bundleName
+
+Subcommand list: List the content - the packages - of a bundle.
+
+positional arguments:
+  bundleName            The bundleName is a value in the format
+                        <distribution>[/<bundleID>] that points to the path in
+                        the folder repo/bundle/ in which the bundle is stored.
+                        Is is possible to just provide the <distribution>
+                        part. In this case, there will be a new bundle (with a
+                        newly incremented bundleID) created for this
+                        distribution. To support command line completion, it
+                        is also allowed to specify the full path relative to
+                        the projects root in the form
+                        repo/bundle/<distribution>[/<bundleID>].
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --own-suite OWN_SUITE
+                        Suite-Selectors that defines the own suite (the suite
+                        of this bundle). The default value is
+                        'bundle:{bundle}'.

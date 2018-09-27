@@ -76,7 +76,7 @@ def main():
 
     # fixup to get help-messages for subcommands that require positional argmuments
     # so that "apt-repos -h <subcommand>" prints a help-message and not an error
-    for subcmd in ['init', 'edit', 'meta', 'show', 'seal', 'apply', 'clone']:
+    for subcmd in ['init', 'edit', 'meta', 'show', 'seal', 'apply', 'clone', 'blacklist', 'black', 'list', 'ls']:
         if ("-h" in sys.argv or "--help" in sys.argv) and subcmd in sys.argv:
             sys.argv.append(".")
 
