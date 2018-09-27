@@ -98,7 +98,7 @@ def main():
     parse_apply = subparsers.add_parser("apply", help=cmd_apply.__doc__, description=cmd_apply.__doc__)
     parse_clone = subparsers.add_parser("clone", help=cmd_clone.__doc__, description=cmd_clone.__doc__)
     parse_bundles = subparsers.add_parser("bundles", help=cmd_bundles.__doc__, description=cmd_bundles.__doc__, aliases=['lsb'])
-    parse_repos = subparsers.add_parser("update_repos_config", help=cmd_update_repos_config.__doc__, description=cmd_update_repos_config.__doc__, aliases=['repos'])
+    parse_repos = subparsers.add_parser("update-repos-config", help=cmd_update_repos_config.__doc__, description=cmd_update_repos_config.__doc__, aliases=['repos'])
 
     parse_init.set_defaults(sub_function=cmd_init, sub_parser=parse_init)
     parse_edit.set_defaults(sub_function=cmd_edit, sub_parser=parse_edit)
@@ -293,7 +293,7 @@ def cmd_apply(args):
 
 def cmd_update_repos_config(args):
     '''
-        Subcommand update_repos_config: updates the file repo/bundle/bundle.repos
+        Subcommand update-repos-config: updates the file repo/bundle/bundle.repos
     '''
     with choose_commit_context(None, args, "UPDATED apt-repos config") as (unused_bundle, git_add):
         git_add.append(updateReposConfig())
