@@ -20,9 +20,16 @@ __DYNAMIC_PACKAGE_LIST__
 INFO[apt_repos]: Using basedir '.apt-repos'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 updating (use --no-update to skip) and querying packages lists for 1 suites.1
-Package         | Version  | Suite                | Arch  | Section        | Source  
-=============== | ======== | ==================== | ===== | ============== | ========
-0ad             | 0.0.22-4 | bundle:mybionic/0001 | amd64 | universe/games | 0ad     
-0ad             | 0.0.22-4 | bundle:mybionic/0001 | i386  | universe/games | 0ad     
-0ad-data        | 0.0.22-1 | bundle:mybionic/0001 | all   | universe/games | 0ad-data
-0ad-data-common | 0.0.22-1 | bundle:mybionic/0001 | all   | universe/games | 0ad-data
+Package             | Version           | Suite                | Arch  | Section           | Source     
+=================== | ================= | ==================== | ===== | ================= | ===========
+0ad                 | 0.0.22-4          | bundle:mybionic/0001 | amd64 | universe/games    | 0ad        
+0ad                 | 0.0.22-4          | bundle:mybionic/0001 | i386  | universe/games    | 0ad        
+389-ds              | 1.3.7.10-1ubuntu1 | bundle:mybionic/0001 | all   | universe/net      | 389-ds-base
+389-ds-base         | 1.3.7.10-1ubuntu1 | bundle:mybionic/0001 | amd64 | universe/net      | 389-ds-base
+389-ds-base         | 1.3.7.10-1ubuntu1 | bundle:mybionic/0001 | i386  | universe/net      | 389-ds-base
+389-ds-base-dev     | 1.3.7.10-1ubuntu1 | bundle:mybionic/0001 | amd64 | universe/libdevel | 389-ds-base
+389-ds-base-dev     | 1.3.7.10-1ubuntu1 | bundle:mybionic/0001 | i386  | universe/libdevel | 389-ds-base
+389-ds-base-libs    | 1.3.7.10-1ubuntu1 | bundle:mybionic/0001 | amd64 | universe/libs     | 389-ds-base
+389-ds-base-libs    | 1.3.7.10-1ubuntu1 | bundle:mybionic/0001 | i386  | universe/libs     | 389-ds-base
+python3-dirsrvtests | 1.3.7.10-1ubuntu1 | bundle:mybionic/0001 | all   | universe/net      | 389-ds-base
+python3-lib389      | 1.3.7.10-1ubuntu1 | bundle:mybionic/0001 | all   | universe/net      | 389-ds-base

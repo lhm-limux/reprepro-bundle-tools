@@ -7,7 +7,8 @@ function batch_editor.sh {
 }
 
 function bundle_03_edit {
-  sed -i "s/# ADD_NEW           SRC+BIN  OF 0ad/ ADD_NEW           SRC+BIN  OF 0ad/" "$1"
+  sed -i "s/# ADD_NEW           SRC+BIN  OF 0ad / ADD_NEW           SRC+BIN  OF 0ad /" "$1"
+  sed -i "s/# ADD_NEW           SRC+BIN  OF 389-ds-base / ADD_NEW           SRC+BIN  OF 389-ds-base /" "$1"
 }
 
 function bundle_05_meta {
@@ -18,7 +19,8 @@ function bundle_05_meta {
 
 function bundle_07_black {
   cat "$1" >repo/editor.in
-  sed -i "s/# 0ad-data-common/ 0ad-data-common/" "$1"
+  sed -i "s/# 389-ds-base-dev / 389-ds-base-dev /" "$1"
+  sed -i "s/# python3/ python3/" "$1"
   cat "$1" >repo/editor.out
 }
 

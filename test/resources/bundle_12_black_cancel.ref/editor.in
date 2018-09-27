@@ -1,7 +1,11 @@
 # Note: clean this file completely to CANCEL this current 'blacklist' action
 
-0ad-data-common purge
+389-ds-base-dev purge
+python3-dirsrvtests purge
+python3-lib389 purge
 
 #==================== uncomment to blacklist: ====================
 # 0ad purge
-# 0ad-data purge
+# 389-ds purge
+# 389-ds-base purge
+# 389-ds-base-libs purge

@@ -1,1 +1,3 @@
-0ad-data-common purge
+389-ds-base-dev purge
+python3-dirsrvtests purge
+python3-lib389 purge
