@@ -15,6 +15,6 @@ INFO[reprepro_bundle.Bundle]: Updating and Querying suite ubuntu:bionic
 INFO[reprepro_bundle.Bundle]: Updating and Querying suite ubuntu:bionic-security
 INFO[reprepro_bundle.Bundle]: Updating and Querying suite ubuntu:bionic-updates
 Calling batch-editor bundle_03_edit
-INFO[bundle]: Adding Update-Rules for suite ubuntu:bionic with 1 entries
+INFO[bundle]: Adding Update-Rules for suite ubuntu:bionic with 2 entries
 INFO[apt_repos.Repository]: Scanning Repository 'Main Ubuntu Repository' (http://archive.ubuntu.com/ubuntu/)
 INFO[reprepro_bundle.Bundle]: Creating config files for bundle 'mybionic/0001'

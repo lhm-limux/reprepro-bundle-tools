@@ -1,1 +1,3 @@
 ADD_NEW             SRC+BIN  OF 0ad 0.0.22-4 FROM ubuntu:bionic universe/games
+
+ADD_NEW             SRC+BIN  OF 0ad-data 0.0.22-1 FROM ubuntu:bionic universe/games

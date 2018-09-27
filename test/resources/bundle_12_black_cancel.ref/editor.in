@@ -1,2 +1,7 @@
 # Note: clean this file completely to CANCEL this current 'blacklist' action
 
+0ad-data-common purge
+
+#==================== uncomment to blacklist: ====================
+# 0ad purge
+# 0ad-data purge

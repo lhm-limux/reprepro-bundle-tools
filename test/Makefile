@@ -39,12 +39,20 @@ bundle_tests: clean
 	@$(T) bundle_04_apply        0 $(BUNDLE) apply mybionic/0001
 	@$(T) bundle_05_meta         0 $(BUNDLE) meta mybionic/0001
 	@$(T) bundle_06_show         0 $(BUNDLE) show mybionic/0001
+	@$(T) bundle_06_list         0 $(BUNDLE) list mybionic/0001
+	@$(T) bundle_06_bundles      0 $(BUNDLE) bundles mybionic
+	@$(T) bundle_06_bundles_l    0 $(BUNDLE) bundles mybionic -l
 	@$(T) bundle_07_black        0 $(BUNDLE) black mybionic/0001
 	@$(T) bundle_08_apply        0 $(BUNDLE) apply mybionic/0001
 	@$(T) bundle_09_show         0 $(BUNDLE) show mybionic/0001
 	@$(T) bundle_10_edit_cancel  0 $(BUNDLE) edit mybionic/0001
 	@$(T) bundle_11_meta_cancel  0 $(BUNDLE) meta mybionic/0001
 	@$(T) bundle_12_black_cancel 0 $(BUNDLE) black mybionic/0001
+	@$(T) bundle_13_seal         0 $(BUNDLE) seal mybionic/0001
+	@$(T) bundle_14_edit         1 $(BUNDLE) edit mybionic/0001
+	@$(T) bundle_15_clone        0 $(BUNDLE) clone mybionic/0001 --no-clean-commit
+	@$(T) bundle_16_bundles      0 $(BUNDLE) bundles -l
+	@$(T) bundle_17_list         0 $(BUNDLE) list mybionic/0002
 
 clean:
 	rm -Rf repo

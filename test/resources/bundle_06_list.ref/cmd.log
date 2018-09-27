@@ -1,0 +1,12 @@
+INFO[bundle]: You are now using bundle 'mybionic/0001'
+INFO[apt_repos]: Using basedir '.apt-repos'
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
+INFO[apt_repos]: Using basedir '.apt-repos'
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
+updating (use --no-update to skip) and querying packages lists for 1 suites.1
+Package         | Version  | Suite                | Arch  | Section        | Source  
+=============== | ======== | ==================== | ===== | ============== | ========
+0ad             | 0.0.22-4 | bundle:mybionic/0001 | amd64 | universe/games | 0ad     
+0ad             | 0.0.22-4 | bundle:mybionic/0001 | i386  | universe/games | 0ad     
+0ad-data        | 0.0.22-1 | bundle:mybionic/0001 | all   | universe/games | 0ad-data
+0ad-data-common | 0.0.22-1 | bundle:mybionic/0001 | all   | universe/games | 0ad-data

@@ -7,18 +7,18 @@ function batch_editor.sh {
 }
 
 function bundle_03_edit {
-  sed -i "s/# ADD_NEW           SRC+BIN  OF 0ad / ADD_NEW           SRC+BIN  OF 0ad /" "$1"
+  sed -i "s/# ADD_NEW           SRC+BIN  OF 0ad/ ADD_NEW           SRC+BIN  OF 0ad/" "$1"
 }
 
 function bundle_05_meta {
   cat "$1" >repo/editor.in
-  sed -i "s/.Subject./This is my best test bundle/" "$1"
+  sed -i "s/<Subject>/This is my best test bundle/" "$1"
   cat "$1" >repo/editor.out
 }
 
 function bundle_07_black {
   cat "$1" >repo/editor.in
-  sed -i "s/# 0ad/ 0ad/" "$1"
+  sed -i "s/# 0ad-data-common/ 0ad-data-common/" "$1"
   cat "$1" >repo/editor.out
 }
 
@@ -40,6 +40,12 @@ function bundle_11_meta_cancel {
 function bundle_12_black_cancel {
   cat "$1" >repo/editor.in
   cancel "$1"
+  cat "$1" >repo/editor.out
+}
+
+function bundle_13_seal {
+  cat "$1" >repo/editor.in
+  sed -i "s/<Details>/We just need this bundle for the test automation./" "$1"
   cat "$1" >repo/editor.out
 }
 

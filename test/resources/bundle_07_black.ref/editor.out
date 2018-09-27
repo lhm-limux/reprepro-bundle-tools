@@ -2,4 +2,6 @@
 
 
 #==================== uncomment to blacklist: ====================
- 0ad purge
+# 0ad purge
+# 0ad-data purge
+ 0ad-data-common purge

@@ -1,0 +1,16 @@
+# Note: clean this file completely to CANCEL this current 'seal' action
+
+= BUNDLE-METADATA =
+Bundlename: mybionic/0001
+BasedOn: NEW
+Distribution: mybionic
+Target: plus
+Creator: chlu
+
+= RELEASENOTES =
+This is my best test bundle
+
+We just need this bundle for the test automation.
+
+__DYNAMIC_PACKAGE_LIST__
+
