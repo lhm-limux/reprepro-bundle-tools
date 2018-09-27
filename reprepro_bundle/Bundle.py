@@ -388,16 +388,13 @@ class Bundle():
             logger.error("Can't update Blacklist as own-suite is not (yet) available.")
             return
         logger.info("Creating blacklist containing binary packages from the bundles own suite {}.".format(self._ownSuite))
-        blacklisted = set()
         proposed = set()
         self._ownSuite.scan(not no_update)
         for p in self._ownSuite.queryPackages('.', True, None, None, PackageField.getByFieldsString('p')):
             package = p.getData()[0]
-            if package in already_blacklisted:
-                blacklisted.add(package)
-            else:
+            if package not in already_blacklisted:
                 proposed.add(package)
-        self._writeBlacklist(blacklisted, proposed, cancel_remark)
+        self._writeBlacklist(already_blacklisted, proposed, cancel_remark)
 
 
     def updateInfofile(self, basedOn=None):

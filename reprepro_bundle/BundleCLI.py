@@ -205,14 +205,19 @@ def cmd_edit(args):
     '''
     bundle = setupContext(args)
     with choose_commit_context(bundle, args, "EDITED sources_control.list of bundle '{bundleName}'") as (bundle, git_add):
+        originCopy = tempfile.NamedTemporaryFile(delete=False).name
+        shutil.copyfile(bundle.scl, originCopy)
         update_sources_control_list(bundle, args, CANCEL_REMARK.format(action="edit"))
         if os.path.isfile(bundle.scl):
             if args.batch or editFile(bundle.scl):
                 bundle.normalizeSourcesControlList()
             else:
                 logger.info("Aborting as empty sources_control.list recognized!")
+                shutil.copyfile(originCopy, bundle.scl) # (rollback)
+                os.remove(originCopy)
                 return
         git_add.append(create_reprepro_config(bundle))
+        os.remove(originCopy)
 
 
 def cmd_blacklist(args):
@@ -221,14 +226,22 @@ def cmd_blacklist(args):
     '''
     bundle = setupContext(args)
     with choose_commit_context(bundle, args, "EDITED blacklist of bundle '{bundleName}'") as (bundle, git_add):
+        originCopy = None
+        if os.path.exists(bundle.getBlacklistFile()):
+            originCopy = tempfile.NamedTemporaryFile(delete=False).name
+            shutil.copyfile(bundle.getBlacklistFile(), originCopy)
         update_blacklist(bundle, args, CANCEL_REMARK.format(action="blacklist"))
         if os.path.isfile(bundle.getBlacklistFile()):
             if editFile(bundle.getBlacklistFile()):
                 bundle.normalizeBlacklist()
             else:
                 logger.info("Aborting as empty blacklist recognized!")
+                if originCopy:
+                    shutil.copyfile(originCopy, bundle.getBlacklistFile()) # (rollback)
                 return
         git_add.append(create_reprepro_config(bundle))
+        if originCopy:
+            shutil.copyfile(originCopy, bundle.getBlacklistFile()) # (rollback)
 
 
 def cmd_meta(args):
