@@ -322,6 +322,8 @@ def cmd_clone(args):
         git_add.append(create_reprepro_config(newBundle))
         shutil.copy(bundle.getInfoFile(), newBundle.getInfoFile())
         git_add.append(newBundle.updateInfofile(bundle.bundleName))
+        if os.path.exists(bundle.getBlacklistFile()):
+            shutil.copy(bundle.getBlacklistFile(), newBundle.getBlacklistFile())
         srcSuiteName = bundle.getOwnSuiteName()
         args.supplier_suites = srcSuiteName
         args.highlighted_suites = srcSuiteName
