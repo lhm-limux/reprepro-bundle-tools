@@ -30,6 +30,7 @@ T = function testcase {\
         ) && echo "TEST OK: $$name" || { echo "TEST FAILED: $$name"; $(CONTINUE); }; \
         echo ""; $(HR); \
     }; testcase
+#====================================================================
 
 
 main: bundle_workflow bundle_help git_diff_results
@@ -56,6 +57,8 @@ bundle_workflow: clean
 	@$(T) bundle_15_clone        0 "" $(BUNDLE) clone mybionic/0001 --no-clean-commit
 	@$(T) bundle_16_bundles      0 "" $(BUNDLE) bundles -l
 	@$(T) bundle_17_list         0 "" $(BUNDLE) list mybionic/0002
+	@$(T) bundle_18_apply        0 "" $(BUNDLE) apply mybionic/0002
+	@$(T) bundle_19_list         0 "" $(BUNDLE) list mybionic/0002
 
 bundle_help:
   #columns: @$(T) testcase-name expRet syncArgs cmd…

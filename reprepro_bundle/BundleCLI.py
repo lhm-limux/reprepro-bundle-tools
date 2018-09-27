@@ -475,7 +475,8 @@ def print_metadata(bundle):
 
 
 def list_content(bundle):
-    subprocess.check_call(["apt-repos/bin/apt-repos", "-b .apt-repos", "ls", "-s", bundle.getOwnSuiteName(), "-r", "." ])
+    if bundle.getOwnSuiteName():
+        subprocess.check_call(["apt-repos/bin/apt-repos", "-b .apt-repos", "ls", "-s", bundle.getOwnSuiteName(), "-r", "." ])
 
 
 def getGitRepoUrl(alias, default):
