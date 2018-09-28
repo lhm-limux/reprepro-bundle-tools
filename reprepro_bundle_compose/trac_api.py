@@ -1,5 +1,22 @@
-#!/usr/bin/python3
-
+#!/usr/bin/python3 -Es
+# -*- coding: utf-8 -*-
+##########################################################################
+# Copyright (c) 2018 Landeshauptstadt München
+#           (c) 2018 Christoph Lutz (InterFace AG)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the European Union Public Licence (EUPL),
+# version 1.0 (or any later version).
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# European Union Public Licence for more details.
+#
+# You should have received a copy of the European Union Public Licence
+# along with this program. If not, see
+# https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
+##########################################################################
 from xmlrpc.client import ServerProxy, ProtocolError
 from urllib.parse import urljoin, urlparse, urlunparse
 import getpass
@@ -56,33 +73,3 @@ class TracApi:
         #if resolution:
         args['resolution'] = resolution
         return self.server.ticket.update(int(id), comment, args)
-
-
-def main():
-    #Testroutine
-    username = 'christoph.lutz'
-    tracurl = 'http://limuxtrac.tvc.muenchen.de/test-limux'
-    trac = TracApi(tracurl, username)
-
-    title = 'Test für XMLRPC-Plugin'
-    description = 'Ein mit Python erstelltes Ticket'
-    deliveryrepo = 1007
-    lieferstufe = 'plus'
-
-    #tid = trac.createTicket(title, description, deliveryrepo, lieferstufe)
-    tid = 19140
-
-    print ('Ein neues Ticket mir Nummer %d wurde erstellt.' % tid)
-
-    ticket = trac.getTicketValues(tid)
-
-    print ('Das Ticket enthält folgende relevanten Informationen: {}'.format(ticket))
-
-    ticket = trac.getTicketStatus(tid)
-
-    print ('Der Status des Tickets ist: %s' % ticket)
-
-    trac.updateTicket(tid, "test", None, "closed", "")
-
-if __name__ == "__main__":
-    main()
