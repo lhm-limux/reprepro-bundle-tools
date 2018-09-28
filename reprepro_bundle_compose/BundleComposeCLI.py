@@ -508,6 +508,12 @@ def main():
     """
         Main entry point for this script
     """
+    # fixup to get help-messages for subcommands that require positional argmuments
+    # so that "apt-repos -h <subcommand>" prints a help-message and not an error
+    for subcmd in ['mark-for-stage', 'stage', 'mark' ]:
+        if ("-h" in sys.argv or "--help" in sys.argv) and subcmd in sys.argv:
+            sys.argv.append("drop")
+
     parser = argparse.ArgumentParser(description=__doc__, prog=progname, add_help=False)
     parser.add_argument("-h", "--help", action="store_true", help="""
                         Show a (subcommand specific) help message""")

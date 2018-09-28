@@ -1,5 +1,6 @@
 SHELL := bash
 BUNDLE := ../bin/bundle
+BUNDLE_COMPOSE := ../bin/bundle-compose
 REPO_RSYNC := rsync -a --delete --exclude dists --exclude lists --exclude db --exclude pool
 NO_DEEP := "--exclude bundle"
 
@@ -33,7 +34,7 @@ T = function testcase {\
 #====================================================================
 
 
-main: bundle_workflow bundle_help git_diff_results
+main: bundle_workflow bundle_help bundle_compose_help git_diff_results
 
 bundle_workflow: clean
   #columns: @$(T) testcase-name expRet syncArgs cmd…
@@ -80,6 +81,21 @@ bundle_help:
 	@$(T) bundle_help_15  0 $(NO_DEEP) $(BUNDLE) -h update-repos-config
 	@$(T) bundle_help_16  0 $(NO_DEEP) $(BUNDLE) -h repos
 	@$(T) bundle_help_17  2 $(NO_DEEP) $(BUNDLE) -h invalid-cmd
+
+bundle_compose_help:
+  #columns: @$(T) testcase-name expRet syncArgs cmd…
+	@$(T) bundle_compose_help_00  1 $(NO_DEEP) $(BUNDLE_COMPOSE)
+	@$(T) bundle_compose_help_01  0 $(NO_DEEP) $(BUNDLE_COMPOSE) -h
+	@$(T) bundle_compose_help_02  0 $(NO_DEEP) $(BUNDLE_COMPOSE) -h update-bundles
+	@$(T) bundle_compose_help_03  0 $(NO_DEEP) $(BUNDLE_COMPOSE) -h ub
+	@$(T) bundle_compose_help_04  0 $(NO_DEEP) $(BUNDLE_COMPOSE) -h mark-for-stage
+	@$(T) bundle_compose_help_05  0 $(NO_DEEP) $(BUNDLE_COMPOSE) -h mark
+	@$(T) bundle_compose_help_06  0 $(NO_DEEP) $(BUNDLE_COMPOSE) -h stage
+	@$(T) bundle_compose_help_07  0 $(NO_DEEP) $(BUNDLE_COMPOSE) -h list
+	@$(T) bundle_compose_help_08  0 $(NO_DEEP) $(BUNDLE_COMPOSE) -h ls
+	@$(T) bundle_compose_help_09  0 $(NO_DEEP) $(BUNDLE_COMPOSE) -h lsb
+	@$(T) bundle_compose_help_10  0 $(NO_DEEP) $(BUNDLE_COMPOSE) -h apply
+	@$(T) bundle_compose_help_11  2 $(NO_DEEP) $(BUNDLE_COMPOSE) -h invalid-cmd
   
 
 

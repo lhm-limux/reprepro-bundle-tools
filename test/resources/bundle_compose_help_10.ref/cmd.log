@@ -1,0 +1,6 @@
+usage: bundle-compose apply [-h]
+
+Applies the bundles list to the reprepro configuration for all target suites.
+
+optional arguments:
+  -h, --help  show this help message and exit
