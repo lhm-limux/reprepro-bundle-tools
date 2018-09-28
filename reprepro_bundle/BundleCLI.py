@@ -34,12 +34,9 @@ import tempfile
 import subprocess
 import shutil
 import apt_pkg
+import apt_repos
 from contextlib import contextmanager
 
-PROJECT_DIR = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../..")
-sys.path.insert(0, PROJECT_DIR + "/apt-repos/")
-sys.path.insert(0, PROJECT_DIR + "/tools/")
-import apt_repos
 
 CANCEL_REMARK = "# Note: clean this file completely to CANCEL this current '{action}' action\n"
 
