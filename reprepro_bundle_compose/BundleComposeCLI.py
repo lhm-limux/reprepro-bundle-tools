@@ -11,8 +11,8 @@ import logging
 import re
 import tempfile
 import subprocess
-import trac_api
 import apt_repos
+from reprepro_bundle_compose import trac_api, PROJECT_DIR
 from os.path import expanduser
 from shutil import copyfile
 from enum import Enum
@@ -20,10 +20,9 @@ from urllib.parse import urljoin, urlparse
 from jinja2 import Environment, FileSystemLoader
 from apt_repos import RepositoryScanner
 
-PROJECT_DIR = os.path.realpath(os.path.dirname(os.path.realpath(__file__)))
-TEMPLATES_DIR = os.path.join(PROJECT_DIR, "templates", "bundle_compose")
 
-progname = "bundle_compose"
+TEMPLATES_DIR = os.path.join(PROJECT_DIR, "templates", "bundle_compose")
+progname = "bundle-compose"
 logger = logging.getLogger(progname)
 tracConf = os.path.join(expanduser("~"), ".config", progname, "trac.conf")
 templateEnv = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
