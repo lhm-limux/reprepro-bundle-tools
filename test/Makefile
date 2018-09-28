@@ -61,6 +61,14 @@ bundle_workflow_part1: clean
 	@$(T) bundle_11_meta_cancel  0 $(sync) $(BUNDLE) meta mybionic/0001
 	@$(T) bundle_12_black_cancel 0 $(sync) $(BUNDLE) black mybionic/0001
 
+bundle_compose_workflow_part1:
+	@$(eval sync := "$(S_COMPOSE)")
+	@#columns: @$(T) testcase-name expRet sync cmd…
+	@$(T) bundle_compose_01_ub    0 $(sync) $(BUNDLE_COMPOSE) update-bundles
+	@$(T) bundle_compose_02_stage 0 $(sync) $(BUNDLE_COMPOSE) mark-for-stage test bundle:mybionic/0001
+	@$(T) bundle_compose_03_stage 0 $(sync) $(BUNDLE_COMPOSE) mark-for-stage -f test bundle:mybionic/0001
+	@$(T) bundle_compose_04_apply 0 $(sync) $(BUNDLE_COMPOSE) apply
+
 bundle_workflow_part2:
 	@$(eval sync := "$(S_BUNDLE)")
 	@#columns: @$(T) testcase-name expRet sync cmd…

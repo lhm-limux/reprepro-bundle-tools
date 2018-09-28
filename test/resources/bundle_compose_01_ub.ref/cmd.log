@@ -1,0 +1,4 @@
+WARNING[bundle-compose]: File …TESTDIR…/bundles not found.
+WARNING[bundle-compose]: File /home/chlu/.config/bundle-compose/trac.conf not found.
+WARNING[bundle-compose]: Missing Key 'TracUrl' in config file '/home/chlu/.config/bundle-compose/trac.conf' --> no synchronization with trac will be done!
+INFO[bundle-compose]: Updated file `bundles`
