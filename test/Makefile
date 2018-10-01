@@ -124,6 +124,7 @@ bundle_compose_help:
 clean:
 	rm -Rf repo
 	rm -Rf resources/*.res
+	rm -Rf .apt-repos/.apt-repos_cache
 	@$(HR)
 
 
