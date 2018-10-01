@@ -1,0 +1,30 @@
+[{
+    "Repository" : "MyBionic-Target für Stage 'test'",
+    "Prefix" : "test",
+    "Tags" : [ "bundle-compose-target" ],
+    "Url" : "file://{PWD}/repo/target/",
+    "Suites" : [
+        { "Suite" : "mybionic",            "Tags" : [ "test-mybionic-plus", "test-mybionic-unattended" ] },
+        { "Suite" : "mybionic-unattended", "Tags" : [                       "test-mybionic-unattended" ] }
+    ],
+    "Scan" : false,
+    "Architectures" : [ "i386", "amd64" ],
+    "Components" : [ "main", "restricted", "universe", "multiverse", "partner" ],
+    "DebSrc" : false,
+    "Trusted" : true
+},
+{
+    "Repository" : "MyBionic-Target für Stage 'prod'",
+    "Prefix" : "prod",
+    "Tags" : [ "bundle-compose-target" ],
+    "Url" : "file://{PWD}/repo/target/",
+    "Suites" : [
+        { "Suite" : "mybionic",            "Tags" : [ "test-mybionic-plus", "test-mybionic-unattended" ] },
+        { "Suite" : "mybionic-unattended", "Tags" : [                       "test-mybionic-unattended" ] }
+    ],
+    "Scan" : false,
+    "Architectures" : [ "i386", "amd64" ],
+    "Components" : [ "main", "restricted", "universe", "multiverse", "partner" ],
+    "DebSrc" : false,
+    "Trusted" : true
+}]
