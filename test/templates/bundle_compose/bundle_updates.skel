@@ -1,0 +1,10 @@
+
+Name: {{ ruleName }}
+Method: {{ repoUrl }}
+Suite: {{ suite }}
+Components: {{ components }}
+Architectures: {{ architectures }}
+DownloadListsAs: .gz
+GetInRelease: no
+VerifyRelease: blindtrust
+

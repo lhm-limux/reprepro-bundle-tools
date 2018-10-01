@@ -1,0 +1,11 @@
+
+Origin: MyBionic
+Label: {{ suite }}
+Suite: {{ suite }}
+Codename: {{ suite }}
+Description: merge target for {{ suite }}
+Architectures: {{ architectures }}
+Components: {{ components }}
+Contents: .gz .bz2
+Update: - {{ updates }}
+

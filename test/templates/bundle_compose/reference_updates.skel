@@ -1,0 +1,11 @@
+
+Name: {{ ruleName }}
+Method: {{ repoUrl }}
+Suite: {{ suite }}
+Components: {{ components }}
+Architectures: {{ architectures }}
+FilterList: install FilterList.purge-from-{{ targetDistribution }}
+DownloadListsAs: .gz
+GetInRelease: no
+VerifyRelease: blindtrust
+
