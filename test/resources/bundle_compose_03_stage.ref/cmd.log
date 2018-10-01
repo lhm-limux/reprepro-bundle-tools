@@ -1,2 +1,1 @@
-INFO[bundle-compose]: setting bundle:mybionic/0001 to status 'test_cust'
-INFO[bundle-compose]: Updated file `bundles`
+ERROR[bundle-compose]: bundle:mybionic/0001 is not ready for being put into state 'test_cust'!

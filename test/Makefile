@@ -65,9 +65,11 @@ bundle_compose_workflow_part1: bundle_workflow_part1
 	@$(eval sync := "$(S_COMPOSE)")
 	@#columns: @$(T) testcase-name expRet sync cmd…
 	@$(T) bundle_compose_01_ub    0 $(sync) $(BUNDLE_COMPOSE) update-bundles --no-trac
-	@$(T) bundle_compose_02_stage 0 $(sync) $(BUNDLE_COMPOSE) mark-for-stage test bundle:mybionic/0001
-	@$(T) bundle_compose_03_stage 0 $(sync) $(BUNDLE_COMPOSE) mark-for-stage -f test bundle:mybionic/0001
-	@$(T) bundle_compose_04_apply 0 $(sync) $(BUNDLE_COMPOSE) apply
+	@$(T) bundle_compose_02_list  0 $(sync) $(BUNDLE_COMPOSE) list
+	@$(T) bundle_compose_03_stage 0 $(sync) $(BUNDLE_COMPOSE) mark-for-stage test bundle:mybionic/0001
+	@$(T) bundle_compose_04_stage 0 $(sync) $(BUNDLE_COMPOSE) mark-for-stage -f test bundle:mybionic/0001
+	@$(T) bundle_compose_05_apply 0 $(sync) $(BUNDLE_COMPOSE) apply
+	@$(T) bundle_compose_06_list  0 $(sync) $(BUNDLE_COMPOSE) list
 
 bundle_workflow_part2: bundle_workflow_part1
 	@$(eval sync := "$(S_BUNDLE)")
