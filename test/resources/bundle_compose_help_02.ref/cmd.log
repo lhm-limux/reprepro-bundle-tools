@@ -1,7 +1,8 @@
-usage: bundle-compose update-bundles [-h]
+usage: bundle-compose update-bundles [-h] [--no-trac]
 
 Updates the file `bundles` against the currently available (rolled out)
 bundles and synchronizes or creates the corresponding trac-Tickets.
 
 optional arguments:
   -h, --help  show this help message and exit
+  --no-trac   Don't sync against trac.

@@ -92,6 +92,10 @@ def main():
     parse_list.set_defaults(sub_function=cmd_list, sub_parser=parse_list)
     parse_apply.set_defaults(sub_function=cmd_apply, sub_parser=parse_apply)
 
+    for p in [parse_ub]:
+        p.add_argument("--no-trac", action="store_true", help="""
+                        Don't sync against trac.""")
+
     for p in [parse_list]:
         p.add_argument("-s", "--stage", default=None, choices=sorted(BundleStatus.getAvailableStages()), help="""
                         Select only bundles in the provided stage.""")
@@ -139,13 +143,14 @@ def cmd_update_bundles(args):
     ids = set(repo_suites.keys()).union(managed_bundles.keys())
 
     trac = None
-    try:
-        config = getUserTracConfig()
-        trac = trac_api.TracApi(config['TracUrl'], config['User'], config.get('Password'))
-    except KeyError as e:
-        logger.warn("Missing Key {} in config file '{}' --> no synchronization with trac will be done!".format(e, tracConf))
-    except Exception as e:
-        logger.warn("Trac will not be synchronized: {}".format(e))
+    if not args.no_trac:
+        try:
+            config = getUserTracConfig()
+            trac = trac_api.TracApi(config['TracUrl'], config['User'], config.get('Password'))
+        except KeyError as e:
+            logger.warn("Missing Key {} in config file '{}' --> no synchronization with trac will be done!".format(e, tracConf))
+        except Exception as e:
+            logger.warn("Trac will not be synchronized: {}".format(e))
 
     for id in sorted(ids):
         logger.debug("Updating {}".format(id))
