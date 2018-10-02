@@ -1,0 +1,5 @@
+INFO[bundle-compose]: Adding 0 targets for stage 'dev'
+INFO[bundle-compose]: Adding 0 targets for stage 'drop'
+INFO[bundle-compose]: Adding 2 targets for stage 'prod'
+INFO[bundle-compose]: Adding 2 targets for stage 'test'
+INFO[bundle-compose]: Creating reprepro-config at '…TESTDIR…/repo/target/conf'
