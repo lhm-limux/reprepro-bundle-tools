@@ -5,8 +5,8 @@ BUNDLE_COMPOSE := ../bin/bundle-compose
 # describes which files from the repo-folder should be transferred to resources/*.res
 REPO_RSYNC := rsync -a --delete
 S_NO_REPOS := --exclude dists --exclude lists --exclude db --exclude pool
-S_BUNDLE   := $(S_NO_REPOS) --exclude bundles_file
-S_HELP     := $(S_NO_REPOS) --exclude bundle --exclude bundles_file
+S_BUNDLE   := $(S_NO_REPOS) --exclude bundles_file --exclude target
+S_HELP     := $(S_NO_REPOS) --exclude bundle --exclude bundles_file --exclude target
 S_COMPOSE  := $(S_NO_REPOS) --exclude bundle
 
 IS_GIT_TREE := (which git && git ls-files --error-unmatch) >/dev/null 2>&1
@@ -40,7 +40,7 @@ T = function testcase {\
 #====================================================================
 
 
-main: bundle_workflow_part1 bundle_workflow_part2 bundle_help bundle_compose_help git_diff_results
+main: bundle_workflow_part1 bundle_compose_workflow_part1 bundle_workflow_part2 bundle_help bundle_compose_help git_diff_results
 
 bundle_workflow_part1: clean
 	@$(eval sync := "$(S_BUNDLE)")
