@@ -1,13 +1,15 @@
 SHELL := bash
 BUNDLE := ../bin/bundle
 BUNDLE_COMPOSE := ../bin/bundle-compose
+REPREPRO := reprepro -b repo/target
+APT_REPOS := apt-repos/bin/apt-repos -b .apt-repos
 
 # describes which files from the repo-folder should be transferred to resources/*.res
 REPO_RSYNC := rsync -a --delete
 S_NO_REPOS := --exclude dists --exclude lists --exclude db --exclude pool
-S_BUNDLE   := $(S_NO_REPOS) --exclude bundles_file --exclude target
-S_HELP     := $(S_NO_REPOS) --exclude bundle --exclude bundles_file --exclude target
-S_COMPOSE  := $(S_NO_REPOS) --exclude bundle
+S_BUNDLE   := "$(S_NO_REPOS) --exclude bundles_file --exclude target"
+S_CMD_ONLY := "$(S_NO_REPOS) --exclude bundle --exclude bundles_file --exclude target"
+S_COMPOSE  := "$(S_NO_REPOS) --exclude bundle"
 
 IS_GIT_TREE := (which git && git ls-files --error-unmatch) >/dev/null 2>&1
 CONTINUE := true
@@ -43,7 +45,7 @@ T = function testcase {\
 main: bundle_workflow_part1 bundle_compose_workflow_part1 bundle_workflow_part2 bundle_help bundle_compose_help git_diff_results
 
 bundle_workflow_part1: clean
-	@$(eval sync := "$(S_BUNDLE)")
+	@$(eval sync := $(S_BUNDLE))
 	@#columns: @$(T) testcase-name expRet sync cmd…
 	@$(T) bundle_01_init         0 $(sync) $(BUNDLE) init mybionic --no-clean-commit
 	@$(T) bundle_02_apply        0 $(sync) $(BUNDLE) apply mybionic/0001
@@ -62,7 +64,7 @@ bundle_workflow_part1: clean
 	@$(T) bundle_12_black_cancel 0 $(sync) $(BUNDLE) black mybionic/0001
 
 bundle_compose_workflow_part1: bundle_workflow_part1
-	@$(eval sync := "$(S_COMPOSE)")
+	@$(eval sync := $(S_COMPOSE))
 	@#columns: @$(T) testcase-name expRet sync cmd…
 	@$(T) bundle_compose_01_ub    0 $(sync) $(BUNDLE_COMPOSE) update-bundles --no-trac
 	@$(T) bundle_compose_02_list  0 $(sync) $(BUNDLE_COMPOSE) list
@@ -70,9 +72,17 @@ bundle_compose_workflow_part1: bundle_workflow_part1
 	@$(T) bundle_compose_04_stage 0 $(sync) $(BUNDLE_COMPOSE) mark-for-stage -f test bundle:mybionic/0001
 	@$(T) bundle_compose_05_apply 0 $(sync) $(BUNDLE_COMPOSE) apply
 	@$(T) bundle_compose_06_list  0 $(sync) $(BUNDLE_COMPOSE) list
+	@$(T) bundle_compose_07_rrexp 0 $(S_CMD_ONLY) $(REPREPRO) export
+	@$(T) bundle_compose_08_rrupd 0 $(S_CMD_ONLY) $(REPREPRO) --noskipold update
+	@$(T) bundle_compose_09_alist 0 $(S_CMD_ONLY) $(APT_REPOS) list -s target: -r .
+	@$(T) bundle_compose_10_stage 0 $(sync) $(BUNDLE_COMPOSE) mark-for-stage prod -c
+	@$(T) bundle_compose_11_apply 0 $(sync) $(BUNDLE_COMPOSE) apply
+	@$(T) bundle_compose_12_list  0 $(sync) $(BUNDLE_COMPOSE) list
+	@$(T) bundle_compose_13_rrupd 0 $(S_CMD_ONLY) $(REPREPRO) --noskipold update
+	@$(T) bundle_compose_14_alist 0 $(S_CMD_ONLY) $(APT_REPOS) list -s target: -r .
 
 bundle_workflow_part2: bundle_workflow_part1
-	@$(eval sync := "$(S_BUNDLE)")
+	@$(eval sync := $(S_BUNDLE))
 	@#columns: @$(T) testcase-name expRet sync cmd…
 	@$(T) bundle_13_seal         0 $(sync) $(BUNDLE) seal mybionic/0001
 	@$(T) bundle_14_edit         1 $(sync) $(BUNDLE) edit mybionic/0001
@@ -83,7 +93,7 @@ bundle_workflow_part2: bundle_workflow_part1
 	@$(T) bundle_19_list         0 $(sync) $(BUNDLE) list mybionic/0002
 
 bundle_help:
-	@$(eval sync := "$(S_HELP)")
+	@$(eval sync := $(S_CMD_ONLY))
 	@#columns: @$(T) testcase-name expRet sync cmd…
 	@$(T) bundle_help_00  1 $(sync) $(BUNDLE)
 	@$(T) bundle_help_01  0 $(sync) $(BUNDLE) -h
@@ -105,7 +115,7 @@ bundle_help:
 	@$(T) bundle_help_17  2 $(sync) $(BUNDLE) -h invalid-cmd
 
 bundle_compose_help:
-	@$(eval sync := "$(S_HELP)")
+	@$(eval sync := $(S_CMD_ONLY))
 	@#columns: @$(T) testcase-name expRet syncArgs cmd…
 	@$(T) bundle_compose_help_00  1 $(sync) $(BUNDLE_COMPOSE)
 	@$(T) bundle_compose_help_01  0 $(sync) $(BUNDLE_COMPOSE) -h

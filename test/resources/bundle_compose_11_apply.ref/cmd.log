@@ -1,0 +1,5 @@
+INFO[bundle-compose]: Found 0 targets for stage 'dev'
+INFO[bundle-compose]: Found 0 targets for stage 'drop'
+INFO[bundle-compose]: Found 2 targets for stage 'prod'
+INFO[bundle-compose]: Found 1 targets for stage 'test'
+INFO[bundle-compose]: Creating reprepro-config at '…TESTDIR…/repo/target/conf' with 3 suites
