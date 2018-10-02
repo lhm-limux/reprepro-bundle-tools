@@ -1,0 +1,3 @@
+INFO[bundle-compose]: setting bundle:mybionic/0001 to status 'dropped'
+INFO[bundle-compose]: setting bundle:mybionic/0002 to status 'dropped'
+INFO[bundle-compose]: Updated file `bundles`

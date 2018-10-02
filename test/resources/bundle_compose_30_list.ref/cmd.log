@@ -1,0 +1,5 @@
+WARNING[bundle-compose]: File …HOME…/.config/bundle-compose/trac.conf not found.
+Bundles with status 'dropped' (stage 'drop'):
+=============================================
+bundle:mybionic/0001 [plus] This is my best test bundle
+bundle:mybionic/0002 [plus] This is my improved best test bundle

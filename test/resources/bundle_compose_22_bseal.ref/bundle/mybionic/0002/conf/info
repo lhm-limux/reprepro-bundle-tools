@@ -1,0 +1,12 @@
+Bundlename: mybionic/0002
+BasedOn: mybionic/0001
+Distribution: mybionic
+Target: plus
+Creator: chlu
+Releasenotes: This is my improved best test bundle
+ .
+ We just need this bundle for the test automation.
+ .
+ __DYNAMIC_PACKAGE_LIST__
+ .
+

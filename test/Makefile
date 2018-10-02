@@ -42,7 +42,7 @@ T = function testcase {\
 #====================================================================
 
 
-main: bundle_workflow_part1 bundle_compose_workflow_part1 bundle_workflow_part2 bundle_help bundle_compose_help git_diff_results
+main: bundle_workflow_part1 bundle_compose_workflow_part1 bundle_workflow_part2 bundle_compose_workflow_part2 bundle_help bundle_compose_help git_diff_results
 
 bundle_workflow_part1: clean
 	@$(eval sync := $(S_BUNDLE))
@@ -91,6 +91,21 @@ bundle_workflow_part2: bundle_workflow_part1
 	@$(T) bundle_17_list         0 $(sync) $(BUNDLE) list mybionic/0002
 	@$(T) bundle_18_apply        0 $(sync) $(BUNDLE) apply mybionic/0002
 	@$(T) bundle_19_list         0 $(sync) $(BUNDLE) list mybionic/0002
+
+bundle_compose_workflow_part2: bundle_compose_workflow_part1 bundle_workflow_part2
+	rm repo/bundles_file
+	@#columns: @$(T) testcase-name expRet sync cmd…
+	@$(T) bundle_compose_20_ub    0 $(S_CMD_ONLY) $(BUNDLE_COMPOSE) update-bundles --no-trac
+	@$(T) bundle_compose_21_list  0 $(S_CMD_ONLY) $(BUNDLE_COMPOSE) list
+	@$(T) bundle_compose_22_bseal 0 $(S_BUNDLE)   $(BUNDLE) seal mybionic/0002
+	@$(T) bundle_compose_23_ub    0 $(S_CMD_ONLY) $(BUNDLE_COMPOSE) update-bundles --no-trac
+	@$(T) bundle_compose_24_list  0 $(S_CMD_ONLY) $(BUNDLE_COMPOSE) list
+	@$(T) bundle_compose_25_apply 0 $(S_COMPOSE)  $(BUNDLE_COMPOSE) apply
+	@$(T) bundle_compose_26_rrupd 0 $(S_CMD_ONLY) $(REPREPRO) --noskipold update
+	@$(T) bundle_compose_27_alist 0 $(S_CMD_ONLY) $(APT_REPOS) list -s target: -r .
+	@$(T) bundle_compose_28_stage 0 $(S_COMPOSE)  $(BUNDLE_COMPOSE) mark-for-stage drop bundle:mybionic/0001 bundle:mybionic/0002 -f
+	@$(T) bundle_compose_29_ub    0 $(S_COMPOSE)  $(BUNDLE_COMPOSE) update-bundles --no-trac
+	@$(T) bundle_compose_30_list  0 $(S_COMPOSE)  $(BUNDLE_COMPOSE) list
 
 bundle_help:
 	@$(eval sync := $(S_CMD_ONLY))

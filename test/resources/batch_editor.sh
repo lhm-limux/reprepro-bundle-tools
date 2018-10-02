@@ -51,6 +51,12 @@ function bundle_13_seal {
   cat "$1" >repo/editor.out
 }
 
+function bundle_compose_22_bseal {
+  cat "$1" >repo/editor.in
+  sed -i "s/best test bundle/improved best test bundle/" "$1"
+  cat "$1" >repo/editor.out
+}
+
 cmd=$(basename $0)
 cmd=${cmd/batch_editor_/}
 
