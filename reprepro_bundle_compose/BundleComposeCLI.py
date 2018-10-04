@@ -386,12 +386,14 @@ def createTargetRepreproConfigForRepository(bundles, repoTargets, repoConfDir, b
             if not targetTag in target.getTags():
                 continue
             ruleName = 'update-' + bundle.getID()
+            keyIds = sorted(getPublicKeyIDs(target.getTrustedGPGFile()))
             chunk = bundle_update_template.render(
                 ruleName=ruleName,
                 repoUrl=bundle.getRepoUrl(),
                 suite=bundle.getAptSuite(),
                 components=" ".join(bundle.getComponents()),
-                architectures=" ".join(bundle.getArchitectures()))
+                architectures=" ".join(bundle.getArchitectures()),
+                publicKeys=("!|".join(keyIds)+"!" if len(keyIds) > 0 else ""))
             update_rules[ruleName] = chunk
             update_line[target] = update_line.get(target, "") + " " + ruleName
     with open(os.path.join(repoConfDir, 'distributions'), "w") as upconf:
@@ -402,6 +404,7 @@ def createTargetRepreproConfigForRepository(bundles, repoTargets, repoConfDir, b
             targetDistribution = target.getAptSuite().split("/")[0]
             for suite in sorted(apt_repos.getSuites(["{}-reference:".format(targetDistribution)])):
                 ruleName = "update-" + suite.getSuiteName()
+                keyIds = sorted(getPublicKeyIDs(suite.getTrustedGPGFile()))
                 updates += ' ' + ruleName
                 chunk = reference_update_template.render(
                     ruleName=ruleName,
@@ -409,7 +412,8 @@ def createTargetRepreproConfigForRepository(bundles, repoTargets, repoConfDir, b
                     suite=suite.getAptSuite(),
                     components=" ".join(suite.getComponents()),
                     architectures=" ".join(suite.getArchitectures()),
-                    targetDistribution = targetDistribution)
+                    targetDistribution = targetDistribution,
+                    publicKeys=("!|".join(keyIds)+"!" if len(keyIds) > 0 else ""))
                 update_rules[ruleName] = chunk
 
             # create distribution file
@@ -474,6 +478,17 @@ def splitReleasenotes(info):
     subject = notes[0:notes.find("\n")]
     text = notes[notes.find("\n"):]
     return (subject, text)
+
+
+def getPublicKeyIDs(gpgFile):
+    ids = set()
+    if gpgFile:
+        res = subprocess.check_output(["gpg", "--list-public-keys", "--keyring", gpgFile, "--no-default-keyring", "--with-colons"]).decode('utf-8')
+        for line in res.splitlines():
+            parts = line.split(':')
+            if len(parts) >= 5 and parts[0] == "pub":
+                ids.add(parts[4])
+    return ids
 
 
 if __name__ == "__main__":
