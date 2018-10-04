@@ -235,10 +235,11 @@ def cmd_blacklist(args):
                 logger.info("Aborting as empty blacklist recognized!")
                 if originCopy:
                     shutil.copyfile(originCopy, bundle.getBlacklistFile()) # (rollback)
+                    os.remove(originCopy)
                 return
         git_add.append(create_reprepro_config(bundle))
         if originCopy:
-            shutil.copyfile(originCopy, bundle.getBlacklistFile()) # (rollback)
+            os.remove(originCopy)
 
 
 def cmd_meta(args):
