@@ -373,24 +373,24 @@ def updateReposConfig():
     bundle_root = os.path.join("repo", "bundle")
     confFile = os.path.join(bundle_root, "bundle.repos")
     with open(confFile, "w") as out:
-        print('[{', file=out)
+        print('[', file=out)
         dist = None
         liEnd = None
         for bundle in sorted(scanBundles()):
             if dist != bundle.distribution:
                 dist = bundle.distribution
                 if liEnd:
-                    print(liEnd, file=out)
-                    print(' },\n {', file=out)
+                    print(liEnd + ',', file=out)
+                print(' {', file=out)
                 print('    "Oid": "bundle-repositories-{}",'.format(bundle.distribution), file=out)
                 print('    "Suites":', file=out)
                 print('    ["--------",', file=out)
-                liEnd='    "---------"]'
+                liEnd='    "---------"]\n }'
             deploymentStatus = DeploymentStatus.STAGING if bundle.isEditable() else DeploymentStatus.ROLLOUT
             print('    {{ "Suite": "{}", "Url": "{}", "Tags": [ "{}" ] }},'.format(bundle.bundleName, bundle.bundleName, deploymentStatus), file=out)
         if liEnd:
             print(liEnd, file=out)
-        print('}]', file=out)
+        print(']', file=out)
     return confFile
 
 
