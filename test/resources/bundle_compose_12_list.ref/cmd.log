@@ -1,4 +1,3 @@
-WARNING[bundle-compose]: File …HOME…/.config/bundle-compose/trac.conf not found.
 Bundles with status 'production' (stage 'prod'):
 ================================================
 bundle:mybionic/0001 [plus] This is my best test bundle

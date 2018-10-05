@@ -42,7 +42,7 @@ from jinja2 import Environment, FileSystemLoader
 TEMPLATES_DIR = os.path.join(PROJECT_DIR, "templates", "bundle_compose")
 progname = "bundle-compose"
 logger = logging.getLogger(progname)
-tracConf = os.path.join(expanduser("~"), ".config", progname, "trac.conf")
+tracConfFiles = [ os.path.join(PROJECT_DIR, ".trac.conf"), os.path.join(expanduser("~"), ".config", progname, "trac.conf") ]
 templateEnv = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
 
 
@@ -145,10 +145,10 @@ def cmd_update_bundles(args):
     trac = None
     if not args.no_trac:
         try:
-            config = getUserTracConfig()
+            config = getTracConfig()
             trac = trac_api.TracApi(config['TracUrl'], config['User'], config.get('Password'))
         except KeyError as e:
-            logger.warn("Missing Key {} in config file '{}' --> no synchronization with trac will be done!".format(e, tracConf))
+            logger.warn("Missing Key {} in config file '{}' --> no synchronization with trac will be done!".format(e, config['__file__']))
         except Exception as e:
             logger.warn("Trac will not be synchronized: {}".format(e))
 
@@ -216,7 +216,7 @@ def cmd_list(args):
         List all bundles grouped by their status / stage.
     '''
     bundles = parseBundles(getBundleRepoSuites())
-    tracUrl = getUserTracConfig().get('TracUrl')
+    tracUrl = getTracConfig().get('TracUrl')
     nl = ""
     for status in BundleStatus:
         if args.stage and not status.getStage() == args.stage:
@@ -289,12 +289,19 @@ def getTargetRepoSuites(stage=None):
     return res
 
 
-def getUserTracConfig():
+def getTracConfig():
     res = dict()
-    if not os.path.isfile(tracConf):
-        logger.warning("File {} not found.".format(tracConf))
+    res['__file__'] = None
+    found = None
+    for tracConf in tracConfFiles:
+        if os.path.isfile(tracConf):
+            found = tracConf
+            break
+    if not found:
+        logger.warning("No trac configuration file found at {}".format(", ".join(tracConfFiles)))
         return res
-    with apt_pkg.TagFile(tracConf) as tagFile:
+    with apt_pkg.TagFile(found) as tagFile:
+        res['__file__'] = found
         tagFile.jump(0)
         for section in tagFile:
             for key in section.keys():
