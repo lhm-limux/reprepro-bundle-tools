@@ -290,7 +290,7 @@ def cmd_apply(args):
     '''
         Subcommand apply: Use reprepro to update the bundle - This action typically runs on the reprepro server and not locally (besides for testing purposes)
     '''
-    bundle = setupContext(args)
+    bundle = setupContext(args, False)
     create_reprepro_config(bundle)   
     repreproCmd = os.environ.get("REPREPRO_CMD", "reprepro")
     subprocess.check_call([repreproCmd, "-b", "repo/bundle/{}".format(bundle.bundleName), "--noskipold", "update" ])
