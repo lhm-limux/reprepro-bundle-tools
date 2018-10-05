@@ -284,7 +284,7 @@ def getTargetRepoSuites(stage=None):
     '''
     res = dict()
     for suite in sorted(apt_repos.getSuites(["bundle-compose-target:"])):
-        if not stage or stage in suite.getTags() or suite.getSuiteName().startswith(stage + ":"):
+        if not stage or "bundle-stage.{}".format(stage) in suite.getTags():
             res[suite.getSuiteName()] = suite
     return res
 
@@ -389,8 +389,7 @@ def createTargetRepreproConfigForRepository(bundles, repoTargets, repoConfDir, b
     # create update rules for bundles
     for target in repoTargets:
         for unused_bid, bundle in sorted(bundles.items()):
-            targetTag = bundle.getTargetTag()
-            if not targetTag in target.getTags():
+            if not bundle.isSupposedForTarget(target):
                 continue
             ruleName = 'update-' + bundle.getID()
             keyIds = sorted(getPublicKeyIDs(target.getTrustedGPGFile()))

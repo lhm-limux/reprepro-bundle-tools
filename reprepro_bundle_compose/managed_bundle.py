@@ -90,15 +90,18 @@ class ManagedBundle:
             lines.append(line)
         return "\n".join(lines)
 
-    def getTargetTag(self):
+    def isSupposedForTarget(self, targetSuite):
         '''
-            This method returns the target tag which is a combination of "stage-distribution-target",
-            where `stage` is e.g. "test" or "prod" (definded by the bundle's status),
-            `distribution` is the bundles suite-name and `target` is the value of the `Target` field
-            from the bundles file. The corresponding target-repoSuite has to define this targetTag
-            as a tag in order to mark it responsible for this bundle.
+            This method returns true if the bundle is supposed to be contained in the supplied `targetSuite`.
+            This is given, if the targetSuite defines the following tags:
+            * a tag "bundle-stage.<stage>" where <stage> matches the bundles getStatus().getStage()
+            * a tag "bundle-dist.<dist>" where <dist> matches the bundles Suitename
+            * a tag "bundle-target.<target>" where <target> matches the the bundles target field
         '''
-        return "{}-{}-{}".format(self.getStatus().getStage(), self.getAptSuite(), self.getTarget())
+        tags = targetSuite.getTags()
+        return "bundle-stage.{}".format(self.getStatus().getStage()) in tags and \
+               "bundle-dist.{}".format(self.getAptSuite()) in tags and \
+               "bundle-target.{}".format(self.getTarget()) in tags
 
     def getID(self):
         return self.__id
