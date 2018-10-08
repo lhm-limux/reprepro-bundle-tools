@@ -44,7 +44,7 @@ T = function testcase {\
 
 main: bundle_workflow_part1 bundle_compose_workflow_part1 bundle_workflow_part2 bundle_compose_workflow_part2 bundle_help bundle_compose_help git_diff_results
 
-bundle_workflow_part1: clean
+bundle_workflow_part1: clean configure_gnupg
 	@$(eval sync := $(S_BUNDLE))
 	@#columns: @$(T) testcase-name expRet sync cmd…
 	@$(T) bundle_01_init         0 $(sync) $(BUNDLE) init mybionic --no-clean-commit
@@ -63,7 +63,7 @@ bundle_workflow_part1: clean
 	@$(T) bundle_11_meta_cancel  0 $(sync) $(BUNDLE) meta mybionic/0001
 	@$(T) bundle_12_black_cancel 0 $(sync) $(BUNDLE) black mybionic/0001
 
-bundle_compose_workflow_part1: bundle_workflow_part1
+bundle_compose_workflow_part1: configure_gnupg bundle_workflow_part1 
 	@$(eval sync := $(S_COMPOSE))
 	@#columns: @$(T) testcase-name expRet sync cmd…
 	@$(T) bundle_compose_01_ub    0 $(sync) $(BUNDLE_COMPOSE) update-bundles --no-trac
@@ -81,7 +81,7 @@ bundle_compose_workflow_part1: bundle_workflow_part1
 	@$(T) bundle_compose_13_rrupd 0 $(S_CMD_ONLY) $(REPREPRO) --noskipold update
 	@$(T) bundle_compose_14_alist 0 $(S_CMD_ONLY) $(APT_REPOS) list -s target: -r .
 
-bundle_workflow_part2: bundle_workflow_part1
+bundle_workflow_part2: configure_gnupg bundle_workflow_part1
 	@$(eval sync := $(S_BUNDLE))
 	@#columns: @$(T) testcase-name expRet sync cmd…
 	@$(T) bundle_13_seal         0 $(sync) $(BUNDLE) seal mybionic/0001
@@ -92,7 +92,7 @@ bundle_workflow_part2: bundle_workflow_part1
 	@$(T) bundle_18_apply        0 $(sync) $(BUNDLE) apply mybionic/0002
 	@$(T) bundle_19_list         0 $(sync) $(BUNDLE) list mybionic/0002
 
-bundle_compose_workflow_part2: bundle_compose_workflow_part1 bundle_workflow_part2
+bundle_compose_workflow_part2: configure_gnupg bundle_compose_workflow_part1 bundle_workflow_part2
 	rm repo/bundles_file
 	@#columns: @$(T) testcase-name expRet sync cmd…
 	@$(T) bundle_compose_20_ub    0 $(S_CMD_ONLY) $(BUNDLE_COMPOSE) update-bundles --no-trac
@@ -144,12 +144,19 @@ bundle_compose_help:
 	@$(T) bundle_compose_help_10  0 $(sync) $(BUNDLE_COMPOSE) -h apply
 	@$(T) bundle_compose_help_11  2 $(sync) $(BUNDLE_COMPOSE) -h invalid-cmd
   
+configure_gnupg: export GNUPGHOME = $(CURDIR)/.gnupg
+configure_gnupg:
+	mkdir -p $$GNUPGHOME
+	chmod 700 $$GNUPGHOME
+	gpg --import .apt-repos/gpg/*
+	@$(HR)
 
 
 clean:
 	rm -Rf repo
 	rm -Rf resources/*.res
 	rm -Rf .apt-repos/.apt-repos_cache
+	rm -Rf .gnupg/
 	@$(HR)
 
 
