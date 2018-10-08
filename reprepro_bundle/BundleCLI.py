@@ -158,7 +158,6 @@ def main():
     
     for p in [parse_bundles]:
         g = p.add_argument_group('''sub command 'bundles' specific options''')
-        g.add_argument("-l", "--long", action="store_true", default=False, help="Provide a long listing containing more information.")
         g.add_argument("-r", "--readonly", action="store_true", default=False, help="Just print bundles that are marked readonly (that are already sealed).")
         g.add_argument("-e", "--editable", action="store_true", default=False, help="Just print bundles that are marked editable (that are not sealed).")
         g.add_argument('bundleNameFilter', nargs='?', default="", help="""
@@ -342,13 +341,10 @@ def cmd_bundles(args):
                 continue
             if args.editable and not bundle.isEditable():
                 continue
-            if args.long:
-                editable = "EDITABLE" if bundle.isEditable() else "READONLY"
-                target = "[{}]".format(bundle.getInfoTag("Target", "no-target"))
-                subject = bundle.getInfoTag("Releasenotes", "--no-subject--").split("\n")[0]
-                print(" ".join((bundle.bundleName, editable, target, subject)))
-            else:
-                print(bundle)
+            editable = "EDITABLE" if bundle.isEditable() else "READONLY"
+            target = "[{}]".format(bundle.getInfoTag("Target", "no-target"))
+            subject = bundle.getInfoTag("Releasenotes", "--no-subject--").split("\n")[0]
+            print(" ".join((bundle.bundleName, editable, target, subject)))
 
 
 def scanBundles():
