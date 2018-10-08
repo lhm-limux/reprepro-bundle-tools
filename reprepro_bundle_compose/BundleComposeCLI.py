@@ -370,7 +370,9 @@ def createTargetRepreproConfigs(bundles):
         else:
             urlFilepath = re.sub("[^a-zA-z0-9]", "_", url)
             repoConfDir = os.path.join(PROJECT_DIR, 'repo', urlFilepath, 'conf')
-            # no initial creation here: in case of other url-types, we expect an already existing symlink
+            if not os.path.isdir(repoConfDir):
+                os.mkdir(repoConfDir)
+                # create the ('conf')-level only as urlFilepath is expected to be a preconfigured symlink
         repoTargets = list()
         for _, target in sorted(getTargetRepoSuites().items()):
             if target.getRepoUrl() == url:
