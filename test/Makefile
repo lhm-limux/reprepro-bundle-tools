@@ -34,7 +34,7 @@ T = function testcase {\
           $$@ >repo/cmd.log 2>&1 || ret=$$?; \
           test $$ret = $$retExp || exit 1; \
           $(REPO_RSYNC) $$syncArgs repo/ resources/$${name}.res; \
-          sed -i "s~$$pwdUrl~…TESTDIR…~; s~$$HOME~…HOME…~" $$(find resources/$$name.res -type f); \
+          sed -i "s~$$pwdUrl~…TESTDIR…~; s~$$HOME~…HOME…~; s~$$USER~…USER…~;" $$(find resources/$$name.res -type f); \
           diff -u -r resources/$$name.ref resources/$$name.res || exit 1; \
         ) && echo "TEST OK: $$name" || { echo "TEST FAILED: $$name"; $(CONTINUE); }; \
         echo ""; $(HR); \

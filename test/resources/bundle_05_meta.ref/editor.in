@@ -5,7 +5,7 @@ Bundlename: mybionic/0001
 BasedOn: NEW
 Distribution: mybionic
 Target: plus
-Creator: chlu
+Creator: …USER…
 
 = RELEASENOTES =
 <Subject>

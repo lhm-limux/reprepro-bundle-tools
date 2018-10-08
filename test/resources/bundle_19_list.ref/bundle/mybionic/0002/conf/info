@@ -2,7 +2,7 @@ Bundlename: mybionic/0002
 BasedOn: mybionic/0001
 Distribution: mybionic
 Target: plus
-Creator: chlu
+Creator: …USER…
 Releasenotes: This is my best test bundle
  .
  We just need this bundle for the test automation.

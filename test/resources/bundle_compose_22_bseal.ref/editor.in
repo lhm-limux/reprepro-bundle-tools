@@ -5,7 +5,7 @@ Bundlename: mybionic/0002
 BasedOn: mybionic/0001
 Distribution: mybionic
 Target: plus
-Creator: chlu
+Creator: …USER…
 
 = RELEASENOTES =
 This is my best test bundle

@@ -13,7 +13,7 @@ Exporting indices...
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 INFO[bundle]: Setting reference-suites to 'mybionic-reference:,bundle:mybionic/0002'
 INFO[apt_repos.Repository]: Scanning Repository 'Main Ubuntu Repository' (http://archive.ubuntu.com/ubuntu/)
-INFO[bundle]: Setting supplier-suites to 'mybionic-supplier:,user-chlu:mybionic'
+INFO[bundle]: Setting supplier-suites to 'mybionic-supplier:,user-…USER…:mybionic'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 INFO[bundle]: Setting highlighted-suites to 'bundle:mybionic/0002'
 INFO[bundle]: Setting add-from to 'None'
