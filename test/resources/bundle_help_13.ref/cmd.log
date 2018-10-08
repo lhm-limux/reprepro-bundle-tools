@@ -1,4 +1,4 @@
-usage: bundle bundles [-h] [-l] [-r] [-e] [bundleNameFilter]
+usage: bundle bundles [-h] [-r] [-e] [bundleNameFilter]
 
 Subcommand bundles: list available bundles.
 
@@ -6,7 +6,6 @@ optional arguments:
   -h, --help        show this help message and exit
 
 sub command 'bundles' specific options:
-  -l, --long        Provide a long listing containing more information.
   -r, --readonly    Just print bundles that are marked readonly (that are
                     already sealed).
   -e, --editable    Just print bundles that are marked editable (that are not
