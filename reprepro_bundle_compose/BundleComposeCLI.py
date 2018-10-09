@@ -491,7 +491,7 @@ def splitReleasenotes(info):
 def getPublicKeyIDs(gpgFile):
     ids = set()
     if gpgFile:
-        res = subprocess.check_output(["gpg", "--list-public-keys", "--keyring", gpgFile, "--no-default-keyring", "--with-colons"]).decode('utf-8')
+        res = subprocess.check_output(["gpg", "--list-public-keys", "--keyring", gpgFile, "--no-default-keyring", "--no-options", "--with-colons"]).decode('utf-8')
         for line in res.splitlines():
             parts = line.split(':')
             if len(parts) >= 5 and parts[0] == "pub":
