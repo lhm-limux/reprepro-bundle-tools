@@ -292,9 +292,13 @@ def cmd_apply(args):
     bundle = setupContext(args)
     create_reprepro_config(bundle)   
     repreproCmd = os.environ.get("REPREPRO_CMD", "reprepro")
-    subprocess.check_call([repreproCmd, "-b", "repo/bundle/{}".format(bundle.bundleName), "--noskipold", "update" ])
+    cmd = [repreproCmd, "-b", "repo/bundle/{}".format(bundle.bundleName), "--noskipold", "update"]
+    logger.info("Executing '{}'".format(" ".join(cmd)))
+    subprocess.check_call(cmd)
     # also export because in case lists are empty update won't create a Release file
-    subprocess.check_call([repreproCmd, "-b", "repo/bundle/{}".format(bundle.bundleName), "export" ])
+    cmd = [repreproCmd, "-b", "repo/bundle/{}".format(bundle.bundleName), "export"]
+    logger.info("Executing '{}'".format(" ".join(cmd)))
+    subprocess.check_call(cmd)
     with choose_commit_context(bundle, args, "APPLIED changes on bundle '{bundleName}'") as (bundle, git_add):
         git_add.append(update_sources_control_list(bundle, args))
         bundle.normalizeSourcesControlList()
