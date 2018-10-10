@@ -73,10 +73,11 @@ Content of this repository
 
 This repository consists of the following parts:
 
-=== bin ===
+### bin
+
 The bin-folder contains bin wrappers to easily execute the bundle-tools *bundle* and *bundle-compose*
 
-=== reprepro_bundle ===
+### reprepro_bundle
 
 A python3 module containing the classes needed for the tool *bundle*. With this tool it is possible to **manage single bundles** and to perform the following steps on a bundle:
 
@@ -88,7 +89,7 @@ A python3 module containing the classes needed for the tool *bundle*. With this 
 * mark a bundle as completed (from developers point of view), which means to seal a bundle
 * to clone a bundle
 
-=== reprepro_bundle_compose ===
+### reprepro_bundle_compose
 
 A python3 module containing the classes needed for the tool *bundle-compose*. With this tool it is possible
 to **manage the status of bundles in the context of your quality assurance (QA) workflow**. The supports the
@@ -105,7 +106,7 @@ following steps:
 
 * apply the settings: **create reprepro config files** for the different target suites and stages
 
-=== test ===
+### test
 
 The test folder contains a concrete example setup of config files and templates to demonstrate
 the management of an own distribution *mybionic* that is based on ubuntu bionic. Look here
