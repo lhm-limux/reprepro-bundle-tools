@@ -92,7 +92,7 @@ A python3 module containing the classes needed for the tool *bundle*. With this 
 ### reprepro_bundle_compose
 
 A python3 module containing the classes needed for the tool *bundle-compose*. With this tool it is possible
-to **manage the status of bundles in the context of your quality assurance (QA) workflow**. The supports the
+to **manage the status of bundles in the context of your quality assurance (QA) workflow**. The tool supports the
 following steps:
 
 * synconronize the list of bundles against the current bundle-repositories provided by the development.
@@ -174,8 +174,8 @@ To test if this (unchanged) example run in your environment use `apt-repos/bin/a
 If this is given, your setup is ready for maintaining the example suite "mybionic". Please adjust the configuration in the folders *.apt-repos* and
 *templates* according to your needs. Please use the above apt-repos command again to check that all apt-repositores and suites are defined for your environment.
 
-* Please ensure that all suites used as upstream suites for your distribution are tagged with "{yourdist}-supplier:" (in the above example this is *ubuntu:bionic*, *ubuntu:bionic-security* and *ubuntu:bionic-updates*)
-* Also ensure that there are some suite defined tagged as "bundle-compose-target:" which describes the target suites holding your distribution. There are different *bundle-stage* and *bundle-target* attributes possible. With theese attributes it is possible describe the targets (i.g. *plus* and *unattended*) that are responsible for holding bundles that have passed the stages (i.g. *test*, *prod*) in your quality assurance process.
+* Please ensure that all suites used as upstream suites for your distribution are tagged with **"{yourdist}-supplier:"** (in the above example this is *ubuntu:bionic*, *ubuntu:bionic-security* and *ubuntu:bionic-updates*)
+* Also ensure that there are some suites defined and tagged as **"bundle-compose-target:"** which describes the target suites holding your distribution. There are different *bundle-stage* and *bundle-target* attributes possible. With theese attributes it is possible describe the targets (i.g. *plus* and *unattended*) that are responsible for holding bundles that have passed the stages (i.g. *test*, *prod*) in your quality assurance process.
 
 Once your configuration looks reasonable to you, you can commit it:
 
@@ -188,7 +188,7 @@ First Steps
 
 Now that you have done the minimal setup, it's time to do the first steps.
 
-This chapter should be described longer in a different document in future to capture the complete possible workflow. By now this is just a rough documentation to get the first steps. For the example we assume that you did use the above example configuration without changes (use you own distribution name if you have changed it).
+This chapter should be described longer in a different document in future to capture the complete set of possible workflow. By now this is just a rough documentation to get the first steps. For the example we assume that you did use the above example configuration without changes (use your own distribution name if you have changed it).
 
 Create your first bundle:
 
@@ -276,7 +276,7 @@ Please look at the (well maintained) command line help provided with each tool:
 * ./bundle -h
 * ./bundle-compose -h
 
-Please also have a look at [test/Makefile](the testsuite's Makefile) for more usage examples of
+Please also have a look at [the_testsuite's_Makefile](test/Makefile) for more usage examples of
 *bundle* and *bundle-compose*.
 
 And of course look at the above chapter "First Steps".
@@ -285,7 +285,7 @@ And of course look at the above chapter "First Steps".
 Comparison with other Open Source solutions
 -------------------------------------------
 
-There is other Open Source software available targeting similar use cases. One is *aptly*. Another ones are the *Debian Archive Kit* (https://wiki.debian.org/DebianDak) and tasks also done with the *Ubuntu Launchpad*. This chapter shows some outstanding criteria that were important goals for the creation of this project:
+There is other Open Source software available targeting similar use cases. One is *aptly*. Others are the *Debian Archive Kit* (https://wiki.debian.org/DebianDak) and tasks also done with the *Ubuntu Launchpad*. This chapter shows some outstanding criteria that were important goals for the creation of this project:
 
 * **Concept of bundles**: The concept of bundles which can contain multiple debian packages (including their sources) and where a bundle contains all outputs from a distribution maintainer "development task" (e.g. security-update, working on a ticket, ...) plays an important role here.
 * **Staging and QA-workflows**: This tools were designed with the requirements of having a staging mechanism and supporting QA-workflows where target suites can get different sets of bundles depending on the bundle's status in the workflow.
