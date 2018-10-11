@@ -188,7 +188,7 @@ First Steps
 
 Now that you have done the minimal setup, it's time to do the first steps.
 
-This chapter should be described longer in a different document in future to capture the complete set of possible workflow. By now this is just a rough documentation to get the first steps. For the example we assume that you did use the above example configuration without changes (use you own distribution name if you have changed it).
+This chapter should be described longer in a different document in future to capture the complete set of possible workflow. By now this is just a rough documentation to get the first steps. For the example we assume that you did use the above example configuration without changes (use your own distribution name if you have changed it).
 
 Create your first bundle:
 
