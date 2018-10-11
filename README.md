@@ -174,8 +174,8 @@ To test if this (unchanged) example run in your environment use `apt-repos/bin/a
 If this is given, your setup is ready for maintaining the example suite "mybionic". Please adjust the configuration in the folders *.apt-repos* and
 *templates* according to your needs. Please use the above apt-repos command again to check that all apt-repositores and suites are defined for your environment.
 
-* Please ensure that all suites used as upstream suites for your distribution are tagged with "{yourdist}-supplier:" (in the above example this is *ubuntu:bionic*, *ubuntu:bionic-security* and *ubuntu:bionic-updates*)
-* Also ensure that there are some suite defined tagged as "bundle-compose-target:" which describes the target suites holding your distribution. There are different *bundle-stage* and *bundle-target* attributes possible. With theese attributes it is possible describe the targets (i.g. *plus* and *unattended*) that are responsible for holding bundles that have passed the stages (i.g. *test*, *prod*) in your quality assurance process.
+* Please ensure that all suites used as upstream suites for your distribution are tagged with **"{yourdist}-supplier:"** (in the above example this is *ubuntu:bionic*, *ubuntu:bionic-security* and *ubuntu:bionic-updates*)
+* Also ensure that there are some suites defined and tagged as **"bundle-compose-target:"** which describes the target suites holding your distribution. There are different *bundle-stage* and *bundle-target* attributes possible. With theese attributes it is possible describe the targets (i.g. *plus* and *unattended*) that are responsible for holding bundles that have passed the stages (i.g. *test*, *prod*) in your quality assurance process.
 
 Once your configuration looks reasonable to you, you can commit it:
 
