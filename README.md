@@ -113,5 +113,65 @@ the management of an own distribution *mybionic* that is based on ubuntu bionic.
 to get inspired and as a first startup. 
 
 It also contains a Makefile doing an automatic (integration-)test of the reprepro-bundle-tools
-using this example setup. Note: the example setup doesn't show all possible features at the moment
-- I'm still working on improving the test suite.
+using this example setup. Note: the example setup doesn't show all possible features at the moment.
+I'm still working on improving the test suite.
+
+
+Setup
+-----
+
+There are only few depencencies required to do "repository managment" with reprepro and the reprepro-bundle-tools.
+Depending on your requirements the setup of all services could become complex, but for the first start
+and impressions, the setup is easy. So let's start with the
+
+### Minimal Setup
+
+The basic setup runs on a modern debian based system where *debian stretch* and *ubuntu bionic* are tested.
+If not already available, the following packages have to be installed on your system:
+
+    sudo apt install python3 python3-apt python3-urllib3 python3-jinja2 reprepro git vim
+
+Note: The bundle tools require a text editor and *vim* is used by default. If you
+would like to use another editor, please ensure that your environment variable EDITOR
+points to that editor (and it is installed).
+
+Now let's start with setting up a project for your own "repository management" tasks.
+It is suggested to create a new git repository containing all the configuration for your setup.
+This git repository would keep track about all the changes in your distribution in the long run.
+
+These steps would create the git repository for your project and install the required 
+dependencies, the *reprepro-bundle-tools* and *apt-repos* as git submodules:
+
+    git init reprepro-managment
+    cd reprepro-managment
+    git submodule init
+    git submodule add https://github.com/lhm-limux/reprepro-bundle-tools.git reprepro-bundle-tools
+    git submodule add https://github.com/lhm-limux/apt-repos.git apt-repos
+    ln -s reprepro-bundle-tools/bin/bundle .
+    ln -s reprepro-bundle-tools/bin/bundle-compose .
+    git add bundle bundle-compose
+    git commit -am "added initial submodules"
+
+Now it's time to add a configuration. We used the example configuration from the "test" folder
+as a template for that.
+
+    cp -a reprepro-bundle-tools/test/.apt-repos/ reprepro-bundle-tools/test/templates/ .
+
+To test if this (unchanged) example run in your environment use `apt-repos/bin/apt-repos -b .apt-repos/ suites` which should output something like:
+
+    INFO[apt_repos]: Using basedir '.apt-repos'
+    INFO[apt_repos.Repository]: Scanning Repository 'Main Ubuntu Repository' (http://archive.ubuntu.com/ubuntu/)
+    INFO[apt_repos.Repository]: Scanning Repository 'MyBionic-Ziel Repository' (file://{PWD}/repo/target/)
+    # ubuntu:bionic [mybionic-supplier:]
+    # ubuntu:bionic-backports
+    # ubuntu:bionic-proposed
+    # ubuntu:bionic-security [mybionic-supplier:]
+    # ubuntu:bionic-updates [mybionic-supplier:]
+    # target:mybionic-test [bundle-compose-target:, bundle-dist.mybionic:, bundle-stage.prod:, bundle-stage.test:, bundle-target.plus:, bundle-target.unattended:, test:]
+    # target:mybionic [bundle-compose-target:, bundle-dist.mybionic:, bundle-stage.prod:, bundle-target.plus:, bundle-target.unattended:, prod:]
+    # target:mybionic-unattended [bundle-compose-target:, bundle-dist.mybionic:, bundle-stage.prod:, bundle-target.unattended:, prod:]
+
+If this is given, your setup is ready for maintaining the example suite "mybionic". Please adjust the configuration in the folders *.apt-repos* and
+*templates* according to your needs.
+
+
