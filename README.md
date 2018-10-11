@@ -92,7 +92,7 @@ A python3 module containing the classes needed for the tool *bundle*. With this 
 ### reprepro_bundle_compose
 
 A python3 module containing the classes needed for the tool *bundle-compose*. With this tool it is possible
-to **manage the status of bundles in the context of your quality assurance (QA) workflow**. The supports the
+to **manage the status of bundles in the context of your quality assurance (QA) workflow**. The tool supports the
 following steps:
 
 * synconronize the list of bundles against the current bundle-repositories provided by the development.
