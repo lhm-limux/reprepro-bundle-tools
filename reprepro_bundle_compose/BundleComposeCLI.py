@@ -410,7 +410,7 @@ def createTargetRepreproConfigForRepository(bundles, repoTargets, repoConfDir, b
             # create update rule for references suites
             updates = update_line.get(target, "")
             targetDistribution = target.getAptSuite().split("/")[0]
-            for suite in sorted(apt_repos.getSuites(["{}-reference:".format(targetDistribution)])):
+            for suite in sorted(apt_repos.getSuites(["bundle-base.{}:".format(targetDistribution)])):
                 ruleName = "update-" + suite.getSuiteName()
                 keyIds = sorted(getPublicKeyIDs(suite.getTrustedGPGFile()))
                 updates += ' ' + ruleName
