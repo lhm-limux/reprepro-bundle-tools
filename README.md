@@ -276,7 +276,7 @@ Please look at the (well maintained) command line help provided with each tool:
 * ./bundle -h
 * ./bundle-compose -h
 
-Please also have a look at [test/Makefile](the_testsuite's_Makefile) for more usage examples of
+Please also have a look at [the_testsuite's_Makefile](test/Makefile) for more usage examples of
 *bundle* and *bundle-compose*.
 
 And of course look at the above chapter "First Steps".
