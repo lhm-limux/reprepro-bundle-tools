@@ -4,9 +4,26 @@
     "Tags" : [ "bundle-compose-target", "bundle-dist.mybionic" ],
     "Url" : "file://{PWD}/repo/target/",
     "Suites" : [
-        { "Suite" : "mybionic-test",       "Tags" : [ "test", "bundle-stage.test", "bundle-stage.prod", "bundle-target.plus", "bundle-target.unattended" ] },
-        { "Suite" : "mybionic",            "Tags" : [ "prod",                      "bundle-stage.prod", "bundle-target.plus", "bundle-target.unattended" ] },
-        { "Suite" : "mybionic-unattended", "Tags" : [ "prod",                      "bundle-stage.prod",                       "bundle-target.unattended" ] }
+        { "Suite" : "mybionic/dev", "Tags" : [
+            "dev", "mybionic-reference",
+            "bundle-stage.dev", "bundle-stage.test", "bundle-stage.prod",
+            "bundle-target.plus", "bundle-target.unattended"
+        ]},
+        { "Suite" : "mybionic/test", "Tags" : [
+            "test",
+            "bundle-stage.test", "bundle-stage.prod",
+            "bundle-target.plus", "bundle-target.unattended"
+        ]},
+        { "Suite" : "mybionic", "Tags" : [
+            "prod",
+            "bundle-stage.prod",
+            "bundle-target.plus", "bundle-target.unattended"
+        ]},
+        { "Suite" : "mybionic/unattended", "Tags" : [
+            "prod",
+            "bundle-stage.prod",
+            "bundle-target.unattended"
+        ]}
     ],
     "Scan" : false,
     "Architectures" : [ "i386", "amd64" ],

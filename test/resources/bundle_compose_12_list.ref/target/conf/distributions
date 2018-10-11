@@ -11,20 +11,30 @@ Contents: .gz .bz2
 Update: -  update-bundle:mybionic/0001
 
 Origin: MyBionic
-Label: mybionic-test
-Suite: mybionic-test
-Codename: mybionic-test
-Description: merge target for mybionic-test
+Label: mybionic/dev
+Suite: mybionic/dev
+Codename: mybionic/dev
+Description: merge target for mybionic/dev
 Architectures: i386 amd64
 Components: main restricted universe multiverse partner
 Contents: .gz .bz2
 Update: -  update-bundle:mybionic/0001
 
 Origin: MyBionic
-Label: mybionic-unattended
-Suite: mybionic-unattended
-Codename: mybionic-unattended
-Description: merge target for mybionic-unattended
+Label: mybionic/test
+Suite: mybionic/test
+Codename: mybionic/test
+Description: merge target for mybionic/test
+Architectures: i386 amd64
+Components: main restricted universe multiverse partner
+Contents: .gz .bz2
+Update: -  update-bundle:mybionic/0001
+
+Origin: MyBionic
+Label: mybionic/unattended
+Suite: mybionic/unattended
+Codename: mybionic/unattended
+Description: merge target for mybionic/unattended
 Architectures: i386 amd64
 Components: main restricted universe multiverse partner
 Contents: .gz .bz2
