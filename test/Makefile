@@ -58,7 +58,6 @@ bundle_workflow_part1: prepare
 	@$(T) bundle_06_show         0 $(sync) $(BUNDLE) show mybionic/0001
 	@$(T) bundle_06_list         0 $(sync) $(BUNDLE) list mybionic/0001
 	@$(T) bundle_06_bundles      0 $(sync) $(BUNDLE) bundles mybionic
-	@$(T) bundle_06_bundles_l    0 $(sync) $(BUNDLE) bundles mybionic -l
 	@$(T) bundle_07_black        0 $(sync) $(BUNDLE) black mybionic/0001
 	@$(T) bundle_08_apply        0 $(sync) $(BUNDLE) apply mybionic/0001
 	@$(T) bundle_09_show         0 $(sync) $(BUNDLE) show mybionic/0001
@@ -90,7 +89,7 @@ bundle_workflow_part2: prepare bundle_workflow_part1
 	@$(T) bundle_13_seal         0 $(sync) $(BUNDLE) seal mybionic/0001
 	@$(T) bundle_14_edit         1 $(sync) $(BUNDLE) edit mybionic/0001
 	@$(T) bundle_15_clone        0 $(sync) $(BUNDLE) clone mybionic/0001 --no-clean-commit
-	@$(T) bundle_16_bundles      0 $(sync) $(BUNDLE) bundles -l
+	@$(T) bundle_16_bundles      0 $(sync) $(BUNDLE) bundles
 	@$(T) bundle_17_list         0 $(sync) $(BUNDLE) list mybionic/0002
 	@$(T) bundle_18_apply        0 $(sync) $(BUNDLE) apply mybionic/0002
 	@$(T) bundle_19_list         0 $(sync) $(BUNDLE) list mybionic/0002
