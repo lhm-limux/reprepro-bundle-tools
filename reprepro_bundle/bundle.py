@@ -25,9 +25,9 @@ import getpass
 import apt_repos
 
 from reprepro_bundle import PROJECT_DIR,BundleError
-from reprepro_bundle.PackageStatus import PackageStatus
-from reprepro_bundle.DeploymentStatus import DeploymentStatus
-from reprepro_bundle.Package import Package
+from reprepro_bundle.package_status import PackageStatus
+from reprepro_bundle.deployment_status import DeploymentStatus
+from reprepro_bundle.package import Package
 from apt_repos import PackageField
 from jinja2 import Environment, FileSystemLoader
 

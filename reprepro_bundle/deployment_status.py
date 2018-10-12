@@ -20,7 +20,7 @@
 import logging
 from enum import Enum
 import reprepro_bundle
-from reprepro_bundle.PackageExistence import PackageExistence
+from reprepro_bundle.package_existence import PackageExistence
 
 logger = logging.getLogger(__name__)
 

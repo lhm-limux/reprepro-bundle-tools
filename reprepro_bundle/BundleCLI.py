@@ -41,9 +41,9 @@ from contextlib import contextmanager
 CANCEL_REMARK = "# Note: clean this file completely to CANCEL this current '{action}' action\n"
 
 from reprepro_bundle import BundleError
-from reprepro_bundle.UpdateRule import UpdateRule
-from reprepro_bundle.DeploymentStatus import DeploymentStatus
-from reprepro_bundle.Bundle import Bundle
+from reprepro_bundle.update_rule import UpdateRule
+from reprepro_bundle.deployment_status import DeploymentStatus
+from reprepro_bundle.bundle import Bundle
 
 progname = "bundle"
 logger = logging.getLogger(progname)

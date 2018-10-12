@@ -3,7 +3,7 @@ INFO[apt_repos]: Using basedir '.apt-repos'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 INFO[bundle]: Adding Update-Rules for suite bundle:mybionic/0001 with 2 entries
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
-INFO[reprepro_bundle.Bundle]: Creating config files for bundle 'mybionic/0001'
+INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0001'
 Calling batch-editor bundle_11_meta_cancel
 Creating empty edit-result in order to cancel the current action
 INFO[bundle]: Aborting as empty metadata file recognized!

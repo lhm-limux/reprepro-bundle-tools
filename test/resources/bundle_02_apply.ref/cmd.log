@@ -3,7 +3,7 @@ INFO[apt_repos]: Using basedir '.apt-repos'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 WARNING[apt_repos.RepositoryScanner]: Could not resolve suite mybionic of repository file://…TESTDIR…/repo/bundle/mybionic/0001/
 WARNING[bundle]: Could not set Own-Suite: Own-Suite selector 'bundle:mybionic/0001' doesn't match an apt-repos suite for bundle 'mybionic/0001'.
-INFO[reprepro_bundle.Bundle]: Creating config files for bundle 'mybionic/0001'
+INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0001'
 INFO[bundle]: Executing 'reprepro -b repo/bundle/mybionic/0001 --noskipold update'
 Calculating packages to get...
 INFO[bundle]: Executing 'reprepro -b repo/bundle/mybionic/0001 export'
@@ -16,10 +16,10 @@ INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybioni
 INFO[bundle]: Setting highlighted-suites to 'bundle:mybionic/0001'
 INFO[bundle]: Setting add-from to 'None'
 INFO[bundle]: Setting upgrade-from to 'None'
-INFO[reprepro_bundle.Bundle]: Creating sources_control.list for 5 suites
-INFO[reprepro_bundle.Bundle]: Updating and Querying suite bundle:mybionic/0001
-INFO[reprepro_bundle.Bundle]: Updating and Querying suite target:mybionic/dev
-INFO[reprepro_bundle.Bundle]: Updating and Querying suite ubuntu:bionic
-INFO[reprepro_bundle.Bundle]: Updating and Querying suite ubuntu:bionic-security
-INFO[reprepro_bundle.Bundle]: Updating and Querying suite ubuntu:bionic-updates
-INFO[reprepro_bundle.Bundle]: Creating config files for bundle 'mybionic/0001'
+INFO[reprepro_bundle.bundle]: Creating sources_control.list for 5 suites
+INFO[reprepro_bundle.bundle]: Updating and Querying suite bundle:mybionic/0001
+INFO[reprepro_bundle.bundle]: Updating and Querying suite target:mybionic/dev
+INFO[reprepro_bundle.bundle]: Updating and Querying suite ubuntu:bionic
+INFO[reprepro_bundle.bundle]: Updating and Querying suite ubuntu:bionic-security
+INFO[reprepro_bundle.bundle]: Updating and Querying suite ubuntu:bionic-updates
+INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0001'
