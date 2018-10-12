@@ -8,8 +8,9 @@ APT_REPOS := apt-repos/bin/apt-repos -b .apt-repos
 REPO_RSYNC := rsync -a --delete
 S_NO_REPOS := --exclude dists --exclude lists --exclude db --exclude pool
 S_BUNDLE   := "$(S_NO_REPOS) --exclude bundles_file --exclude target"
-S_CMD_ONLY := "$(S_NO_REPOS) --exclude bundle --exclude bundles_file --exclude target"
-S_COMPOSE  := "$(S_NO_REPOS) --exclude bundle"
+S_EDIT     := "$(S_NO_REPOS) --exclude bundle --exclude bundles_file --exclude target"
+S_CMD_ONLY := "$(S_NO_REPOS) --exclude bundle --exclude bundles_file --exclude target --exclude editor.*"
+S_COMPOSE  := "$(S_NO_REPOS) --exclude bundle --exclude editor.*"
 
 IS_GIT_TREE := (which git && git ls-files --error-unmatch) >/dev/null 2>&1
 CONTINUE := true
@@ -104,10 +105,12 @@ bundle_compose_workflow_part2: prepare bundle_compose_workflow_part1 bundle_work
 	@$(T) bundle_compose_24_list  0 $(S_CMD_ONLY) $(BUNDLE_COMPOSE) list
 	@$(T) bundle_compose_25_apply 0 $(S_COMPOSE)  $(BUNDLE_COMPOSE) apply
 	@$(T) bundle_compose_26_rrupd 0 $(S_CMD_ONLY) $(REPREPRO) --noskipold update
-	@$(T) bundle_compose_27_alist 0 $(S_CMD_ONLY) $(APT_REPOS) list -s target: -r .
-	@$(T) bundle_compose_28_stage 0 $(S_COMPOSE)  $(BUNDLE_COMPOSE) mark-for-stage drop bundle:mybionic/0001 bundle:mybionic/0002 -f
-	@$(T) bundle_compose_29_ub    0 $(S_COMPOSE)  $(BUNDLE_COMPOSE) update-bundles --no-trac
-	@$(T) bundle_compose_30_list  0 $(S_COMPOSE)  $(BUNDLE_COMPOSE) list
+	@$(T) bundle_compose_27_init  0 $(S_EDIT)     $(BUNDLE) init mybionic --no-clean-commit
+	@$(T) bundle_compose_28_edit  0 $(S_EDIT)     $(BUNDLE) edit mybionic/0003
+	@$(T) bundle_compose_29_alist 0 $(S_CMD_ONLY) $(APT_REPOS) list -s target: -r .
+	@$(T) bundle_compose_30_stage 0 $(S_COMPOSE)  $(BUNDLE_COMPOSE) mark-for-stage drop bundle:mybionic/0001 bundle:mybionic/0002 -f
+	@$(T) bundle_compose_31_ub    0 $(S_COMPOSE)  $(BUNDLE_COMPOSE) update-bundles --no-trac
+	@$(T) bundle_compose_32_list  0 $(S_COMPOSE)  $(BUNDLE_COMPOSE) list
 
 bundle_help:
 	@$(eval sync := $(S_CMD_ONLY))

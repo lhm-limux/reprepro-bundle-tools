@@ -24,6 +24,11 @@ function bundle_07_black {
   cat "$1" >repo/editor.out
 }
 
+function bundle_compose_28_edit {
+  # we don't want to change the sources list, but check if the reference-suites were considered
+  grep "WE_CURRENTLY_HAVE" "$1" >repo/editor.in.grep_currently_have
+}
+
 function cancel {
   echo "Creating empty edit-result in order to cancel the current action"
   echo -n "" >"$1"
