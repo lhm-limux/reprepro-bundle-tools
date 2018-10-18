@@ -20,6 +20,12 @@ async def handle_doit(request):
     logMessage("quit")
     return web.Response(text="ok")
 
+async def handle_bundleList(request):
+    res = list()
+    for i in range(1,10):
+        res.append({ 'name': f"walhalla/{i:04d}" })
+    return web.json_response(res)
+
 async def handle(request):
     name = request.match_info.get('name', "Anonymous")
     text = "Hello, " + name
@@ -55,10 +61,11 @@ async def websocket_handler(request):
 
 def run_webserver():
     app = web.Application()
-    app.add_routes([web.get('/', handle),
-                web.get('/log', websocket_handler),
-                web.get('/doit', handle_doit)])
-    app.router.add_static('/app/', path=str('./app/'))
+    app.add_routes([
+        web.get('/log', websocket_handler),
+        web.get('/bundleList', handle_bundleList)
+    ])
+    app.router.add_static('/bundle/', path=str('./ng-frontends/ng-bundle/dist/ng-bundle/'))
     web.run_app(app)
 
 run_webserver()
