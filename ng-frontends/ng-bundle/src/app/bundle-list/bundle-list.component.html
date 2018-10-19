@@ -1,4 +1,30 @@
-<h2>Verfügbare Bundles:</h2>
-<p *ngFor="let bundle of bundles">
-  {{bundle.name}}
-</p>
+<h2>Filter</h2>
+<div class="row">
+  <div>
+    <p>Distribution</p>
+    <div class="card-deck">
+        <select-filter name="walhalla" [selected]="filter['distribution']==='walhalla'" (selectedChange)="$event && addFilter('distribution', 'walhalla')"></select-filter>
+        <select-filter name="wanderer" [selected]="filter['distribution']==='wanderer'" (selectedChange)="$event && addFilter('distribution', 'wanderer')"></select-filter>
+      </div>
+  </div>
+  <!--div>
+    <p>Target</p>
+    <div class="card-deck">
+      <select-filter field="target" name="plus" (selected)="true"></select-filter>
+      <select-filter field="target" name="unattended" (selected)="true"></select-filter>
+    </div>
+  </div>
+  <div>
+    <p>Creator</p>
+    <div class="card-deck">
+      <select-filter field="creator" name="clutz" (selected)="true"></select-filter>
+      <select-filter field="creator" name="Others" (selected)="true"></select-filter>
+    </div>
+  </div>-->
+</div>
+<p>{{filter | json}}</p>
+<div>
+  <h2>Verfügbare Bundles</h2>
+  <p *ngFor="let bundle of getBundles()">
+    {{bundle | json}}
+  </p>

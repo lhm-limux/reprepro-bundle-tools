@@ -14,5 +14,4 @@ export class BundleListService {
   getBundleList(): Observable<Bundle[]> {
     return this.http.get<Bundle[]>("/bundleList");
   }
-
 }

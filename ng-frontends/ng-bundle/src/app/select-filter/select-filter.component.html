@@ -1,0 +1,13 @@
+<div class="card" [ngStyle]="{'background-color': (selected) ? 'rgb(204, 197, 185)' : 'white' }">
+    <div class="header">
+        <h2 class="title">{{name}}</h2>
+    </div>
+    <button
+        class="btn btn-default"
+        *ngIf="!selected"
+        (click)="select()">Anzeigen</button>
+    <button
+        class="btn btn-default"
+        *ngIf="selected"
+        (click)="deselect()">Ausblenden</button>
+</div>

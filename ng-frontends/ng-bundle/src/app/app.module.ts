@@ -5,10 +5,11 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { ServerLogComponent } from './server-log/server-log.component';
 import { BundleListComponent } from './bundle-list/bundle-list.component';
+import { SelectFilterComponent } from './select-filter/select-filter.component';
 
 @NgModule({
   declarations: [
-    AppComponent, ServerLogComponent, BundleListComponent
+    AppComponent, ServerLogComponent, BundleListComponent, SelectFilterComponent
   ],
   imports: [
     BrowserModule, HttpClientModule
