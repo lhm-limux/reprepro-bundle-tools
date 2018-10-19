@@ -1,11 +1,8 @@
-<div class="col">
-  <div style="background-color: #bbbbbb">{{field}}</div>
+<div class="col" style="background-color: #bbbbbb">
+  <div>{{field}}</div>
   <div class="row">
     <div *ngFor="let value of values" class="col">
-      <div [ngStyle]="{'background-color': (selected.has(value)) ? 'rgb(204, 197, 185)' : 'white' }">
-        <button *ngIf="!selected.has(value)" (click)="select(value)" style="width: 100%">{{value}}</button>
-        <button *ngIf="selected.has(value)" (click)="deselect(value)" style="width: 100%">{{value}}</button>
-      </div>
+      <button class="btn" (click)="toggle(value)" style="width: 100%" [ngClass]="selected.has(value)? 'btn-success' : 'btn-light'">{{value}}</button>
     </div>
   </div>
   <div>{{selected.entries | json}}</div>
