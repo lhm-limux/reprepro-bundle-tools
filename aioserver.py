@@ -23,7 +23,22 @@ async def handle_doit(request):
 async def handle_bundleList(request):
     res = list()
     for i in range(1,10):
-        res.append({ 'name': f"walhalla/{i:04d}" })
+        res.append({ 
+            'name': f"walhalla/{i:04d}",
+            'distribution': "walhalla",
+            'target': "plus",
+            'subject': "This is a bundle",
+            'readonly': False,
+            'creator': 'chlu'
+        })
+        res.append({ 
+            'name': f"wanderer/{i:04d}",
+            'distribution': "wanderer",
+            'target': "plus",
+            'subject': "This is a bundle",
+            'readonly': False,
+            'creator': 'chlu'
+        })
     return web.json_response(res)
 
 async def handle(request):
