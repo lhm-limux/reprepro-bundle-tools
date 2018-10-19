@@ -10,20 +10,21 @@ export class SelectFilterComponent implements OnInit {
   constructor() { }
 
   @Input() field: string;
-  @Input() name: string;
-  @Input() selected: boolean;
-  @Output() selectedChange = new EventEmitter<boolean>();
+  @Input() values: string[];
+  @Input() selected: Set<string> = new Set();
+  @Output() selectedChange = new EventEmitter<Set<string>>();
 
   ngOnInit() {
+    this.values.forEach((v) => this.select(v));
   }
 
-  select() {
-      this.selected = true;
+  select(value) {
+      this.selected.add(value);
       this.selectedChange.next(this.selected);
   }
 
-  deselect() {
-      this.selected = false;
+  deselect(value) {
+      this.selected.delete(value);
       this.selectedChange.next(this.selected);
   }
 

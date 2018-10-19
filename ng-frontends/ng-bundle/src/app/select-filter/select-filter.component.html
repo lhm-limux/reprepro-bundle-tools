@@ -1,13 +1,12 @@
-<div class="card" [ngStyle]="{'background-color': (selected) ? 'rgb(204, 197, 185)' : 'white' }">
-    <div class="header">
-        <h2 class="title">{{name}}</h2>
+<div class="col">
+  <div style="background-color: #bbbbbb">{{field}}</div>
+  <div class="row">
+    <div *ngFor="let value of values" class="col">
+      <div [ngStyle]="{'background-color': (selected.has(value)) ? 'rgb(204, 197, 185)' : 'white' }">
+        <button *ngIf="!selected.has(value)" (click)="select(value)" style="width: 100%">{{value}}</button>
+        <button *ngIf="selected.has(value)" (click)="deselect(value)" style="width: 100%">{{value}}</button>
+      </div>
     </div>
-    <button
-        class="btn btn-default"
-        *ngIf="!selected"
-        (click)="select()">Anzeigen</button>
-    <button
-        class="btn btn-default"
-        *ngIf="selected"
-        (click)="deselect()">Ausblenden</button>
+  </div>
+  <div>{{selected.entries | json}}</div>
 </div>

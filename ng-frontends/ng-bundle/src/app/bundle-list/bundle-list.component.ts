@@ -9,7 +9,10 @@ import { Bundle } from "../shared/bundle";
   styleUrls: ["./bundle-list.component.css"]
 })
 export class BundleListComponent implements OnInit {
-  filter = new Set();
+  selectedDistribution = new Set<string>();
+  selectedState = new Set<string>();
+  selectedTarget = new Set<string>();
+  selectedCreator = new Set<string>();
   bundles: Bundle[] = [];
 
   constructor(private bundleListService: BundleListService) {}
@@ -30,17 +33,14 @@ export class BundleListComponent implements OnInit {
   }
 
   getBundles(): Bundle[] {
-    if (this.filter.size > 0) {
-      return this.bundles.filter(
-        (b) => b.distribution === this.filter['distribution']
-      );
-    } else {
-      return this.bundles;
-    }
-  }
-
-  addFilter(field, value): void {
-    //console.log("addFilter("+field+","+value+")");
-    this.filter[field] = value;
+    return this.bundles.filter(
+      (b) => this.selectedDistribution.has(b.distribution)
+    ).filter(
+      (b) => this.selectedTarget.has(b.target)
+    ).filter(
+      (b) => this.selectedState.has((b.readonly ? 'Readonly' : 'Editable'))
+    ).filter(
+      (b) => this.selectedCreator.has(b.creator)
+    );
   }
 }
