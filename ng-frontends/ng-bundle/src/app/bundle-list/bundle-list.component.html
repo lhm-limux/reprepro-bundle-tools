@@ -7,4 +7,13 @@
   </div>
 </div>
 <h2>Bundle-Liste</h2>
-<p *ngFor="let bundle of getBundles()">{{bundle | json}}</p>
+<div class="card-columns">
+  <div *ngFor="let bundle of getBundles()" class="card">
+    <div class="card-header">
+      <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+      <b>{{ bundle.name }}</b> [{{ bundle.target}}]
+    </div>
+    <div>Subject: {{ bundle.subject }}</div>
+    <div>Creator: {{ bundle.creator }}</div>
+  </div>
+</div>
