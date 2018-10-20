@@ -1,10 +1,10 @@
-<h2>Verfügbare Bundles</h2>
-<div class="row container" style="background-color: #cccccc;">
-  <b class="col-sm-1"><br/>Anzeige-auswahl</b>
-  <select-filter class="col" field="Distribution" [values]="['walhalla', 'wanderer']" [(selected)]="selectedDistribution"></select-filter>
-  <select-filter class="col" field="Zustand" [values]="['Editable', 'Readonly']" [(selected)]="selectedState"></select-filter>
-  <select-filter class="col" field="Target" [values]="['plus', 'unattended']" [(selected)]="selectedTarget"></select-filter>
-  <select-filter class="col" field="Creator" [values]="['chlu', 'others']" [(selected)]="selectedCreator"></select-filter>
+<div class="bg-light w-75">
+  <div class="row">
+    <select-filter class="col" field="Distribution" [values]="['walhalla', 'wanderer']" [(selected)]="selectedDistribution"></select-filter>
+    <select-filter class="col" field="Zustand" [values]="['Editable', 'Readonly']" [(selected)]="selectedState"></select-filter>
+    <select-filter class="col" field="Target" [values]="['plus', 'unattended']" [(selected)]="selectedTarget"></select-filter>
+    <select-filter class="col" field="Creator" [values]="['chlu', 'others']" [(selected)]="selectedCreator"></select-filter>
+  </div>
 </div>
-<div>
+<h2>Bundle-Liste</h2>
 <p *ngFor="let bundle of getBundles()">{{bundle | json}}</p>
