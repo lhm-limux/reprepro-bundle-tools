@@ -409,7 +409,10 @@ def createTargetRepreproConfigForRepository(bundles, repoTargets, repoConfDir, b
         for target in repoTargets:
             # create update rule for references suites
             updates = update_line.get(target, "")
-            targetDistribution = target.getAptSuite().split("/")[0]
+            targetDistribution = getBundleDist(target)
+            if not targetDistribution:
+                logger.warning(f"Skipping target {target} as it has no 'bundle-dist.*' tag!")
+                continue
             for suite in sorted(apt_repos.getSuites(["bundle-base.{}:".format(targetDistribution)])):
                 ruleName = "update-" + suite.getSuiteName()
                 keyIds = sorted(getPublicKeyIDs(suite.getTrustedGPGFile()))
@@ -454,6 +457,17 @@ def createTargetRepreproConfigForRepository(bundles, repoTargets, repoConfDir, b
             logger.debug("Copying file {} --> {}".format(srcPath, targetPath))
             copyfile(srcPath, targetPath)
 
+
+def getBundleDist(targetRepoSuite):
+    ''' 
+        Returns the bundle-dist defined as a "bundle-dist.*"-tag within the supplied
+        targetRepoSuite-object or None, if no such tag is available.
+        This defines the suitename of a bundle the targetRepoSuite  is responsible for.
+    '''
+    for tag in targetRepoSuite.getTags():
+        if tag.startswith("bundle-dist."):
+            return tag[len("bundle-dist."):]
+    return None
 
 
 def filterBundles(bundles, status):
