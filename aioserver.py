@@ -36,8 +36,8 @@ async def handle_bundleList(request):
             'distribution': "wanderer",
             'target': "plus",
             'subject': "This is a bundle",
-            'readonly': False,
-            'creator': 'chlu'
+            'readonly': True,
+            'creator': 'some.other'
         })
     return web.json_response(res)
 
