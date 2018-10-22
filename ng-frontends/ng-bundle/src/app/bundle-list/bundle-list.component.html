@@ -8,7 +8,7 @@
 </div>
 <h2>Bundle-Liste</h2>
 <div class="card-columns">
-  <div *ngFor="let bundle of getBundles()" class="card">
+  <div *ngFor="let bundle of getBundles()" class="card border-info">
     <div class="card-header">
         <i [ngClass]="bundle.readonly ? 'fa fa-lock' : 'fa fa-unlock'" aria-hidden="true"></i>
         <b> {{ bundle.name }}</b> [{{ bundle.target}}]
