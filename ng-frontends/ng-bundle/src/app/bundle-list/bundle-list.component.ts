@@ -9,38 +9,64 @@ import { Bundle } from "../shared/bundle";
   styleUrls: ["./bundle-list.component.css"]
 })
 export class BundleListComponent implements OnInit {
-  selectedDistribution = new Set<string>();
-  selectedState = new Set<string>();
-  selectedTarget = new Set<string>();
-  selectedCreator = new Set<string>();
+  availableDistributions = new Set<string>();
+  selectedDistributions = new Set<string>();
+
+  availableStates = new Set<string>();
+  selectedStates = new Set<string>();
+
+  availableTargets = new Set<string>();
+  selectedTargets = new Set<string>();
+
+  availableCreators = new Set<string>();
+  selectedCreators = new Set<string>();
+
   bundles: Bundle[] = [];
+
+  username = "chlu";
 
   constructor(private bundleListService: BundleListService) {}
 
   ngOnInit() {
-    this.update();
+    this.bundleListService.cast.subscribe(bundles => this.update(bundles));
+    this.bundleListService.update();
   }
 
-  update() {
-    this.bundleListService.getBundleList().subscribe(
-      (bundles: Bundle[]) => {
-        this.bundles = bundles;
-      },
-      errResp => {
-        console.error('Error loading bundle list', errResp);
-      }
+  update(bundles) {
+    this.bundles = bundles;
+    const wasEmpty =
+      this.availableCreators.size === 0 &&
+      this.availableDistributions.size === 0 &&
+      this.availableStates.size === 0 &&
+      this.availableTargets.size === 0;
+    this.availableCreators = this.bundleListService.getAvailableUserOrOthers(
+      this.username
     );
+    this.availableDistributions = this.bundleListService.getAvailableDistributions();
+    this.availableTargets = this.bundleListService.getAvailableTargets();
+    this.availableStates = new Set<string>();
+    this.bundleListService
+      .getAvailableReadonly()
+      .forEach(ro => this.availableStates.add(ro ? "Readonly" : "Editable"));
+    if (wasEmpty) {
+      this.selectedCreators = new Set(this.availableCreators);
+      this.selectedDistributions = new Set(this.availableDistributions);
+      this.selectedStates = new Set(this.availableStates);
+      this.selectedTargets = new Set(this.availableTargets);
+    }
   }
 
   getBundles(): Bundle[] {
-    return this.bundles.filter(
-      (b) => this.selectedDistribution.has(b.distribution)
-    ).filter(
-      (b) => this.selectedTarget.has(b.target)
-    ).filter(
-      (b) => this.selectedState.has((b.readonly ? 'Readonly' : 'Editable'))
-    ).filter(
-      (b) => this.selectedCreator.has(b.creator)
-    );
+    return this.bundles
+      .filter(b => this.selectedDistributions.has(b.distribution))
+      .filter(b => this.selectedTargets.has(b.target))
+      .filter(b =>
+        this.selectedStates.has(b.readonly ? "Readonly" : "Editable")
+      )
+      .filter(b =>
+        this.selectedCreators.has(
+          this.bundleListService.getUserOrOthers(this.username, b)
+        )
+      );
   }
 }

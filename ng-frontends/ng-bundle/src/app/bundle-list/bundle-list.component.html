@@ -1,17 +1,17 @@
 <div class="bg-light w-75">
   <div class="row">
-    <select-filter class="col" field="Distribution" [values]="['walhalla', 'wanderer']" [(selected)]="selectedDistribution"></select-filter>
-    <select-filter class="col" field="Zustand" [values]="['Editable', 'Readonly']" [(selected)]="selectedState"></select-filter>
-    <select-filter class="col" field="Target" [values]="['plus', 'unattended']" [(selected)]="selectedTarget"></select-filter>
-    <select-filter class="col" field="Creator" [values]="['chlu', 'others']" [(selected)]="selectedCreator"></select-filter>
+    <select-filter class="col" field="Distribution" [values]="availableDistributions" [(selected)]="selectedDistributions"></select-filter>
+    <select-filter class="col" field="Zustand" [values]="availableStates" [(selected)]="selectedStates"></select-filter>
+    <select-filter class="col" field="Target" [values]="availableTargets" [(selected)]="selectedTargets"></select-filter>
+    <select-filter class="col" field="Creator" [values]="availableCreators" [(selected)]="selectedCreators"></select-filter>
   </div>
 </div>
 <h2>Bundle-Liste</h2>
 <div class="card-columns">
   <div *ngFor="let bundle of getBundles()" class="card border-info">
     <div class="card-header">
-        <i [ngClass]="bundle.readonly ? 'fa fa-lock' : 'fa fa-unlock'" aria-hidden="true"></i>
-        <b> {{ bundle.name }}</b> [{{ bundle.target}}]
+      <i [ngClass]="bundle.readonly ? 'fa fa-lock' : 'fa fa-unlock'" aria-hidden="true"></i>
+      <b> {{ bundle.name }}</b> --> [{{ bundle.target }}]
     </div>
     <div>Subject: {{ bundle.subject }}</div>
     <div>Creator: {{ bundle.creator }}</div>
