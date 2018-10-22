@@ -24,15 +24,11 @@ export class BundleListService {
   }
 
   getAvailableDistributions(): Set<string> {
-    const res = new Set<string>();
-    this.bundles.getValue().forEach(bundle => res.add(bundle.distribution));
-    return res;
+    return new Set(this.bundles.getValue().map(bundle => bundle.distribution));
   }
 
   getAvailableTargets(): Set<string> {
-    const res = new Set<string>();
-    this.bundles.getValue().forEach(bundle => res.add(bundle.target));
-    return res;
+    return new Set(this.bundles.getValue().map(bundle => bundle.target));
   }
 
   getUserOrOthers(user: string, bundle: Bundle): string {
@@ -40,16 +36,12 @@ export class BundleListService {
   }
 
   getAvailableUserOrOthers(user: string): Set<string> {
-    const res = new Set<string>();
-    this.bundles
-      .getValue()
-      .forEach(bundle => res.add(this.getUserOrOthers(user, bundle)));
-    return res;
+    return new Set(
+      this.bundles.getValue().map(bundle => this.getUserOrOthers(user, bundle))
+    );
   }
 
   getAvailableReadonly(): Set<boolean> {
-    const res = new Set<boolean>();
-    this.bundles.getValue().forEach(bundle => res.add(bundle.readonly));
-    return res;
+    return new Set(this.bundles.getValue().map(bundle => bundle.readonly));
   }
 }
