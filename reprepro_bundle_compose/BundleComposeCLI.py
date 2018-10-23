@@ -411,7 +411,7 @@ def createTargetRepreproConfigForRepository(bundles, repoTargets, repoConfDir, b
             updates = update_line.get(target, "")
             targetDistribution = getBundleDist(target)
             if not targetDistribution:
-                logger.warning(f"Skipping target {target} as it has no 'bundle-dist.*' tag!")
+                logger.warning("Skipping target {} as it has no 'bundle-dist.*' tag!".format(target))
                 continue
             for suite in sorted(apt_repos.getSuites(["bundle-base.{}:".format(targetDistribution)])):
                 ruleName = "update-" + suite.getSuiteName()
