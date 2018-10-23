@@ -4,12 +4,14 @@
 module.exports = function (config) {
   config.set({
     basePath: '',
+    browsers: ['Firefox', 'Chrome'],
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage-istanbul-reporter'),
+      require('karma-firefox-launcher'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
@@ -25,7 +27,6 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
     singleRun: false
   });
 };
