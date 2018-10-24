@@ -2,6 +2,7 @@ import { BundleListService } from "./bundle-list.service";
 import { ServerLogComponent } from "./../server-log/server-log.component";
 import { Component, OnInit, SystemJsNgModuleLoader } from "@angular/core";
 import { Bundle } from "../shared/bundle";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "bundle-list",
@@ -21,11 +22,13 @@ export class BundleListComponent implements OnInit {
   availableCreators = new Set<string>();
   selectedCreators = new Set<string>();
 
+  highlighted: Bundle;
+
   bundles: Bundle[] = [];
 
   username = "chlu";
 
-  constructor(private bundleListService: BundleListService) {}
+  constructor(private bundleListService: BundleListService, private router: Router) {}
 
   ngOnInit() {
     this.bundleListService.cast.subscribe(bundles => this.update(bundles));
@@ -68,5 +71,9 @@ export class BundleListComponent implements OnInit {
           this.bundleListService.getUserOrOthers(this.username, b)
         )
       );
+  }
+
+  navigateTo(bundle): void {
+    this.router.navigate(['/view/', bundle.name.replace('/', '-')]);
   }
 }
