@@ -17,9 +17,7 @@ export class SelectFilterComponent implements OnInit {
   @Output()
   selectedChange = new EventEmitter<Set<string>>();
 
-  ngOnInit() {
-    this.values.forEach(v => this.selected.add(v));
-  }
+  ngOnInit() {}
 
   toggle(value) {
     if (this.selected.has(value)) {
