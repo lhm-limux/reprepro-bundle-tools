@@ -41,10 +41,8 @@ async def handle_bundleList(request):
         })
     return web.json_response(res)
 
-async def handle(request):
-    name = request.match_info.get('name', "Anonymous")
-    text = "Hello, " + name
-    return web.Response(text=text)
+async def handle_else(request):
+    return aiohttp.web.HTTPFound('/bundle/index.html')
 
 async def websocket_handler(request):
     global events
@@ -78,9 +76,12 @@ def run_webserver():
     app = web.Application()
     app.add_routes([
         web.get('/log', websocket_handler),
-        web.get('/bundleList', handle_bundleList)
+        web.get('/bundleList', handle_bundleList),
+        web.get('/bundle', handle_else),
+        web.get('/bundle/', handle_else)
     ])
     app.router.add_static('/bundle/', path=str('./ng-frontends/ng-bundle/dist/ng-bundle/'))
+    app.add_routes([web.get('/{tail:.*}', handle_else)])
     web.run_app(app)
 
 run_webserver()
