@@ -44,7 +44,11 @@ async def handle_bundleList(request):
         })
     return web.json_response(res)
 
-async def handle_else(request):
+async def handle_router_link(request):
+    '''
+        pass router-links to angular' main entry page so that
+        they are handled by angulars router module
+    '''
     return web.FileResponse(os.path.join(APP_DIST, 'index.html'))
 
 async def websocket_handler(request):
@@ -78,10 +82,17 @@ async def websocket_handler(request):
 def run_webserver():
     app = web.Application()
     app.add_routes([
+        # api routes
         web.get('/api/log', websocket_handler),
         web.get('/api/bundleList', handle_bundleList),
-        web.get('/', handle_else),
-        web.get('/view/{tail:.*}', handle_else),
+
+        # angular router-links
+        web.get('/', handle_router_link),
+        web.get('/bundle-list', handle_router_link),
+        web.get('/bundle-list/{tail:.*}', handle_router_link),
+        web.get('/bundle/{tail:.*}', handle_router_link),
+
+        # static content
         web.static('/', APP_DIST)
     ])
     web.run_app(app)

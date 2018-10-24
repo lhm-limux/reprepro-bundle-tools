@@ -5,15 +5,19 @@ import { BundleEditComponent } from "./bundle-edit/bundle-edit.component";
 export const APP_ROUTES: Routes = [
   {
     path: "",
-    component: BundleListComponent,
+    redirectTo: "bundle-list",
     pathMatch: "full"
   },
   {
-    path: "view/:id",
+    path: "bundle-list",
+    component: BundleListComponent,
+  },
+  {
+    path: "bundle/:dist/:id",
     component: BundleEditComponent
   },
   {
     path: "**",
-    redirectTo: "/index.html"
+    redirectTo: "bundle-list"
   }
 ];

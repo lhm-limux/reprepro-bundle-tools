@@ -74,6 +74,6 @@ export class BundleListComponent implements OnInit {
   }
 
   navigateTo(bundle): void {
-    this.router.navigate(['/view/', bundle.name.replace('/', '-')]);
+    this.router.navigate(['/bundle/', bundle.distribution, bundle.name.split("/")[1]]);
   }
 }
