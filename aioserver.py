@@ -75,12 +75,10 @@ async def websocket_handler(request):
 def run_webserver():
     app = web.Application()
     app.add_routes([
-        web.get('/log', websocket_handler),
-        web.get('/bundleList', handle_bundleList),
-        web.get('/bundle', handle_else),
-        web.get('/bundle/', handle_else)
+        web.get('/api/log', websocket_handler),
+        web.get('/api/bundleList', handle_bundleList),
     ])
-    app.router.add_static('/bundle/', path=str('./ng-frontends/ng-bundle/dist/ng-bundle/'))
+    app.router.add_static('/', path=str('./ng-frontends/ng-bundle/dist/ng-bundle/'))
     app.add_routes([web.get('/{tail:.*}', handle_else)])
     web.run_app(app)
 

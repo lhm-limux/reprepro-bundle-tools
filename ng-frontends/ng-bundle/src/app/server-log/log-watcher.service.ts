@@ -10,7 +10,7 @@ export class LogWatcherService {
   observer: Observer<string>;
 
   getLog(): Observable<string> {
-    this.socket = new WebSocket('ws://localhost:8080/log');
+    this.socket = new WebSocket('ws://localhost:8080/api/log');
     this.socket.onopen = (event) => {
 
       // Send an initial message

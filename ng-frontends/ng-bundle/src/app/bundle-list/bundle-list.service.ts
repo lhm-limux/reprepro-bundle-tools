@@ -13,7 +13,7 @@ export class BundleListService {
   constructor(private http: HttpClient) {}
 
   update(): void {
-    this.http.get<Bundle[]>("/bundleList").subscribe(
+    this.http.get<Bundle[]>("/api/bundleList").subscribe(
       (bundles: Bundle[]) => {
         this.bundles.next(bundles);
       },
