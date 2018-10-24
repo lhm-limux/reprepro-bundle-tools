@@ -2,8 +2,11 @@
 
 import time
 import aiohttp
+import os
 from aiohttp import web
 import asyncio
+
+APP_DIST = './ng-frontends/ng-bundle/dist/ng-bundle/'
 
 events = set()
 
@@ -42,7 +45,7 @@ async def handle_bundleList(request):
     return web.json_response(res)
 
 async def handle_else(request):
-    return aiohttp.web.HTTPFound('/bundle/index.html')
+    return web.FileResponse(os.path.join(APP_DIST, 'index.html'))
 
 async def websocket_handler(request):
     global events
@@ -77,9 +80,10 @@ def run_webserver():
     app.add_routes([
         web.get('/api/log', websocket_handler),
         web.get('/api/bundleList', handle_bundleList),
+        web.get('/', handle_else),
+        web.get('/view/{tail:.*}', handle_else),
+        web.static('/', APP_DIST)
     ])
-    app.router.add_static('/', path=str('./ng-frontends/ng-bundle/dist/ng-bundle/'))
-    app.add_routes([web.get('/{tail:.*}', handle_else)])
     web.run_app(app)
 
 run_webserver()
