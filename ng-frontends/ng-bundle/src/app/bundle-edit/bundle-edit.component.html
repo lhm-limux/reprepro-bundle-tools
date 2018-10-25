@@ -1,14 +1,14 @@
-<h2>Bundle {{ distribution }}/{{ id}}</h2>
+<h2>Bundle {{ bundlename }}</h2>
 <form>
   <div class="card">
     <h4 class="card-header">Metadaten</h4>
     <div class="form-group row">
       <label for="distribution" class="col col-form-label">Distribution</label>
-      <div class="col-sm-3">{{ distribution }}</div>
+      <div class="col-sm-3">{{ bundle.distribution }}</div>
       <label for="basedOn" class="col col-form-label">Abgeleitet von</label>
       <div class="col-sm-3">{{ basedOn }}</div>
       <label for="creator" class="col col-form-label">Ersteller</label>
-      <div class="col-sm-3">{{ creator }}</div>
+      <div class="col-sm-3">{{ bundle.creator }}</div>
     </div>
     <div class="form-group row">
       <label for="target" class="col-sm-2 col-form-label">Zielrepository</label>
@@ -20,13 +20,15 @@
     <div class="form-group row">
       <label for="subject" class="col-sm-2 col-form-label">Subject</label>
       <div class="col mr-3">
-        <input type="text" class="form-control form-control-lg" id="subject" placeholder="Subject">
+        <input #inpSub type="text" class="form-control form-control-lg" id="subject" placeholder="Subject" (keyup)="bundle.subject = inpSub.value"
+          [value]="bundle.subject">
       </div>
     </div>
     <div class="form-group row">
       <label for="releasenotes" class="col-sm-2 col-form-label">Releasenotes</label>
       <div class="col mr-3">
-        <textarea type="text" class="form-control" id="releasenotes" placeholder="Releasenotes" rows=15></textarea>
+        <textarea #inpRel type="text" class="form-control" id="releasenotes" placeholder="Releasenotes" rows=15 (keyup)="releasenotes = inpRel.value"
+          [value]="releasenotes"></textarea>
       </div>
     </div>
   </div>

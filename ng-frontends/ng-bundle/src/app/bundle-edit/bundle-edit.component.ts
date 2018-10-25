@@ -1,5 +1,8 @@
+import { BundleMetadataService } from "./bundle-metadata.service";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
+import { Bundle } from "../shared/bundle";
+import { updateClassProp } from "@angular/core/src/render3/styling";
 
 @Component({
   selector: "app-bundle-edit",
@@ -7,28 +10,44 @@ import { ActivatedRoute } from "@angular/router";
   styleUrls: ["./bundle-edit.component.css"]
 })
 export class BundleEditComponent implements OnInit {
-  id: string;
-  distribution: string;
-  subject: string;
+  bundlename: string = null;
+  bundle: Bundle = null;
   basedOn: string;
-  target: string;
-  creator: string;
+  releasenotes: string;
 
   @ViewChild("targetSelect")
   targetSelect;
 
-  constructor(private route: ActivatedRoute) {
+  constructor(
+    private route: ActivatedRoute,
+    private bundleMetadataService: BundleMetadataService
+  ) {
     route.params.subscribe(p => {
-      this.id = p["id"];
-      this.distribution = p["dist"];
+      this.bundlename = p["dist"] + "/" + p["id"];
+      this.update();
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.update();
+  }
+
+  update() {
+    if (this.bundlename) {
+      this.bundleMetadataService
+        .getMetadata(this.bundlename)
+        .subscribe(meta => {
+          this.bundle = meta.bundle;
+          this.basedOn = meta.basedOn;
+          this.releasenotes = meta.releasenotes;
+        });
+    }
+  }
 
   selectTarget($event): void {
     const sel = this.targetSelect.nativeElement;
-    this.target = sel.options[sel.selectedIndex].value;
-    //console.log("Target: " + this.target);
+    if (this.bundle) {
+      this.bundle.target = sel.options[sel.selectedIndex].value;
+    }
   }
 }

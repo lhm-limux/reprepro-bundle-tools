@@ -26,18 +26,33 @@ async def handle_doit(request):
     logMessage("quit")
     return web.Response(text="ok")
 
-async def handle_bundleList(request):
+async def handle_get_bundleList(request):
     res = list()
     for bundle in sorted(scanBundles()):
-        res.append({ 
-            'name': bundle.bundleName,
-            'distribution': bundle.bundleName.split("/")[0],
-            'target': bundle.getInfoTag("Target", "no-target"),
-            'subject': bundle.getInfoTag("Releasenotes", "--no-subject--").split("\n")[0],
-            'readonly': not bundle.isEditable(),
-            'creator': bundle.getInfoTag("Creator", "unknown")
-        })
+        res.append(bundleJson(bundle))
     return web.json_response(res)
+
+async def handle_get_metadata(request):
+    res = list()
+    for bundle in sorted(scanBundles()):
+        if bundle.bundleName == request.rel_url.query['bundlename']:
+            meta = {
+                'bundle': bundleJson(bundle),
+                'basedOn': "xyz",
+                'releasenotes': "dies sind meine Releasenotes"
+            }
+            return web.json_response(meta)
+    return web.Response("error")
+
+def bundleJson(bundle):
+    return {
+        'name': bundle.bundleName,
+        'distribution': bundle.bundleName.split("/")[0],
+        'target': bundle.getInfoTag("Target", "no-target"),
+        'subject': bundle.getInfoTag("Releasenotes", "--no-subject--").split("\n")[0],
+        'readonly': not bundle.isEditable(),
+        'creator': bundle.getInfoTag("Creator", "unknown")
+    }
 
 async def handle_router_link(request):
     '''
@@ -92,7 +107,8 @@ async def run_webserver():
     app.add_routes([
         # api routes
         web.get('/api/log', websocket_handler),
-        web.get('/api/bundleList', handle_bundleList),
+        web.get('/api/bundleList', handle_get_bundleList),
+        web.get('/api/bundleMetadata', handle_get_metadata),
         web.get('/api/exit', handle_exit),
 
         # angular router-links
