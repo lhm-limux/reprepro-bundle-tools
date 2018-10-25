@@ -12,6 +12,11 @@ import { BundleEditComponent } from "./bundle-edit/bundle-edit.component";
 import { MockBundleListService } from "./test/mock-bundle-list-service.class";
 import { BundleListService } from "./bundle-list/bundle-list.service";
 
+export function windowFactory() {
+  console.log("my windowFactory called with: " + window);
+  return window;
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,7 +26,8 @@ import { BundleListService } from "./bundle-list/bundle-list.service";
     BundleEditComponent
   ],
   imports: [BrowserModule, HttpClientModule, RouterModule.forRoot(APP_ROUTES)],
+  bootstrap: [AppComponent],
+  providers: [{ provide: "windowObject", useFactory: windowFactory }]
   //providers: [{ provide: BundleListService, useClass: MockBundleListService }],
-  bootstrap: [AppComponent]
 })
 export class AppModule {}

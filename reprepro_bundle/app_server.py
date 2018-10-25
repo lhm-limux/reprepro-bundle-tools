@@ -3,10 +3,13 @@
 import time
 import aiohttp
 import os
+import subprocess
 from aiohttp import web
+from aiohttp.web import run_app
 import asyncio
+from reprepro_bundle.BundleCLI import scanBundles
 
-APP_DIST = './ng-frontends/ng-bundle/dist/ng-bundle/'
+APP_DIST = './ng-bundle/'
 
 events = set()
 
@@ -25,22 +28,14 @@ async def handle_doit(request):
 
 async def handle_bundleList(request):
     res = list()
-    for i in range(1,10):
+    for bundle in sorted(scanBundles()):
         res.append({ 
-            'name': f"walhalla/{i:04d}",
-            'distribution': "walhalla",
-            'target': "plus",
-            'subject': "This is a bundle",
-            'readonly': False,
-            'creator': 'chlu'
-        })
-        res.append({ 
-            'name': f"wanderer/{i:04d}",
-            'distribution': "wanderer",
-            'target': "plus",
-            'subject': "This is a bundle",
-            'readonly': True,
-            'creator': 'some.other'
+            'name': bundle.bundleName,
+            'distribution': bundle.bundleName.split("/")[0],
+            'target': bundle.getInfoTag("Target", "no-target"),
+            'subject': bundle.getInfoTag("Releasenotes", "--no-subject--").split("\n")[0],
+            'readonly': not bundle.isEditable(),
+            'creator': bundle.getInfoTag("Creator", "unknown")
         })
     return web.json_response(res)
 
@@ -79,12 +74,26 @@ async def websocket_handler(request):
     print('websocket connection closed')
     return ws
 
-def run_webserver():
+async def handle_exit(request):
+    loop = asyncio.get_event_loop()
+    loop.call_soon_threadsafe(loop.stop)
+    return web.json_response("exiting")
+
+async def wait_for_user_input_and_exit():
+    loop = asyncio.get_event_loop()
+    await input("Press <Enter> to quit…")
+    loop.call_soon_threadsafe(loop.stop)
+
+async def start_browser(url):
+    subprocess.call(["xdg-open", url])
+
+async def run_webserver():
     app = web.Application()
     app.add_routes([
         # api routes
         web.get('/api/log', websocket_handler),
         web.get('/api/bundleList', handle_bundleList),
+        web.get('/api/exit', handle_exit),
 
         # angular router-links
         web.get('/', handle_router_link),
@@ -95,6 +104,17 @@ def run_webserver():
         # static content
         web.static('/', APP_DIST)
     ])
-    web.run_app(app)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, 'localhost', 8081)
+    url = f"http://localhost:8081/"
+    await site.start()
+    return (runner, url)
 
-run_webserver()
+
+loop = asyncio.get_event_loop()
+(runner, url) = loop.run_until_complete(run_webserver())
+loop.run_until_complete(start_browser(url))
+#loop.create_task(wait_for_user_input_and_exit())
+loop.run_forever()
+loop.run_until_complete(runner.cleanup())
