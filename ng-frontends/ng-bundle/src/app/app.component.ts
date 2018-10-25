@@ -8,6 +8,7 @@ import { ExitBackendService } from "./exit-backend.service";
 })
 export class AppComponent {
   title = "ng-bundle";
+  hlx = false;
 
   constructor(
     private exitBackendService: ExitBackendService,
