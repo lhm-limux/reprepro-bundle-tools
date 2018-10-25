@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 
 @Component({
@@ -14,6 +14,9 @@ export class BundleEditComponent implements OnInit {
   target: string;
   creator: string;
 
+  @ViewChild("targetSelect")
+  targetSelect;
+
   constructor(private route: ActivatedRoute) {
     route.params.subscribe(p => {
       this.id = p["id"];
@@ -22,4 +25,10 @@ export class BundleEditComponent implements OnInit {
   }
 
   ngOnInit() {}
+
+  selectTarget($event): void {
+    const sel = this.targetSelect.nativeElement;
+    this.target = sel.options[sel.selectedIndex].value;
+    //console.log("Target: " + this.target);
+  }
 }
