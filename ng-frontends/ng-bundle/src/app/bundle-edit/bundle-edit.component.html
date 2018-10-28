@@ -1,16 +1,16 @@
-<h2>Bundle {{ bundlename }}</h2>
+<h2><i [ngClass]="bundle.readonly ? 'fa fa-lock mx-3' : 'fa fa-unlock mx-3'" style="font-size: x-large" aria-hidden="true"></i>Bundle {{ bundlename }}</h2>
 <form>
   <div class="card">
     <h4 class="card-header">Metadaten</h4>
     <div class="form-group row" style="justify-content: space-between">
       <div class="col col-sm-2">Distribution: {{ bundle.distribution }}</div>
-      <div class="col col-sm-2">Abgeleitet von: {{ basedOn }}</div>
+      <div *ngIf="basedOn !== 'NEW'" class="col col-sm-3">Abgeleitet von: <a [routerLink]="['/bundle', bundle.distribution, basedOn.split('/')[1] ]">{{ basedOn }}</a></div>
       <div class="col"></div>
       <div class="col col-sm-2">Ersteller: {{ bundle.creator }}</div>
     </div>
     <div class="form-group row">
       <label for="target" class="col-sm-2 col-form-label">Zielrepository</label>
-      <select #targetSelect class="col-sm-2 form-control ml-3" ngModel="targetItem" (change)="selectTarget($event)">
+      <select #targetSelect class="col-sm-2 form-control ml-3" ngModel="targetItem" (change)="selectTarget($event)" [disabled]="bundle.readonly">
         <option value="plus">Standard (Plus)</option>
         <option value="unattended">Unattended Security</option>
       </select>
@@ -19,14 +19,14 @@
       <label for="subject" class="col-sm-2 col-form-label">Subject</label>
       <div class="col mr-3">
         <input #inpSub type="text" class="form-control form-control-lg" id="subject" placeholder="Subject" (keyup)="bundle.subject = inpSub.value"
-          [value]="bundle.subject">
+          [value]="bundle.subject" [readonly]="bundle.readonly">
       </div>
     </div>
     <div class="form-group row">
       <label for="releasenotes" class="col-sm-2 col-form-label">Releasenotes</label>
       <div class="col mr-3">
         <textarea #inpRel type="text" class="form-control" id="releasenotes" placeholder="Releasenotes" rows=15 (keyup)="releasenotes = inpRel.value"
-          [value]="releasenotes"></textarea>
+          [value]="releasenotes" [readonly]="bundle.readonly"></textarea>
       </div>
     </div>
   </div>
