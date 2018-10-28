@@ -2,13 +2,11 @@
 <form>
   <div class="card">
     <h4 class="card-header">Metadaten</h4>
-    <div class="form-group row">
-      <label for="distribution" class="col col-form-label">Distribution</label>
-      <div class="col-sm-3">{{ bundle.distribution }}</div>
-      <label for="basedOn" class="col col-form-label">Abgeleitet von</label>
-      <div class="col-sm-3">{{ basedOn }}</div>
-      <label for="creator" class="col col-form-label">Ersteller</label>
-      <div class="col-sm-3">{{ bundle.creator }}</div>
+    <div class="form-group row" style="justify-content: space-between">
+      <div class="col col-sm-2">Distribution: {{ bundle.distribution }}</div>
+      <div class="col col-sm-2">Abgeleitet von: {{ basedOn }}</div>
+      <div class="col"></div>
+      <div class="col col-sm-2">Ersteller: {{ bundle.creator }}</div>
     </div>
     <div class="form-group row">
       <label for="target" class="col-sm-2 col-form-label">Zielrepository</label>
