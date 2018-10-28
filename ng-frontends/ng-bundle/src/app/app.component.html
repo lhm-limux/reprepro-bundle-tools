@@ -1,6 +1,7 @@
 <div class="card bg-info">
-  <h1>Bundle-Tool<span title="Close Local Backend" (click)="closeBackend()" (mouseover)="hlX = true" (mouseleave)="hlX = false" [ngClass]="(hlX) ? 'float-right badge badge-danger' : 'float-right'"><i class="fa fa-times-circle"></i></span></h1>
+  <h1 class="card-header">Bundle-Tool<span title="Close Local Backend" (click)="closeBackend()" (mouseover)="hlX = true"
+      (mouseleave)="hlX = false" [ngClass]="(hlX) ? 'float-right badge badge-danger' : 'float-right'"><i class="fa fa-times-circle"></i></span></h1>
 </div>
-<div>
+<div class="m-3">
   <router-outlet></router-outlet>
 </div>
