@@ -518,8 +518,6 @@ def infofileToEditformat(infile, out_fh, cancel_remark=None):
                 print("\n= Releasenotes =".upper(), file=out_fh)
                 lines = Bundle.unescapeMultiline(section["Releasenotes"])
                 for line in lines.split("\n"):
-                    line = re.sub(r"^ ", "", line)
-                    line = re.sub(r"^\.$", "", line)
                     print(line, file=out_fh)
     out_fh.flush()
 

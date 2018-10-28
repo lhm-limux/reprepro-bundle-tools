@@ -7,7 +7,7 @@ import subprocess
 from aiohttp import web
 from aiohttp.web import run_app
 import asyncio
-from reprepro_bundle.BundleCLI import scanBundles
+from reprepro_bundle.BundleCLI import scanBundles, multilineToString
 
 APP_DIST = './ng-bundle/'
 
@@ -36,10 +36,11 @@ async def handle_get_metadata(request):
     res = list()
     for bundle in sorted(scanBundles()):
         if bundle.bundleName == request.rel_url.query['bundlename']:
+            rnParts = multilineToString(bundle.getInfoTag("Releasenotes", "")).split("\n", 2)
             meta = {
                 'bundle': bundleJson(bundle),
-                'basedOn': "xyz",
-                'releasenotes': "dies sind meine Releasenotes"
+                'basedOn': bundle.getInfoTag("BasedOn"),
+                'releasenotes': rnParts[2] if (len(rnParts) == 3) else "",
             }
             return web.json_response(meta)
     return web.Response("error")
@@ -47,9 +48,9 @@ async def handle_get_metadata(request):
 def bundleJson(bundle):
     return {
         'name': bundle.bundleName,
-        'distribution': bundle.bundleName.split("/")[0],
+        'distribution': bundle.bundleName.split("/", 1)[0],
         'target': bundle.getInfoTag("Target", "no-target"),
-        'subject': bundle.getInfoTag("Releasenotes", "--no-subject--").split("\n")[0],
+        'subject': bundle.getInfoTag("Releasenotes", "--no-subject--").split("\n", 1)[0],
         'readonly': not bundle.isEditable(),
         'creator': bundle.getInfoTag("Creator", "unknown")
     }
