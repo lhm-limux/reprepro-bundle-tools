@@ -8,12 +8,15 @@
 </div>
 <h2>Bundle-Liste</h2>
 <div class="card-columns">
-  <div *ngFor="let bundle of getBundles()" [ngClass]="(bundle === highlighted) ? 'card text-white bg-info' : 'card border-info'" (click)="navigateTo(bundle)" (mouseover)="highlighted = bundle" (mouseleave)="highlighted = null">
+  <div *ngFor="let bundle of getBundles()" [ngClass]="(bundle === highlighted) ? 'card text-white bg-info' : 'card border-info'"
+    (click)="navigateTo(bundle)" (mouseover)="highlighted = bundle" (mouseleave)="highlighted = null">
     <div class="card-header">
       <i [ngClass]="bundle.readonly ? 'fa fa-lock mr-2' : 'fa fa-unlock mr-2'" style="font-size: x-large" aria-hidden="true"></i>
       <b> {{ bundle.name }}</b> --> [{{ bundle.target }}]
     </div>
-    <div>Subject: {{ bundle.subject }}</div>
-    <div>Creator: {{ bundle.creator }}</div>
+    <div class="card-body">
+      <h5 class="card-title">{{ bundle.subject }}</h5>
+      <div>Creator: {{ bundle.creator }}</div>
+    </div>
   </div>
 </div>
