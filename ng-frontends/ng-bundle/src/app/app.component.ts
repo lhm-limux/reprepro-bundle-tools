@@ -1,5 +1,6 @@
 import { Component, Inject } from "@angular/core";
 import { ExitBackendService } from "./exit-backend.service";
+import { ConfigService } from "./shared/config.service";
 
 @Component({
   selector: "app-root",
@@ -12,6 +13,7 @@ export class AppComponent {
   hlB = false;
 
   constructor(
+    private config: ConfigService,
     private exitBackendService: ExitBackendService,
     @Inject("windowObject") public window: Window
   ) {}
