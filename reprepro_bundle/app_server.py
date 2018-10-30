@@ -52,7 +52,6 @@ def main():
     (backendStarted, runner, url) = loop.run_until_complete(run_webserver("0.0.0.0", 8081))
     loop.run_until_complete(start_browser(url))
     if backendStarted:
-        #loop.create_task(wait_for_user_input_and_exit())
         loop.run_forever()
         loop.run_until_complete(runner.cleanup())
 
@@ -164,13 +163,8 @@ async def handle_unregister(request):
         return web.json_response("error")
 
 
-async def wait_for_user_input_and_exit():
-    loop = asyncio.get_event_loop()
-    await input("Press <Enter> to quit…")
-    loop.call_soon_threadsafe(loop.stop)
-
-
 async def start_browser(url):
+    logger.info("trying to open browser with url '{}'".format(url))
     subprocess.call(["xdg-open", url])
 
 
@@ -201,8 +195,9 @@ async def run_webserver(hostname, port):
     try:
         await site.start()
         started = True
+        logger.info("starting backend at url '{}'".format(url))
     except OSError as e:
-        print(e)
+        logger.info("could not start backend: {}".format(e))
     return (started, runner, url)
 
 
