@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
 import { BackendRegisterService } from "./backend-register.service";
-import { ConfigService } from "shared/config.service";
 
 @Component({
   selector: "app-root",
@@ -9,11 +8,9 @@ import { ConfigService } from "shared/config.service";
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = "ng-bundle";
-  hlX = false;
   hlB = false;
 
   constructor(
-    private config: ConfigService,
     private backend: BackendRegisterService
   ) {}
 
