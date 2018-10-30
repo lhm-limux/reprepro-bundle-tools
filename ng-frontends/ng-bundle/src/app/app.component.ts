@@ -1,5 +1,5 @@
-import { Component, Inject } from "@angular/core";
-import { ExitBackendService } from "./exit-backend.service";
+import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
+import { BackendRegisterService } from "./backend-register.service";
 import { ConfigService } from "shared/config.service";
 
 @Component({
@@ -7,29 +7,26 @@ import { ConfigService } from "shared/config.service";
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.css"]
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
   title = "ng-bundle";
   hlX = false;
   hlB = false;
 
   constructor(
     private config: ConfigService,
-    private exitBackendService: ExitBackendService,
-    @Inject("windowObject") public window: Window
+    private backend: BackendRegisterService
   ) {}
 
-  closeBackend() {
-    this.exitBackendService.exitBackend().subscribe(res => {
-      if (res === "exiting") {
-        console.log("Backend is closing now!");
-        if (this.window) {
-          console.log("Closing Window now.");
-          console.log("Solution for Firefox if this doesn't work: do 'about:config' and set 'allow_scripts_to_close_windows' to true");
-          this.window.close();
-        } else {
-          console.log("Can't close window as no Window Object is available");
-        }
-      }
-    });
+  ngOnInit(): void {
+    this.backend.registerOnBackend();
+  }
+
+  ngOnDestroy(): void {
+    this.backend.unregisterFromBackend();
+  }
+
+  @HostListener("window:beforeunload", ["$event"])
+  private _storeSettings($event: any = null): void {
+    this.backend.unregisterFromBackend();
   }
 }
