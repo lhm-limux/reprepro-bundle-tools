@@ -103,7 +103,7 @@ async def wait_for_user_input_and_exit():
 async def start_browser(url):
     subprocess.call(["xdg-open", url])
 
-async def run_webserver():
+async def run_webserver(hostname, port):
     app = web.Application()
     app.add_routes([
         # api routes
@@ -123,15 +123,21 @@ async def run_webserver():
     ])
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, 'localhost', 8081)
-    url = f"http://localhost:8081/"
-    await site.start()
-    return (runner, url)
+    site = web.TCPSite(runner, hostname, port)
+    url = "http://{}:{}/".format(hostname, port)
+    started = False
+    try:
+        await site.start()
+        started = True
+    except OSError as e:
+        print(e)
+    return (started, runner, url)
 
 
 loop = asyncio.get_event_loop()
-(runner, url) = loop.run_until_complete(run_webserver())
+(backendStarted, runner, url) = loop.run_until_complete(run_webserver("0.0.0.0", 8081))
 loop.run_until_complete(start_browser(url))
-#loop.create_task(wait_for_user_input_and_exit())
-loop.run_forever()
-loop.run_until_complete(runner.cleanup())
+if backendStarted:
+    #loop.create_task(wait_for_user_input_and_exit())
+    loop.run_forever()
+    loop.run_until_complete(runner.cleanup())
