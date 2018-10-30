@@ -6,7 +6,7 @@ import {
   SystemJsNgModuleLoader,
   HostListener
 } from "@angular/core";
-import { Bundle } from "../shared/bundle";
+import { Bundle } from "shared/bundle";
 import { Router } from "@angular/router";
 
 @Component({

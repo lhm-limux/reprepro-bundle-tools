@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { Observer, Observable, BehaviorSubject } from "rxjs";
-import { Bundle } from "../shared/bundle";
+import { BehaviorSubject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
-import { ConfigService } from "../shared/config.service";
+import { Bundle } from "shared/bundle";
+import { ConfigService } from "shared/config.service";
 
 @Injectable({
   providedIn: "root"

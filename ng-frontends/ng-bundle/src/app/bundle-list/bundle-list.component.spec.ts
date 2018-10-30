@@ -2,7 +2,7 @@ import { SelectFilterComponent } from "./../select-filter/select-filter.componen
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
 import { BundleListComponent } from "./bundle-list.component";
-import { Bundle } from "../shared/bundle";
+import { Bundle } from "shared/bundle";
 import { BehaviorSubject } from "rxjs";
 import { BundleListService } from "./bundle-list.service";
 import { MockBundleListService } from "../test/mock-bundle-list-service.class";

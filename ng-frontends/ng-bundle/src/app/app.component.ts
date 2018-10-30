@@ -1,6 +1,6 @@
 import { Component, Inject } from "@angular/core";
 import { ExitBackendService } from "./exit-backend.service";
-import { ConfigService } from "./shared/config.service";
+import { ConfigService } from "shared/config.service";
 
 @Component({
   selector: "app-root",
