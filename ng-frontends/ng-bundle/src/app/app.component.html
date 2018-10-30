@@ -1,7 +1,7 @@
 <div class="card bg-info">
   <h1 class="card-header">
     <span title="Back" routerLink="../" (mouseover)="hlB = true" (mouseleave)="hlB = false"
-    [ngClass]="(hlB) ? 'badge badge-secondary' : ''" style="outline: none"><i class="fa fa-chevron-left"></i></span>
+    [ngClass]="(hlB) ? 'badge badge-secondary mr-3' : 'mr-3'" style="outline: none"><i class="fa fa-chevron-left"></i></span>
     Bundle-Tool<span *ngIf="!config.isElectronApp()" title="Close Local Backend" (click)="closeBackend()" (mouseover)="hlX = true" (mouseleave)="hlX = false"
       [ngClass]="(hlX) ? 'float-right badge badge-danger' : 'float-right'"><i class="fa fa-times-circle"></i></span></h1>
 </div>
