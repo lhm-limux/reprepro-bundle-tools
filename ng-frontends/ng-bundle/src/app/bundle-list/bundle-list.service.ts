@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Observer, Observable, BehaviorSubject } from "rxjs";
 import { Bundle } from "../shared/bundle";
 import { HttpClient } from "@angular/common/http";
+import { ConfigService } from "../shared/config.service";
 
 @Injectable({
   providedIn: "root"
@@ -10,10 +11,10 @@ export class BundleListService {
   private bundles = new BehaviorSubject<Bundle[]>([]);
   cast = this.bundles.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private config: ConfigService, private http: HttpClient) {}
 
   update(): void {
-    this.http.get<Bundle[]>("/api/bundleList").subscribe(
+    this.http.get<Bundle[]>(this.config.getApiUrl("bundleList")).subscribe(
       (bundles: Bundle[]) => {
         this.bundles.next(bundles);
       },
