@@ -22,6 +22,8 @@ progname = "bundle-app"
 logger = logging.getLogger(progname)
 
 APP_DIST = './ng-bundle/'
+DEFAULT_HOST = "0.0.0.0"
+DEFAULT_PORT = 4253
 
 events = set()
 registeredClients = set()
@@ -44,13 +46,22 @@ def setupLogging(loglevel):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, prog=progname)
     parser.add_argument("-d", "--debug", action="store_true", default=False, help="Show debug messages.")
+    parser.add_argument("--no-open-url", action="store_true", help="""
+            Don't try to open the backend url in a browser.""")
+    parser.add_argument("--no-static-files", action="store_true", help="""
+            Don't serve static files in the backend.""")
+    parser.add_argument("--host", default=DEFAULT_HOST, help="""
+            Hostname for the backend to listen on. Default is '{}'.""".format(DEFAULT_HOST))
+    parser.add_argument("--port", default=DEFAULT_PORT, help="""
+            Port for the backend to listen on. Default is '{}'.""".format(DEFAULT_PORT))
     args = parser.parse_args()
 
     setupLogging(logging.DEBUG if args.debug else logging.INFO)
 
     loop = asyncio.get_event_loop()
-    (backendStarted, runner, url) = loop.run_until_complete(run_webserver("0.0.0.0", 8081))
-    loop.run_until_complete(start_browser(url))
+    (backendStarted, runner, url) = loop.run_until_complete(run_webserver(args.host, args.port, args.no_static_files))
+    if not args.no_open_url:
+        loop.run_until_complete(start_browser(url))
     if backendStarted:
         loop.run_forever()
         loop.run_until_complete(runner.cleanup())
@@ -168,7 +179,7 @@ async def start_browser(url):
     subprocess.call(["xdg-open", url])
 
 
-async def run_webserver(hostname, port):
+async def run_webserver(hostname, port, no_static_files=False):
     app = web.Application()
     app.add_routes([
         # api routes
@@ -176,17 +187,19 @@ async def run_webserver(hostname, port):
         web.get('/api/bundleList', handle_get_bundleList),
         web.get('/api/bundleMetadata', handle_get_metadata),
         web.get('/api/unregister', handle_unregister),
-        web.get('/api/register', handle_register),
-
-        # angular router-links
-        web.get('/', handle_router_link),
-        web.get('/bundle-list', handle_router_link),
-        web.get('/bundle-list/{tail:.*}', handle_router_link),
-        web.get('/bundle/{tail:.*}', handle_router_link),
-
-        # static content
-        web.static('/', APP_DIST)
+        web.get('/api/register', handle_register)
     ])
+    if not no_static_files:
+        app.add_routes([
+            # angular router-links
+            web.get('/', handle_router_link),
+            web.get('/bundle-list', handle_router_link),
+            web.get('/bundle-list/{tail:.*}', handle_router_link),
+            web.get('/bundle/{tail:.*}', handle_router_link),
+
+            # static content
+            web.static('/', APP_DIST)
+        ])
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, hostname, port)
