@@ -49,15 +49,15 @@ class BundleStatus(Enum):
         it is ready for internal tests.
     '''}
 
-    TEST_INT = { 'ord': 3, 'tracStatus': 'Test', 'override':True, 'comment': '''
+    TEST_INT = { 'ord': 3, 'tracStatus': 'Test', 'stage': 'dev', 'override':True, 'comment': '''
         The bundle is currently in test by the internal test team.
     '''}
 
-    REVIEW_DEV = { 'ord': 4, 'tracStatus': 'Übernahmereview', 'override':True, 'comment': '''
+    REVIEW_DEV = { 'ord': 4, 'tracStatus': 'Übernahmereview', 'stage': 'dev', 'override':True, 'comment': '''
         A successfully tested bundle needs a final review by a developer before it could be seen by customers.
     '''}
 
-    TESTED_AND_RELEASED = { 'ord': 5, 'tracStatus': 'Übernahmefreigabe', 'comment': '''
+    TESTED_AND_RELEASED = { 'ord': 5, 'tracStatus': 'Übernahmefreigabe', 'stage': 'dev', 'comment': '''
         The bundle was successfully tested and is approved for being seen by customers. It is not yet visible for customers!
     '''}
 
@@ -131,7 +131,8 @@ class BundleStatus(Enum):
 
     @staticmethod
     def getByStage(stage):
-        for s in BundleStatus:
+        '''returns the first BundleStatus that is assigned to the stage `stage`.'''
+        for s in sorted(BundleStatus):
             if stage == s.getStage():
                 return s
         return BundleStatus.UNKNOWN
