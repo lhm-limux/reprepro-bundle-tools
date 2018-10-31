@@ -89,7 +89,6 @@ async def handle_get_bundleList(request):
 
 
 async def handle_get_metadata(request):
-    res = list()
     for bundle in sorted(scanBundles()):
         if bundle.bundleName == request.rel_url.query['bundlename']:
             rnParts = multilineToString(bundle.getInfoTag("Releasenotes", "")).split("\n", 2)
@@ -99,7 +98,7 @@ async def handle_get_metadata(request):
                 'releasenotes': rnParts[2] if (len(rnParts) == 3) else "",
             }
             return web.json_response(meta)
-    return web.Response("error")
+    return web.Response(text="error")
 
 
 def bundleJson(bundle):
