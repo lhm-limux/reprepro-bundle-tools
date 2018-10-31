@@ -1,4 +1,11 @@
 #!/usr/bin/python3
+'''
+   This is the common_app_server that contains shared code for concrete
+   app_servers like bundle_compose.app_server.
+
+   It uses xdg-open to start the web-frontend of the bundle-tool and
+   runs the corresponding backend service.
+'''
 
 import time
 import aiohttp
@@ -10,18 +17,10 @@ import subprocess
 from aiohttp import web
 from aiohttp.web import run_app
 import asyncio
-from reprepro_bundle.BundleCLI import scanBundles, multilineToString
-'''
-   This is the starter for the bundle-tool frontend.
 
-   It uses xdg-open to start the web-frontend of the bundle-tool and
-   runs the corresponding backend service.
-'''
-
-progname = "bundle-app"
+progname = "common_app_server"
 logger = logging.getLogger(progname)
 
-APP_DIST = './ng-bundle/'
 DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = 4253
 
@@ -43,8 +42,8 @@ def setupLogging(loglevel):
     logging.getLogger("aiohttp").setLevel(logging.ERROR if loglevel != logging.DEBUG else logging.INFO)
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__, prog=progname)
+def mainLoop(progname=progname, description=__doc__, registerRoutes=None, serveDistPath=None):
+    parser = argparse.ArgumentParser(description=description, prog=progname)
     parser.add_argument("-d", "--debug", action="store_true", default=False, help="Show debug messages.")
     parser.add_argument("--no-open-url", action="store_true", help="""
             Don't try to open the backend url in a browser.""")
@@ -59,7 +58,7 @@ def main():
     setupLogging(logging.DEBUG if args.debug else logging.INFO)
 
     loop = asyncio.get_event_loop()
-    (backendStarted, runner, url) = loop.run_until_complete(run_webserver(args.host, args.port, args.no_static_files))
+    (backendStarted, runner, url) = loop.run_until_complete(run_webserver(args, registerRoutes, serveDistPath))
     if not args.no_open_url:
         loop.run_until_complete(start_browser(url))
     if backendStarted:
@@ -79,45 +78,6 @@ async def handle_doit(request):
         await asyncio.sleep(1)
     logMessage("quit")
     return web.Response(text="ok")
-
-
-async def handle_get_bundleList(request):
-    res = list()
-    for bundle in sorted(scanBundles()):
-        res.append(bundleJson(bundle))
-    return web.json_response(res)
-
-
-async def handle_get_metadata(request):
-    for bundle in sorted(scanBundles()):
-        if bundle.bundleName == request.rel_url.query['bundlename']:
-            rnParts = multilineToString(bundle.getInfoTag("Releasenotes", "")).split("\n", 2)
-            meta = {
-                'bundle': bundleJson(bundle),
-                'basedOn': bundle.getInfoTag("BasedOn"),
-                'releasenotes': rnParts[2] if (len(rnParts) == 3) else "",
-            }
-            return web.json_response(meta)
-    return web.Response(text="error")
-
-
-def bundleJson(bundle):
-    return {
-        'name': bundle.bundleName,
-        'distribution': bundle.bundleName.split("/", 1)[0],
-        'target': bundle.getInfoTag("Target", "no-target"),
-        'subject': bundle.getInfoTag("Releasenotes", "--no-subject--").split("\n", 1)[0],
-        'readonly': not bundle.isEditable(),
-        'creator': bundle.getInfoTag("Creator", "unknown")
-    }
-
-
-async def handle_router_link(request):
-    '''
-        pass router-links to angular' main entry page so that
-        they are handled by angulars router module
-    '''
-    return web.FileResponse(os.path.join(APP_DIST, 'index.html'))
 
 
 async def websocket_handler(request):
@@ -178,31 +138,24 @@ async def start_browser(url):
     subprocess.call(["xdg-open", url])
 
 
-async def run_webserver(hostname, port, no_static_files=False):
+async def run_webserver(args, registerAdditionalRoutes=None, serveDistPath=None):
     app = web.Application()
+
     app.add_routes([
         # api routes
         web.get('/api/log', websocket_handler),
-        web.get('/api/bundleList', handle_get_bundleList),
-        web.get('/api/bundleMetadata', handle_get_metadata),
         web.get('/api/unregister', handle_unregister),
         web.get('/api/register', handle_register)
     ])
-    if not no_static_files:
-        app.add_routes([
-            # angular router-links
-            web.get('/', handle_router_link),
-            web.get('/bundle-list', handle_router_link),
-            web.get('/bundle-list/{tail:.*}', handle_router_link),
-            web.get('/bundle/{tail:.*}', handle_router_link),
+    if registerAdditionalRoutes:
+        registerAdditionalRoutes(args, app) 
+    if serveDistPath and not args.no_static_files:
+        app.add_routes([ web.static('/', serveDistPath) ])
 
-            # static content
-            web.static('/', APP_DIST)
-        ])
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, hostname, port)
-    url = "http://{}:{}/".format(hostname, port)
+    site = web.TCPSite(runner, args.host, args.port)
+    url = "http://{}:{}/".format(args.host, args.port)
     started = False
     try:
         await site.start()
@@ -211,7 +164,3 @@ async def run_webserver(hostname, port, no_static_files=False):
     except OSError as e:
         logger.info("could not start backend: {}".format(e))
     return (started, runner, url)
-
-
-if __name__ == "__main__":
-    main()
