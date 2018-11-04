@@ -1,7 +1,7 @@
 import { BundleMetadataService } from "./bundle-metadata.service";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { Bundle } from "shared/bundle";
+import { Bundle } from "shared/interfaces";
 
 @Component({
   selector: "app-bundle-edit",

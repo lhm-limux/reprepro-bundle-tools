@@ -6,3 +6,9 @@ export interface Bundle {
   readonly: boolean;
   creator: string;
 }
+
+export interface BundleMetadata {
+  bundle: Bundle;
+  releasenotes: string;
+  basedOn: string;
+}

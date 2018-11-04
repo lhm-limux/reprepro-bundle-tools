@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
-import { Bundle } from "shared/bundle";
+import { Bundle } from "shared/interfaces";
 import { ConfigService } from "shared/config.service";
 
 @Injectable({

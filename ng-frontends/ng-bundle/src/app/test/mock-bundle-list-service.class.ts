@@ -1,4 +1,4 @@
-import { Bundle } from "shared/bundle";
+import { Bundle } from "shared/interfaces";
 import { BehaviorSubject } from "rxjs";
 
 export class MockBundleListService {
