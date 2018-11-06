@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Socket } from "socket.io";
 import { Observer, Observable } from "rxjs";
-import { ConfigService } from "shared/config.service";
+import { ConfigService } from "shared";
 
 @Injectable({
   providedIn: "root"

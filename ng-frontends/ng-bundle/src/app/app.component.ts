@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
-import { BackendRegisterService } from "shared/backend-register.service";
+import { BackendRegisterService } from "shared";
 
 @Component({
   selector: "app-root",
