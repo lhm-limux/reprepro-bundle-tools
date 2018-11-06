@@ -18,7 +18,13 @@
       "dom"
     ],
     "paths": {
-      "shared/*": [ "src/app/shared/*" ]
+      "shared/*": [
+        "src/app/shared/*",
+        "dist/shared/*"
+      ],
+      "shared": [
+        "dist/shared"
+      ]
     }
   }
 }
