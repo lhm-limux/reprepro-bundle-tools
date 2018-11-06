@@ -126,7 +126,7 @@ async def handle_unregister(request):
         if len(registeredClients) == 0:
             logger.info("scheduled backend stop as no more clients are registered")
             loop = asyncio.get_event_loop()
-            loop.call_soon_threadsafe(loop.stop)
+            #loop.call_soon_threadsafe(loop.stop)
         return web.json_response("unregistered")
     else:
         logger.debug("ignoring unregister unknown frontend with uuid '{}'".format(uuid))
