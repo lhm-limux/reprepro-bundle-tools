@@ -11,6 +11,7 @@ import os
 from reprepro_bundle_appserver import common_app_server
 from aiohttp import web
 from reprepro_bundle.BundleCLI import scanBundles, multilineToString
+from reprepro_bundle_compose.bundle_status import BundleStatus
 
 progname = "bundle-compose-app"
 logger = logging.getLogger(progname)
@@ -38,6 +39,23 @@ async def handle_get_metadata(request):
     return web.Response(text="error")
 
 
+async def handle_get_workflow_metadata(request):
+    res = list()
+    for status in sorted(BundleStatus):
+        res.append({
+            'ord': status.value.get('ord'),
+            'name': status.name,
+            'comment': status.value.get('comment'),
+            'repoSuiteTag': status.value.get('repoSuiteTag'),
+            'tracStatus': status.value.get('tracStatus'),
+            'stage': status.value.get('stage'),
+            'override': status.value.get('override'),
+            'tracResolution': status.value.get('tracResolution'),
+            'candidates': status.value.get('candidates')
+        })
+    return web.json_response(res)
+
+
 def bundleJson(bundle):
     return {
         'name': bundle.bundleName,
@@ -60,16 +78,15 @@ async def handle_router_link(request):
 def registerRoutes(args, app):
     app.add_routes([
         # api routes
-        #web.get('/api/bundleList', handle_get_bundleList),
-        #web.get('/api/bundleMetadata', handle_get_metadata),
+        web.get('/api/workflowMetadata', handle_get_workflow_metadata),
     ])
     if not args.no_static_files:
         app.add_routes([
             # angular router-links
             web.get('/', handle_router_link),
-            web.get('/bundle-list', handle_router_link),
-            web.get('/bundle-list/{tail:.*}', handle_router_link),
-            web.get('/bundle/{tail:.*}', handle_router_link),
+            web.get('/workflow-status-editor', handle_router_link),
+            web.get('/workflow-status-editor/{tail:.*}', handle_router_link),
+            #web.get('/bundle/{tail:.*}', handle_router_link),
         ])
 
 
