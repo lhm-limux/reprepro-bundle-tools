@@ -1,3 +1,14 @@
-<p *ngFor="let status of workflowMetadata">
-  {{ status | json }}
-</p>
+<div class="card-columns">
+  <div *ngFor="let status of workflowMetadata" [ngClass]="(status === highlighted) ? 'card text-white bg-info' : 'card border-info'"
+    (mouseover)="highlighted = status" (mouseleave)="highlighted = null">
+    <div class="card-header">
+      <i [ngClass]="status.override ? 'fa fa-lock mr-2' : 'fa fa-unlock mr-2'" style="font-size: x-large" aria-hidden="true"></i>
+      <b> {{ status.name }} --> {{ status.stage }}</b>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">{{ status.comment }}</h5>
+      <div>Trac-Status: {{ status.tracStatus }}<span *ngIf="status.tracResolution"> as "{{status.tracResolution }}"</span></div>
+      <div>{{ status | json }}</div>
+    </div>
+  </div>
+</div>

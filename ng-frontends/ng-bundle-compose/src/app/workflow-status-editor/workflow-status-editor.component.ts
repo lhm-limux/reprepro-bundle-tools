@@ -10,6 +10,7 @@ import { Router } from "@angular/router";
 })
 export class WorkflowStatusEditorComponent implements OnInit {
   workflowMetadata: WorkflowMetadata[] = [];
+  highlighted: WorkflowMetadata;
 
   constructor(
     private workflowMetadataService: WorkflowMetadataService,
