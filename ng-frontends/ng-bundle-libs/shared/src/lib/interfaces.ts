@@ -12,3 +12,15 @@ export interface BundleMetadata {
   releasenotes: string;
   basedOn: string;
 }
+
+export interface WorkflowMetadata {
+  ord: number,
+  name: string,
+  comment: string,
+  repoSuiteTag: string,
+  tracStatus: string,
+  tracResolution: string,
+  stage: string,
+  override: boolean,
+  candidates: string
+}
