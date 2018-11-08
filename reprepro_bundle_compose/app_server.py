@@ -8,9 +8,10 @@
 
 import logging
 import os
+from reprepro_bundle_compose import trac_api, PROJECT_DIR
 from reprepro_bundle_appserver import common_app_server
 from aiohttp import web
-from reprepro_bundle.BundleCLI import scanBundles, multilineToString
+from reprepro_bundle_compose.BundleComposeCLI import getTargetRepoSuites
 from reprepro_bundle_compose.bundle_status import BundleStatus
 
 progname = "bundle-compose-app"
@@ -19,24 +20,13 @@ logger = logging.getLogger(progname)
 APP_DIST = './ng-bundle-compose/'
 
 
-async def handle_get_bundleList(request):
+async def handle_get_configured_stages(request):
     res = list()
-    for bundle in sorted(scanBundles()):
-        res.append(bundleJson(bundle))
+    for stage in sorted(BundleStatus.getAvailableStages()):
+        targets = getTargetRepoSuites(stage)
+        if len(targets) > 0:
+            res.append(stage)
     return web.json_response(res)
-
-
-async def handle_get_metadata(request):
-    for bundle in sorted(scanBundles()):
-        if bundle.bundleName == request.rel_url.query['bundlename']:
-            rnParts = multilineToString(bundle.getInfoTag("Releasenotes", "")).split("\n", 2)
-            meta = {
-                'bundle': bundleJson(bundle),
-                'basedOn': bundle.getInfoTag("BasedOn"),
-                'releasenotes': rnParts[2] if (len(rnParts) == 3) else "",
-            }
-            return web.json_response(meta)
-    return web.Response(text="error")
 
 
 async def handle_get_workflow_metadata(request):
@@ -56,17 +46,6 @@ async def handle_get_workflow_metadata(request):
     return web.json_response(res)
 
 
-def bundleJson(bundle):
-    return {
-        'name': bundle.bundleName,
-        'distribution': bundle.bundleName.split("/", 1)[0],
-        'target': bundle.getInfoTag("Target", "no-target"),
-        'subject': bundle.getInfoTag("Releasenotes", "--no-subject--").split("\n", 1)[0],
-        'readonly': not bundle.isEditable(),
-        'creator': bundle.getInfoTag("Creator", "unknown")
-    }
-
-
 async def handle_router_link(request):
     '''
         pass router-links to angular' main entry page so that
@@ -79,6 +58,7 @@ def registerRoutes(args, app):
     app.add_routes([
         # api routes
         web.get('/api/workflowMetadata', handle_get_workflow_metadata),
+        web.get('/api/configuredStages', handle_get_configured_stages),
     ])
     if not args.no_static_files:
         app.add_routes([

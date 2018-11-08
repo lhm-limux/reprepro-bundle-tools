@@ -17,6 +17,8 @@ import subprocess
 from aiohttp import web
 from aiohttp.web import run_app
 import asyncio
+import apt_repos
+from reprepro_bundle_compose import PROJECT_DIR
 
 progname = "common_app_server"
 logger = logging.getLogger(progname)
@@ -40,6 +42,7 @@ def setupLogging(loglevel):
     logging.basicConfig(**kwargs)
     logging.getLogger("urllib3").setLevel(logging.ERROR)
     logging.getLogger("aiohttp").setLevel(logging.ERROR if loglevel != logging.DEBUG else logging.INFO)
+    logging.getLogger("apt_repos").setLevel(logging.ERROR if loglevel != logging.DEBUG else logging.INFO)
 
 
 def mainLoop(progname=progname, description=__doc__, registerRoutes=None, serveDistPath=None):
@@ -56,6 +59,7 @@ def mainLoop(progname=progname, description=__doc__, registerRoutes=None, serveD
     args = parser.parse_args()
 
     setupLogging(logging.DEBUG if args.debug else logging.INFO)
+    apt_repos.setAptReposBaseDir(os.path.join(PROJECT_DIR, ".apt-repos"))
 
     loop = asyncio.get_event_loop()
     (backendStarted, runner, url) = loop.run_until_complete(run_webserver(args, registerRoutes, serveDistPath))
