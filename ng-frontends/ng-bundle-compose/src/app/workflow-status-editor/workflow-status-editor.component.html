@@ -1,10 +1,11 @@
-<div class="card-columns">
-  <div *ngFor="let status of workflowMetadata" [ngClass]="(status === highlighted) ? 'card text-white bg-info' : 'card border-info'"
-    (mouseover)="highlighted = status" (mouseleave)="highlighted = null">
+<div class="row">
+  <div *ngFor="let status of getWorkflow()" [ngClass]="'card my-2 ' + ((status === highlighted) ? 'text-white bg-info' : 'border-info')"
+    (mouseover)="highlighted = status" (mouseleave)="highlighted = null" style="width: 100%">
     <div class="card-header">
       <b>{{ status.ord }}) {{ status.name }}</b>
-      <div *ngIf="status.stage" class="badge-pill badge-success float-right"><b>Stage: {{ status.stage }}</b></div>
-      <div *ngIf="status.tracStatus" class="badge-pill badge-warning float-right mx-2">Trac: {{ status.tracStatus }}<span *ngIf="status.tracResolution"> as "{{status.tracResolution }}"</span><i [ngClass]="status.override ? 'fa fa-chevron-right ml-2' : 'fa fa-lock ml-2'" aria-hidden="true"></i></div>
+      <div *ngIf="status.stage" class="badge-pill badge-success float-right"><b>Stage: {{ status.stage | uppercase }}</b></div>
+      <div *ngIf="status.tracStatus" class="badge-pill badge-warning float-right mx-2">Trac: {{ status.tracStatus | uppercase }}<span *ngIf="status.tracResolution"> as "{{status.tracResolution }}"</span><i [ngClass]="status.override ? 'fa fa-chevron-right ml-2' : 'fa fa-lock ml-2'" aria-hidden="true"></i></div>
+      <div *ngIf="status.repoSuiteTag" class="badge-pill badge-primary float-right"><b>Bundle-Tag: {{ status.repoSuiteTag | uppercase }}</b></div>
     </div>
     <div class="card-body">
       <h5 class="card-title">{{ status.comment }}</h5>

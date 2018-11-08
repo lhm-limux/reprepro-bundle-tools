@@ -25,4 +25,8 @@ export class WorkflowStatusEditorComponent implements OnInit {
   update(workflowMetadata) {
     this.workflowMetadata = workflowMetadata;
   }
+
+  getWorkflow() {
+    return this.workflowMetadata.filter(st => st.name != "UNKNOWN");
+  }
 }
