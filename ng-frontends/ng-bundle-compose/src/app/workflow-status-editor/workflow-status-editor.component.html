@@ -1,4 +1,7 @@
 <div class="row">
+    <select-filter class="col" field="Workflow" [values]="availableWorkflow" [(selected)]="selectedWorkflow"></select-filter>
+</div>
+<div class="row">
   <div *ngFor="let status of getWorkflow()" [ngClass]="'card my-2 ' + ((status === highlighted) ? 'text-white bg-info' : 'border-info')"
     (mouseover)="highlighted = status" (mouseleave)="highlighted = null" style="width: 100%">
     <div class="card-header">
