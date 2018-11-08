@@ -10,6 +10,7 @@ import { Router } from "@angular/router";
 })
 export class WorkflowStatusEditorComponent implements OnInit {
   workflowMetadata: WorkflowMetadata[] = [];
+  configuredStages: string[] = [];
   highlighted: WorkflowMetadata;
 
   availableWorkflow = ['Show Stages and Candidates', 'Show Others', 'Hide Empty Steps'];
@@ -22,16 +23,21 @@ export class WorkflowStatusEditorComponent implements OnInit {
 
   ngOnInit() {
     this._restoreSettings()
-    this.workflowMetadataService.cast.subscribe(workflowMetadata => this.update(workflowMetadata));
+    this.workflowMetadataService.castWorkflowMetadata.subscribe(data => this.workflowMetadata = data);
+    this.workflowMetadataService.castConfiguredStages.subscribe(data => this.configuredStages = data);
     this.workflowMetadataService.update();
-  }
-
-  update(workflowMetadata) {
-    this.workflowMetadata = workflowMetadata;
   }
 
   getWorkflow() {
     return this.workflowMetadata.filter(st => st.name != "UNKNOWN");
+  }
+
+  isValidStage(status: WorkflowMetadata) {
+    return status.stage && this.configuredStages.indexOf(status.stage) >= 0;
+  }
+
+  candidateForStages(status: WorkflowMetadata) {
+    return this.workflowMetadata.filter(st => this.isValidStage(st) && st.candidates == status.name);
   }
 
   @HostListener("window:beforeunload", ["$event"])

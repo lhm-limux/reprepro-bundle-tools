@@ -7,8 +7,12 @@ import { HttpClient } from "@angular/common/http";
   providedIn: "root"
 })
 export class WorkflowMetadataService {
+
   private workflowMetadata = new BehaviorSubject<WorkflowMetadata[]>([]);
-  cast = this.workflowMetadata.asObservable();
+  castWorkflowMetadata = this.workflowMetadata.asObservable();
+
+  private configuredStages = new BehaviorSubject<string[]>([]);
+  castConfiguredStages = this.configuredStages.asObservable();
 
   constructor(private config: ConfigService, private http: HttpClient) {}
 
@@ -19,6 +23,14 @@ export class WorkflowMetadataService {
       },
       errResp => {
         console.error("Error loading workflow metadata", errResp);
+      }
+    );
+    this.http.get<string[]>(this.config.getApiUrl("configuredStages")).subscribe(
+      (configuredStages: string[]) => {
+        this.configuredStages.next(configuredStages);
+      },
+      errResp => {
+        console.error("Error loading configured stages", errResp);
       }
     );
   }

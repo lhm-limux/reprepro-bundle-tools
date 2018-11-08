@@ -6,7 +6,8 @@
     (mouseover)="highlighted = status" (mouseleave)="highlighted = null" style="width: 100%">
     <div class="card-header">
       <b>{{ status.ord }}) {{ status.name }}</b>
-      <div *ngIf="status.stage" class="badge-pill badge-success float-right"><b>Stage: {{ status.stage | uppercase }}</b></div>
+      <div *ngIf="isValidStage(status)" class="badge-pill badge-success float-right"><b>Stage: {{ status.stage | uppercase }}</b></div>
+      <div *ngIf="candidateForStages(status).length > 0" class="badge-pill badge-info float-right mx-2"><b>Candiates for <span *ngFor="let stage of candidateForStages(status)">{{ stage.stage | uppercase }}</span></b></div>
       <div *ngIf="status.tracStatus" class="badge-pill badge-warning float-right mx-2">Trac: {{ status.tracStatus | uppercase }}<span *ngIf="status.tracResolution"> as "{{status.tracResolution }}"</span><i [ngClass]="status.override ? 'fa fa-chevron-right ml-2' : 'fa fa-lock ml-2'" aria-hidden="true"></i></div>
       <div *ngIf="status.repoSuiteTag" class="badge-pill badge-primary float-right"><b>Bundle-Tag: {{ status.repoSuiteTag | uppercase }}</b></div>
     </div>
