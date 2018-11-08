@@ -1,7 +1,7 @@
 import { BundleListComponent } from "./bundle-list/bundle-list.component";
 import { TestBed, async } from "@angular/core/testing";
 import { AppComponent } from "./app.component";
-import { SelectFilterComponent } from "./select-filter/select-filter.component";
+import { SelectFilterComponent } from "shared";
 import { BundleListService } from "./bundle-list/bundle-list.service";
 import { MockBundleListService } from "./test/mock-bundle-list-service.class";
 

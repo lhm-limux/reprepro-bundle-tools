@@ -1,4 +1,4 @@
-import { SelectFilterComponent } from "./../select-filter/select-filter.component";
+import { SelectFilterComponent } from "shared";
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
 import { BundleListComponent } from "./bundle-list.component";
