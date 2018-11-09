@@ -11,13 +11,32 @@ import os
 from reprepro_bundle_compose import trac_api, PROJECT_DIR
 from reprepro_bundle_appserver import common_app_server, common_interfaces
 from aiohttp import web
-from reprepro_bundle_compose.BundleComposeCLI import getTargetRepoSuites
+from reprepro_bundle_compose.BundleComposeCLI import getTargetRepoSuites, getBundleRepoSuites, parseBundles, getTracConfig
 from reprepro_bundle_compose.bundle_status import BundleStatus
+
 
 progname = "bundle-compose-app"
 logger = logging.getLogger(progname)
 
 APP_DIST = './ng-bundle-compose/'
+
+
+async def handle_get_managed_bundles(request):
+    # faster (doesn't need to resolve info file)
+    res = list()
+    bundles = parseBundles(getBundleRepoSuites())
+    for (unused_id, bundle) in sorted(bundles.items()):
+        res.append(common_interfaces.ManagedBundle(bundle, **{'tracBaseUrl': getTracConfig().get('TracUrl')}))
+    return web.json_response(res)
+
+
+async def handle_get_managed_bundle_infos(request):
+    # slower (as it needs to resolve info files)
+    res = list()
+    bundles = parseBundles(getBundleRepoSuites())
+    for (unused_id, bundle) in sorted(bundles.items()):
+        res.append(common_interfaces.ManagedBundleInfo(bundle, **{'tracBaseUrl': getTracConfig().get('TracUrl')}))
+    return web.json_response(res)
 
 
 async def handle_get_configured_stages(request):
@@ -49,6 +68,8 @@ def registerRoutes(args, app):
         # api routes
         web.get('/api/workflowMetadata', handle_get_workflow_metadata),
         web.get('/api/configuredStages', handle_get_configured_stages),
+        web.get('/api/managedBundles', handle_get_managed_bundles),
+        web.get('/api/managedBundleInfos', handle_get_managed_bundle_infos),
     ])
     if not args.no_static_files:
         app.add_routes([

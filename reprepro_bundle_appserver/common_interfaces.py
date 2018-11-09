@@ -2,7 +2,8 @@
 '''
     This file contains interface implementations for common/shared interfaces
 '''
-import re
+from urllib.parse import urljoin
+
 
 def Bundle(bundle):
     info = bundle.getInfo()
@@ -22,6 +23,32 @@ def BundleMetadata(bundle):
         'bundle': Bundle(bundle),
         'basedOn': info.get("BasedOn"),
         'releasenotes': rnParts[2] if (len(rnParts) == 3) else "",
+    }
+
+def ManagedBundle(bundle, **kwargs):
+    tracBaseUrl = kwargs.get('tracBaseUrl')
+
+    ticketUrl = ""
+    if tracBaseUrl and bundle.getTrac():
+        #if not tracBaseUrl.endswith("/"):
+        #    tracBaseUrl += "/"
+        ticketUrl = urljoin(tracBaseUrl, "ticket/{}".format(bundle.getTrac()))
+
+    return {
+        'id': bundle.getID(),
+        'distribution': bundle.getAptSuite(),
+        'status': str(bundle.getStatus()),
+        'target': bundle.getTarget(),
+        'ticketUrl': ticketUrl
+    }
+
+def ManagedBundleInfo(bundle, **kwargs):
+    info = bundle.getInfo()
+    return {
+        'managedBundle': ManagedBundle(bundle, **kwargs),
+        'basedOn': info.get("BasedOn"),
+        'subject': info.get("Releasenotes", "--no-subject--").split("\n", 1)[0],
+        'creator': info.get("Creator", "unknown"),
     }
 
 def WorkflowMetadata(status):
