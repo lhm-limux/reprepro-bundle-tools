@@ -113,14 +113,11 @@ class Bundle():
         '''
         distributions = os.path.join(self.__confDir, "distributions")
         if os.path.isfile(distributions):
-            tagfile = apt_pkg.TagFile(distributions)
-            try:
+            with apt_pkg.TagFile(distributions) as tagfile:
                 for distri in tagfile:
                     ro = distri.get('ReadOnly', 'No')
                     if ro.upper() == "YES":
                         return False
-            finally:
-                '''tagfile.close() - not supported by old apt-pkg'''
         return True
 
 
