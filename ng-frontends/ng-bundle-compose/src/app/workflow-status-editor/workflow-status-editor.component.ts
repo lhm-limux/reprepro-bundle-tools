@@ -3,21 +3,22 @@ import { WorkflowMetadata, SelectFilterComponent } from "shared";
 import { WorkflowMetadataService } from "./workflow-metadata.service";
 import { Router } from "@angular/router";
 
+const STAGES_AND_CANDIDATES = 'Stages And Candidates';
+const OTHERS = 'Others';
+
 @Component({
   selector: "app-workflow-status-editor",
   templateUrl: "./workflow-status-editor.component.html",
   styleUrls: ["./workflow-status-editor.component.css"]
 })
 export class WorkflowStatusEditorComponent implements OnInit {
+
   workflowMetadata: WorkflowMetadata[] = [];
   configuredStages: string[] = [];
   highlighted: WorkflowMetadata;
 
-  availableWorkflow = ['Stages and Candidates', 'Others'];
+  availableWorkflow = [STAGES_AND_CANDIDATES, OTHERS];
   selectedWorkflow = new Set<string>();
-
-  availableOptions = ['Hide Empty Steps'];
-  selectedOptions = new Set<string>();
 
   constructor(
     private workflowMetadataService: WorkflowMetadataService,
@@ -32,7 +33,13 @@ export class WorkflowStatusEditorComponent implements OnInit {
   }
 
   getWorkflow() {
-    return this.workflowMetadata.filter(st => st.name != "UNKNOWN");
+    return this.workflowMetadata
+      .filter(st => st.name != "UNKNOWN")
+      .filter(st =>
+        (this.selectedWorkflow.has(STAGES_AND_CANDIDATES) &&
+          (this.isValidStage(st) || this.candidateForStages(st).length > 0)) ||
+        this.selectedWorkflow.has(OTHERS)
+      );
   }
 
   getCardFormat(status: WorkflowMetadata) {

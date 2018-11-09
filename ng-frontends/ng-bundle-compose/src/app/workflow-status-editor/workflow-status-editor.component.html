@@ -1,6 +1,5 @@
 <div class="row">
     <select-filter class="col col-sm-3" field="Show Workflow Steps" [values]="availableWorkflow" [(selected)]="selectedWorkflow"></select-filter>
-    <select-filter class="col col-sm-2" field="Options" [values]="availableOptions" [(selected)]="selectedOptions"></select-filter>
 </div>
 <div class="row m-1">
   <div *ngFor="let status of getWorkflow()" 
