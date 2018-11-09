@@ -13,8 +13,11 @@ export class WorkflowStatusEditorComponent implements OnInit {
   configuredStages: string[] = [];
   highlighted: WorkflowMetadata;
 
-  availableWorkflow = ['Show Stages and Candidates', 'Show Others', 'Hide Empty Steps'];
+  availableWorkflow = ['Stages and Candidates', 'Others'];
   selectedWorkflow = new Set<string>();
+
+  availableOptions = ['Hide Empty Steps'];
+  selectedOptions = new Set<string>();
 
   constructor(
     private workflowMetadataService: WorkflowMetadataService,
@@ -30,6 +33,29 @@ export class WorkflowStatusEditorComponent implements OnInit {
 
   getWorkflow() {
     return this.workflowMetadata.filter(st => st.name != "UNKNOWN");
+  }
+
+  getCardFormat(status: WorkflowMetadata) {
+    if (!this.isValidStage(status)) {
+      return 'border-info';
+    }
+    switch(status.stage) {
+      case 'dev': {
+         return 'text-white bg-secondary';
+      }
+      case 'test': {
+        return 'bg-warning';
+      }
+      case 'prod': {
+        return 'bg-success';
+      }
+      case 'drop': {
+        return 'text-white bg-danger';
+      }
+      default: {
+        return 'border-info';
+      }
+    }
   }
 
   isValidStage(status: WorkflowMetadata) {
