@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 '''
-   This is the starter for the bundle-tool frontend.
+   This is the starter for the bundle-compose-tool frontend.
 
-   It uses xdg-open to start the web-frontend of the bundle-tool and
+   It uses xdg-open to start the web-frontend of the bundle-compose-tool and
    runs the corresponding backend service.
 '''
 
