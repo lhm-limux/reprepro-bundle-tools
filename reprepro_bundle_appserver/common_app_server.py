@@ -25,6 +25,7 @@ logger = logging.getLogger(PROGNAME)
 
 DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = 4253
+RE_REGISTER_DELAY_SECONDS = 2
 
 events = set()
 registeredClients = set()
@@ -134,14 +135,23 @@ async def handle_unregister(request):
     if uuid in registeredClients:
         registeredClients.remove(uuid)
         logger.info("unregistered frontend with uuid '{}'".format(uuid))
-        if len(registeredClients) == 0:
-            logger.info("scheduled backend stop as no more clients are registered")
-            loop = asyncio.get_event_loop()
-            #loop.call_soon_threadsafe(loop.stop)
+        loop = asyncio.get_event_loop()
+        loop.call_later(RE_REGISTER_DELAY_SECONDS, stop_backend_if_unused)
         return web.json_response("unregistered")
     else:
         logger.debug("ignoring unregister unknown frontend with uuid '{}'".format(uuid))
         return web.json_response("error")
+
+
+def stop_backend_if_unused():
+    logger.debug("triggered: stop_backend_if_unused")
+    global registeredClients
+    if len(registeredClients) == 0:
+        logger.info("stopping backend as there are no more frontends registered")
+        loop = asyncio.get_event_loop()
+        loop.call_soon_threadsafe(loop.stop)
+    else:
+        logger.debug("keep running as there are still frontends registered")
 
 
 async def start_browser(url):
