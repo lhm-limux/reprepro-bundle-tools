@@ -9,7 +9,7 @@
 import logging
 import os
 from reprepro_bundle_compose import trac_api, PROJECT_DIR
-from reprepro_bundle_appserver import common_app_server
+from reprepro_bundle_appserver import common_app_server, common_interfaces
 from aiohttp import web
 from reprepro_bundle_compose.BundleComposeCLI import getTargetRepoSuites
 from reprepro_bundle_compose.bundle_status import BundleStatus
@@ -32,17 +32,7 @@ async def handle_get_configured_stages(request):
 async def handle_get_workflow_metadata(request):
     res = list()
     for status in sorted(BundleStatus):
-        res.append({
-            'ord': status.value.get('ord'),
-            'name': status.name,
-            'comment': status.value.get('comment'),
-            'repoSuiteTag': status.value.get('repoSuiteTag'),
-            'tracStatus': status.value.get('tracStatus'),
-            'stage': status.value.get('stage'),
-            'override': status.value.get('override'),
-            'tracResolution': status.value.get('tracResolution'),
-            'candidates': status.value.get('candidates')
-        })
+        res.append(common_interfaces.WorkflowMetadata(status))
     return web.json_response(res)
 
 

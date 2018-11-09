@@ -8,9 +8,9 @@
 
 import logging
 import os
-from reprepro_bundle_appserver import common_app_server
+from reprepro_bundle_appserver import common_app_server, common_interfaces
 from aiohttp import web
-from reprepro_bundle.BundleCLI import scanBundles, multilineToString
+from reprepro_bundle.BundleCLI import scanBundles
 
 progname = "bundle-app"
 logger = logging.getLogger(progname)
@@ -21,32 +21,15 @@ APP_DIST = './ng-bundle/'
 async def handle_get_bundleList(request):
     res = list()
     for bundle in sorted(scanBundles()):
-        res.append(bundleJson(bundle))
+        res.append(common_interfaces.Bundle(bundle))
     return web.json_response(res)
 
 
 async def handle_get_metadata(request):
     for bundle in sorted(scanBundles()):
         if bundle.bundleName == request.rel_url.query['bundlename']:
-            rnParts = multilineToString(bundle.getInfoTag("Releasenotes", "")).split("\n", 2)
-            meta = {
-                'bundle': bundleJson(bundle),
-                'basedOn': bundle.getInfoTag("BasedOn"),
-                'releasenotes': rnParts[2] if (len(rnParts) == 3) else "",
-            }
-            return web.json_response(meta)
+            return web.json_response(common_interfaces.BundleMetadata(bundle))
     return web.Response(text="error")
-
-
-def bundleJson(bundle):
-    return {
-        'name': bundle.bundleName,
-        'distribution': bundle.bundleName.split("/", 1)[0],
-        'target': bundle.getInfoTag("Target", "no-target"),
-        'subject': bundle.getInfoTag("Releasenotes", "--no-subject--").split("\n", 1)[0],
-        'readonly': not bundle.isEditable(),
-        'creator': bundle.getInfoTag("Creator", "unknown")
-    }
 
 
 async def handle_router_link(request):
