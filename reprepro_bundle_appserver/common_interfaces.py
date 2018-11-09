@@ -5,20 +5,22 @@
 import re
 
 def Bundle(bundle):
+    info = bundle.getInfo()
     return {
         'name': bundle.bundleName,
         'distribution': bundle.bundleName.split("/", 1)[0],
-        'target': bundle.getInfoTag("Target", "no-target"),
-        'subject': bundle.getInfoTag("Releasenotes", "--no-subject--").split("\n", 1)[0],
+        'target': info.get("Target", "no-target"),
+        'subject': info.get("Releasenotes", "--no-subject--").split("\n", 1)[0],
         'readonly': not bundle.isEditable(),
-        'creator': bundle.getInfoTag("Creator", "unknown")
+        'creator': info.get("Creator", "unknown")
     }
 
 def BundleMetadata(bundle):
-    rnParts = __multilineToString(bundle.getInfoTag("Releasenotes", "")).split("\n", 2)
+    info = bundle.getInfo()
+    rnParts = info.get("Releasenotes", "").split("\n", 2)
     return {
         'bundle': Bundle(bundle),
-        'basedOn': bundle.getInfoTag("BasedOn"),
+        'basedOn': info.get("BasedOn"),
         'releasenotes': rnParts[2] if (len(rnParts) == 3) else "",
     }
 
@@ -34,11 +36,3 @@ def WorkflowMetadata(status):
         'tracResolution': status.value.get('tracResolution'),
         'candidates': status.value.get('candidates')
     }
-
-def __multilineToString(multiline):
-    res = list()
-    for line in multiline.split("\n"):
-        line = re.sub(r"^ ", "", line)
-        line = re.sub(r"^\.$", "", line)
-        res.append(line)
-    return "\n".join(res)
