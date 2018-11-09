@@ -25,6 +25,12 @@ export class SelectFilterComponent implements OnInit {
     } else {
       this.selected.add(value);
     }
+    // cleanup no more available values
+    for (let v of this.selected) {
+      if (this.values.indexOf(v) < 0) {
+        this.selected.delete(v);
+      }
+    }
     this.selectedChange.next(this.selected);
   }
 }
