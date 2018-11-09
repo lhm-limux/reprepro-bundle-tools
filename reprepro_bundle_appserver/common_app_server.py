@@ -20,8 +20,8 @@ import asyncio
 import apt_repos
 from reprepro_bundle_compose import PROJECT_DIR
 
-progname = "common_app_server"
-logger = logging.getLogger(progname)
+PROGNAME = "common_app_server"
+logger = logging.getLogger(PROGNAME)
 
 DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = 4253
@@ -45,17 +45,24 @@ def setupLogging(loglevel):
     logging.getLogger("apt_repos").setLevel(logging.ERROR if loglevel != logging.DEBUG else logging.INFO)
 
 
-def mainLoop(progname=progname, description=__doc__, registerRoutes=None, serveDistPath=None):
+def mainLoop(**kwargs):
+    progname=kwargs.get('progname', PROGNAME)
+    description=kwargs.get('description', __doc__)
+    registerRoutes=kwargs.get('registerRoutes', None)
+    serveDistPath=kwargs.get('serveDistPath', None)
+    host=kwargs.get('host', DEFAULT_HOST)
+    port=kwargs.get('port', DEFAULT_PORT)
+
     parser = argparse.ArgumentParser(description=description, prog=progname)
     parser.add_argument("-d", "--debug", action="store_true", default=False, help="Show debug messages.")
     parser.add_argument("--no-open-url", action="store_true", help="""
             Don't try to open the backend url in a browser.""")
     parser.add_argument("--no-static-files", action="store_true", help="""
             Don't serve static files in the backend.""")
-    parser.add_argument("--host", default=DEFAULT_HOST, help="""
-            Hostname for the backend to listen on. Default is '{}'.""".format(DEFAULT_HOST))
-    parser.add_argument("--port", default=DEFAULT_PORT, help="""
-            Port for the backend to listen on. Default is '{}'.""".format(DEFAULT_PORT))
+    parser.add_argument("--host", default=host, help="""
+            Hostname for the backend to listen on. Default is '{}'.""".format(host))
+    parser.add_argument("--port", default=port, help="""
+            Port for the backend to listen on. Default is '{}'.""".format(port))
     args = parser.parse_args()
 
     setupLogging(logging.DEBUG if args.debug else logging.INFO)

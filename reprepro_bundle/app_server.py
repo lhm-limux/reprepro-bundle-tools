@@ -74,4 +74,10 @@ def registerRoutes(args, app):
 
 
 if __name__ == "__main__":
-    common_app_server.mainLoop(progname, __doc__, registerRoutes, APP_DIST)
+    common_app_server.mainLoop(**{
+        'progname': progname,
+        'description': __doc__,
+        'registerRoutes': registerRoutes,
+        'serveDistPath': APP_DIST,
+        'port': 4253
+    })
