@@ -124,21 +124,29 @@ class Bundle():
         return True
 
 
-    def getInfoTag(self, tagname, fallback=None):
+    def getInfo(self):
         '''
-            This method extracts the tag <tagname> from the bundle's info-file
-            and returns it's value or None, if the info-file or the tag doesn't exit.
+            This method extracts the key/value pairs from the bundle's info-file
+            and returns them in a dict (or as an empty dict if the info-file doesn't exit).
+            Multi-Line values contained in the tag-file are unescaped and returned
+            as a string value with '\n's.
         '''
+        res = dict()
         if os.path.isfile(self.getInfoFile()):
-            tagfile = apt_pkg.TagFile(self.getInfoFile())
-            try:
-                for distri in tagfile:
-                    value = distri.get(tagname, None)
-                    if value:
-                        return value
-            finally:
-                '''tagfile.close() - not supported by old apt-pkg'''
-        return fallback
+            with apt_pkg.TagFile(self.getInfoFile()) as tagfile:
+                tagfile.step()
+                for key in tagfile.section.keys():
+                    res[key] = Bundle.unescapeMultiline(tagfile.section[key])
+        return res
+
+    @staticmethod
+    def unescapeMultiline(value):
+        lines = list()
+        for line in value.split("\n"):
+            line = re.sub(r"^ ", "", line)
+            line = re.sub(r"^\.$", "", line)
+            lines.append(line)
+        return "\n".join(lines)
 
 
     def getTemplateDir(self):
