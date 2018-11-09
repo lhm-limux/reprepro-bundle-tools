@@ -1,7 +1,8 @@
 <div class="card bg-info">
   <h1 class="card-header">
     <span title="Back" routerLink="../" (mouseover)="hlB = true" (mouseleave)="hlB = false"
-    [ngClass]="(hlB) ? 'badge badge-secondary mr-3' : 'mr-3'" style="outline: none"><i class="fa fa-chevron-left"></i></span>
+    [ngClass]="'badge ' + ((hlB) ? 'badge-secondary' : 'badge-info')" style="outline: none">
+      <i class="fa fa-chevron-left"></i></span>
     Bundle-Tool</h1>
 </div>
 <div class="m-3">
