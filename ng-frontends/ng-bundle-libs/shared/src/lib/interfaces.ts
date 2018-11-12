@@ -13,6 +13,21 @@ export interface BundleMetadata {
   basedOn: string;
 }
 
+export interface ManagedBundle {
+  id: string,
+  distribution: string;
+  status: string;
+  target: string;
+  ticketUrl: string;
+}
+
+export interface ManagedBundleInfo {
+  managedBundle: ManagedBundle;
+  basedOn: string;
+  subject: string;
+  creator: string;
+}
+
 export interface WorkflowMetadata {
   ord: number,
   name: string,
