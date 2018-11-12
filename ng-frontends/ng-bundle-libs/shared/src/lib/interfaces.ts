@@ -16,8 +16,9 @@ export interface BundleMetadata {
 export interface ManagedBundle {
   id: string,
   distribution: string;
-  status: string;
+  status: WorkflowMetadata;
   target: string;
+  ticket: string;
   ticketUrl: string;
 }
 

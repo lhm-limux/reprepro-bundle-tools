@@ -1,7 +1,8 @@
 import { Component, OnInit, HostListener } from "@angular/core";
-import { WorkflowMetadata, SelectFilterComponent } from "shared";
+import { WorkflowMetadata, ManagedBundle, SelectFilterComponent } from "shared";
 import { WorkflowMetadataService } from "./workflow-metadata.service";
 import { Router } from "@angular/router";
+import { ManagedBundleService } from "./managed-bundle.service";
 
 const STAGES_AND_CANDIDATES = "Stages And Candidates";
 const OTHERS = "Others";
@@ -14,13 +15,14 @@ const OTHERS = "Others";
 export class WorkflowStatusEditorComponent implements OnInit {
   workflowMetadata: WorkflowMetadata[] = [];
   configuredStages: string[] = [];
-  highlighted: WorkflowMetadata;
+  highlighted: ManagedBundle;
 
   availableWorkflow = [STAGES_AND_CANDIDATES, OTHERS];
   selectedWorkflow = new Set<string>();
 
   constructor(
     private workflowMetadataService: WorkflowMetadataService,
+    public managedBundleService: ManagedBundleService,
     private router: Router
   ) {}
 
@@ -33,6 +35,7 @@ export class WorkflowStatusEditorComponent implements OnInit {
       data => (this.configuredStages = data)
     );
     this.workflowMetadataService.update();
+    this.managedBundleService.update();
   }
 
   getWorkflow() {
