@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 
 
 def Bundle(bundle):
-    info = bundle.getInfo()
+    info = bundle.getInfo() or dict()
     return {
         'name': bundle.bundleName,
         'distribution': bundle.bundleName.split("/", 1)[0],
@@ -17,7 +17,7 @@ def Bundle(bundle):
     }
 
 def BundleMetadata(bundle):
-    info = bundle.getInfo()
+    info = bundle.getInfo() or dict()
     rnParts = info.get("Releasenotes", "").split("\n", 2)
     return {
         'bundle': Bundle(bundle),
@@ -46,7 +46,7 @@ def ManagedBundle(bundle, **kwargs):
     }
 
 def ManagedBundleInfo(bundle, **kwargs):
-    info = bundle.getInfo()
+    info = bundle.getInfo() or dict()
     return {
         'managedBundle': ManagedBundle(bundle, **kwargs),
         'basedOn': info.get("BasedOn"),
