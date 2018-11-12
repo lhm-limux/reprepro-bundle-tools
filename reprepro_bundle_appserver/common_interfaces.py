@@ -28,17 +28,20 @@ def BundleMetadata(bundle):
 def ManagedBundle(bundle, **kwargs):
     tracBaseUrl = kwargs.get('tracBaseUrl')
 
+    ticket = ""
     ticketUrl = ""
     if tracBaseUrl and bundle.getTrac():
-        #if not tracBaseUrl.endswith("/"):
-        #    tracBaseUrl += "/"
-        ticketUrl = urljoin(tracBaseUrl, "ticket/{}".format(bundle.getTrac()))
+        if not tracBaseUrl.endswith("/"):
+            tracBaseUrl += "/"
+        ticket = bundle.getTrac()
+        ticketUrl = urljoin(tracBaseUrl, "ticket/{}".format(ticket))
 
     return {
         'id': bundle.getID(),
         'distribution': bundle.getAptSuite(),
-        'status': str(bundle.getStatus()),
+        'status': WorkflowMetadata(bundle.getStatus()),
         'target': bundle.getTarget(),
+        'ticket': ticket,
         'ticketUrl': ticketUrl
     }
 
