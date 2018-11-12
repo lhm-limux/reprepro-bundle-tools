@@ -3,8 +3,8 @@ import { WorkflowMetadata, SelectFilterComponent } from "shared";
 import { WorkflowMetadataService } from "./workflow-metadata.service";
 import { Router } from "@angular/router";
 
-const STAGES_AND_CANDIDATES = 'Stages And Candidates';
-const OTHERS = 'Others';
+const STAGES_AND_CANDIDATES = "Stages And Candidates";
+const OTHERS = "Others";
 
 @Component({
   selector: "app-workflow-status-editor",
@@ -12,7 +12,6 @@ const OTHERS = 'Others';
   styleUrls: ["./workflow-status-editor.component.css"]
 })
 export class WorkflowStatusEditorComponent implements OnInit {
-
   workflowMetadata: WorkflowMetadata[] = [];
   configuredStages: string[] = [];
   highlighted: WorkflowMetadata;
@@ -26,41 +25,47 @@ export class WorkflowStatusEditorComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this._restoreSettings()
-    this.workflowMetadataService.castWorkflowMetadata.subscribe(data => this.workflowMetadata = data);
-    this.workflowMetadataService.castConfiguredStages.subscribe(data => this.configuredStages = data);
+    this._restoreSettings();
+    this.workflowMetadataService.castWorkflowMetadata.subscribe(
+      data => (this.workflowMetadata = data)
+    );
+    this.workflowMetadataService.castConfiguredStages.subscribe(
+      data => (this.configuredStages = data)
+    );
     this.workflowMetadataService.update();
   }
 
   getWorkflow() {
     return this.workflowMetadata
-      .filter(st => st.name != "UNKNOWN")
-      .filter(st =>
-        (this.selectedWorkflow.has(STAGES_AND_CANDIDATES) &&
-          (this.isValidStage(st) || this.candidateForStages(st).length > 0)) ||
-        this.selectedWorkflow.has(OTHERS)
+      .filter(st => st.name !== "UNKNOWN")
+      .filter(
+        st =>
+          (this.selectedWorkflow.has(STAGES_AND_CANDIDATES) &&
+            (this.isValidStage(st) ||
+              this.candidateForStages(st).length > 0)) ||
+          this.selectedWorkflow.has(OTHERS)
       );
   }
 
   getCardFormat(status: WorkflowMetadata) {
     if (!this.isValidStage(status)) {
-      return 'border-info';
+      return "border-info";
     }
-    switch(status.stage) {
-      case 'dev': {
-         return 'text-white bg-secondary';
+    switch (status.stage) {
+      case "dev": {
+        return "text-white bg-secondary";
       }
-      case 'test': {
-        return 'bg-warning';
+      case "test": {
+        return "bg-warning";
       }
-      case 'prod': {
-        return 'bg-success';
+      case "prod": {
+        return "bg-success";
       }
-      case 'drop': {
-        return 'text-white bg-danger';
+      case "drop": {
+        return "text-white bg-danger";
       }
       default: {
-        return 'border-info';
+        return "border-info";
       }
     }
   }
@@ -70,7 +75,9 @@ export class WorkflowStatusEditorComponent implements OnInit {
   }
 
   candidateForStages(status: WorkflowMetadata) {
-    return this.workflowMetadata.filter(st => this.isValidStage(st) && st.candidates == status.name);
+    return this.workflowMetadata.filter(
+      st => this.isValidStage(st) && st.candidates === status.name
+    );
   }
 
   @HostListener("window:beforeunload", ["$event"])
@@ -84,7 +91,9 @@ export class WorkflowStatusEditorComponent implements OnInit {
   }
 
   private _restoreSettings(): void {
-    const stored = localStorage.getItem("stored-workflow-status-editor-settings");
+    const stored = localStorage.getItem(
+      "stored-workflow-status-editor-settings"
+    );
     if (stored == null) {
       return;
     }
