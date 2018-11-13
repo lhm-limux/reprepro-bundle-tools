@@ -1,12 +1,20 @@
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
-import { ManagedBundle, ManagedBundleInfo, ConfigService, WorkflowMetadata } from "shared";
+import {
+  ManagedBundle,
+  ManagedBundleInfo,
+  ConfigService,
+  WorkflowMetadata
+} from "shared";
 import { HttpClient } from "@angular/common/http";
 
 @Injectable({
   providedIn: "root"
 })
 export class ManagedBundleService {
+  private changed = new Subject();
+  cast = this.changed.asObservable();
+
   private managedBundles: ManagedBundle[] = [];
   private managedBundleInfos: ManagedBundleInfo[] = [];
 
@@ -18,6 +26,7 @@ export class ManagedBundleService {
       .subscribe(
         (data: ManagedBundle[]) => {
           this.managedBundles = data;
+          this.changed.next();
         },
         errResp => {
           console.error("Error loading managed bundles list", errResp);
@@ -29,6 +38,7 @@ export class ManagedBundleService {
         (data: ManagedBundleInfo[]) => {
           this.managedBundleInfos = data;
           this.managedBundles = data.map(mbi => mbi.managedBundle);
+          this.changed.next();
         },
         errResp => {
           console.error("Error loading managed bundle infos list", errResp);
@@ -36,7 +46,13 @@ export class ManagedBundleService {
       );
   }
 
-  getManagedBundleInfosForStatus(status: WorkflowMetadata): ManagedBundleInfo[] {
+  hasElements(): boolean {
+    return this.managedBundles.length > 0;
+  }
+
+  getManagedBundleInfosForStatus(
+    status: WorkflowMetadata
+  ): ManagedBundleInfo[] {
     let mbInfos: ManagedBundleInfo[] = [];
     if (this.managedBundleInfos.length > 0) {
       mbInfos = this.managedBundleInfos;
@@ -52,6 +68,14 @@ export class ManagedBundleService {
         }
       );
     }
-    return mbInfos.filter((mbi) => mbi.managedBundle.status.name === status.name);
+    return mbInfos.filter(mbi => mbi.managedBundle.status.name === status.name);
+  }
+
+  getAvailableDistributions(): string[] {
+    return Array.from(new Set(this.managedBundles.map(bundle => bundle.distribution)));
+  }
+
+  getAvailableTargets(): string[] {
+    return Array.from(new Set(this.managedBundles.map(bundle => bundle.target)));
   }
 }

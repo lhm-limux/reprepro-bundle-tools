@@ -1,5 +1,7 @@
 <div class="row">
-    <select-filter class="col col-sm-3" field="Show Workflow Steps" [values]="availableWorkflow" [(selected)]="selectedWorkflow"></select-filter>
+  <select-filter class="col col-sm-3" field="Show Workflow Steps" [values]="availableWorkflow" [(selected)]="selectedWorkflow"></select-filter>
+  <select-filter class="col col-sm-3" field="Distributions" [values]="managedBundleService.getAvailableDistributions()" [(selected)]="selectedDistributions"></select-filter>
+  <select-filter class="col col-sm-3" field="Targets" [values]="managedBundleService.getAvailableTargets()" [(selected)]="selectedTargets"></select-filter>
 </div>
 <div class="row m-1">
   <div *ngFor="let status of getWorkflow()"
@@ -17,7 +19,7 @@
         </h5>
 
         <div class="card-columns">
-          <div *ngFor="let bi of managedBundleService.getManagedBundleInfosForStatus(status)" [ngClass]="'card ' + ((bi.managedBundle === highlighted) ? 'text-white bg-secondary' : 'card border-info')"
+          <div *ngFor="let bi of getManagedBundleInfosForStatus(status)" [ngClass]="'card ' + ((bi.managedBundle === highlighted) ? 'text-white bg-secondary' : 'border-info')"
             (mouseover)="highlighted = bi.managedBundle" (mouseleave)="highlighted = null">
             <div class="card-header">
               <b> {{ bi.managedBundle.id }}</b> --> [{{ bi.managedBundle.target }}]

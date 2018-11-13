@@ -1,8 +1,9 @@
-import { Component, OnInit, HostListener } from "@angular/core";
+import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
 import { WorkflowMetadata, ManagedBundle, SelectFilterComponent } from "shared";
 import { WorkflowMetadataService } from "./workflow-metadata.service";
 import { Router } from "@angular/router";
 import { ManagedBundleService } from "./managed-bundle.service";
+import { Subscription } from "rxjs";
 
 const STAGES_AND_CANDIDATES = "Stages And Candidates";
 const OTHERS = "Others";
@@ -12,13 +13,19 @@ const OTHERS = "Others";
   templateUrl: "./workflow-status-editor.component.html",
   styleUrls: ["./workflow-status-editor.component.css"]
 })
-export class WorkflowStatusEditorComponent implements OnInit {
+export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription[] = [];
+  private needInit = true;
+
   workflowMetadata: WorkflowMetadata[] = [];
   configuredStages: string[] = [];
   highlighted: ManagedBundle;
 
   availableWorkflow = [STAGES_AND_CANDIDATES, OTHERS];
   selectedWorkflow = new Set<string>();
+
+  selectedDistributions = new Set<string>();
+  selectedTargets = new Set<string>();
 
   constructor(
     private workflowMetadataService: WorkflowMetadataService,
@@ -28,14 +35,34 @@ export class WorkflowStatusEditorComponent implements OnInit {
 
   ngOnInit() {
     this._restoreSettings();
-    this.workflowMetadataService.castWorkflowMetadata.subscribe(
-      data => (this.workflowMetadata = data)
+    this.subscriptions.push(
+      this.workflowMetadataService.castWorkflowMetadata.subscribe(
+        data => (this.workflowMetadata = data)
+      )
     );
-    this.workflowMetadataService.castConfiguredStages.subscribe(
-      data => (this.configuredStages = data)
+    this.subscriptions.push(
+      this.workflowMetadataService.castConfiguredStages.subscribe(
+        data => (this.configuredStages = data)
+      )
+    );
+    this.subscriptions.push(
+      this.managedBundleService.cast.subscribe(() => this.initSelections())
     );
     this.workflowMetadataService.update();
     this.managedBundleService.update();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe());
+  }
+
+  initSelections() {
+    if (this.needInit && this.managedBundleService.hasElements()) {
+      this.selectedDistributions = new Set(this.managedBundleService.getAvailableDistributions());
+      this.selectedTargets = new Set(this.managedBundleService.getAvailableTargets());
+      this.needInit = false;
+    }
+
   }
 
   getWorkflow() {
@@ -48,6 +75,12 @@ export class WorkflowStatusEditorComponent implements OnInit {
               this.candidateForStages(st).length > 0)) ||
           this.selectedWorkflow.has(OTHERS)
       );
+  }
+
+  getManagedBundleInfosForStatus(status: WorkflowMetadata) {
+    return this.managedBundleService.getManagedBundleInfosForStatus(status)
+      .filter(b => this.selectedDistributions.has(b.managedBundle.distribution))
+      .filter(b => this.selectedTargets.has(b.managedBundle.target));
   }
 
   getCardFormat(status: WorkflowMetadata) {
