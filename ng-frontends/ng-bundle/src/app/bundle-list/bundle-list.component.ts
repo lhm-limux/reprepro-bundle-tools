@@ -36,7 +36,7 @@ export class BundleListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._restoreSettings();
-    this.subscription = this.bls.cast.subscribe(() => this.update());
+    this.subscription = this.bls.cast.subscribe(() => this.initSelections());
     this.bls.update();
   }
 
@@ -44,7 +44,7 @@ export class BundleListComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  update() {
+  initSelections() {
     if (this.needInit && this.bls.bundles.length > 0) {
       this.selectedCreators = new Set(this.bls.getAvailableUserOrOthers(this.username));
       this.selectedDistributions = new Set(this.bls.getAvailableDistributions());
