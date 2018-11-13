@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
+import { Subject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { Bundle } from "shared";
 import { ConfigService } from "shared";
@@ -8,15 +8,19 @@ import { ConfigService } from "shared";
   providedIn: "root"
 })
 export class BundleListService {
-  private bundles = new BehaviorSubject<Bundle[]>([]);
-  cast = this.bundles.asObservable();
+
+  private changed = new Subject();
+  cast = this.changed.asObservable();
+
+  bundles: Bundle[] = [];
 
   constructor(private config: ConfigService, private http: HttpClient) {}
 
   update(): void {
     this.http.get<Bundle[]>(this.config.getApiUrl("bundleList")).subscribe(
-      (bundles: Bundle[]) => {
-        this.bundles.next(bundles);
+      (data: Bundle[]) => {
+        this.bundles = data;
+        this.changed.next();
       },
       errResp => {
         console.error("Error loading bundle list", errResp);
@@ -25,11 +29,11 @@ export class BundleListService {
   }
 
   getAvailableDistributions(): Set<string> {
-    return new Set(this.bundles.getValue().map(bundle => bundle.distribution));
+    return new Set(this.bundles.map(bundle => bundle.distribution));
   }
 
   getAvailableTargets(): Set<string> {
-    return new Set(this.bundles.getValue().map(bundle => bundle.target));
+    return new Set(this.bundles.map(bundle => bundle.target));
   }
 
   getUserOrOthers(user: string, bundle: Bundle): string {
@@ -38,11 +42,15 @@ export class BundleListService {
 
   getAvailableUserOrOthers(user: string): Set<string> {
     return new Set(
-      this.bundles.getValue().map(bundle => this.getUserOrOthers(user, bundle))
+      this.bundles.map(bundle => this.getUserOrOthers(user, bundle))
     );
   }
 
   getAvailableReadonly(): Set<boolean> {
-    return new Set(this.bundles.getValue().map(bundle => bundle.readonly));
+    return new Set(this.bundles.map(bundle => bundle.readonly));
+  }
+
+  getAvailableStates(): Set<"Readonly" | "Editable"> {
+    return new Set(this.bundles.map(bundle => bundle.readonly ? "Readonly" : "Editable"));
   }
 }

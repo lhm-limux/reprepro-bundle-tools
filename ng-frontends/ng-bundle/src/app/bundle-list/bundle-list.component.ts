@@ -1,72 +1,61 @@
+import { Subscription } from "rxjs";
 import { BundleListService } from "./bundle-list.service";
 import { ServerLogComponent } from "./../server-log/server-log.component";
 import {
   Component,
-  OnInit,
+  OnInit, OnDestroy,
   SystemJsNgModuleLoader,
   HostListener
 } from "@angular/core";
 import { Bundle } from "shared";
 import { Router } from "@angular/router";
 
+
 @Component({
   selector: "bundle-list",
   templateUrl: "./bundle-list.component.html",
   styleUrls: ["./bundle-list.component.css"]
 })
-export class BundleListComponent implements OnInit {
+export class BundleListComponent implements OnInit, OnDestroy {
   private needInit = true;
+  private subscription: Subscription;
 
-  availableDistributions = new Set<string>();
   selectedDistributions = new Set<string>();
-
-  availableStates = new Set<string>();
   selectedStates = new Set<string>();
-
-  availableTargets = new Set<string>();
   selectedTargets = new Set<string>();
-
-  availableCreators = new Set<string>();
   selectedCreators = new Set<string>();
 
-  bundles: Bundle[] = [];
   highlighted: Bundle;
 
   username = "chlu";
 
   constructor(
-    private bundleListService: BundleListService,
+    private bls: BundleListService,
     private router: Router
   ) {}
 
   ngOnInit() {
     this._restoreSettings();
-    this.bundleListService.cast.subscribe(bundles => this.update(bundles));
-    this.bundleListService.update();
+    this.subscription = this.bls.cast.subscribe(() => this.update());
+    this.bls.update();
   }
 
-  update(bundles) {
-    this.bundles = bundles;
-    this.availableCreators = this.bundleListService.getAvailableUserOrOthers(
-      this.username
-    );
-    this.availableDistributions = this.bundleListService.getAvailableDistributions();
-    this.availableTargets = this.bundleListService.getAvailableTargets();
-    this.availableStates = new Set<string>();
-    this.bundleListService
-      .getAvailableReadonly()
-      .forEach(ro => this.availableStates.add(ro ? "Readonly" : "Editable"));
-    if (this.needInit && bundles.length > 0) {
-      this.selectedCreators = new Set(this.availableCreators);
-      this.selectedDistributions = new Set(this.availableDistributions);
-      this.selectedStates = new Set(this.availableStates);
-      this.selectedTargets = new Set(this.availableTargets);
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+
+  update() {
+    if (this.needInit && this.bls.bundles.length > 0) {
+      this.selectedCreators = new Set(this.bls.getAvailableUserOrOthers(this.username));
+      this.selectedDistributions = new Set(this.bls.getAvailableDistributions());
+      this.selectedStates = new Set(this.bls.getAvailableStates());
+      this.selectedTargets = new Set(this.bls.getAvailableTargets());
       this.needInit = false;
     }
   }
 
   getBundles(): Bundle[] {
-    return this.bundles
+    return this.bls.bundles
       .filter(b => this.selectedDistributions.has(b.distribution))
       .filter(b => this.selectedTargets.has(b.target))
       .filter(b =>
@@ -74,7 +63,7 @@ export class BundleListComponent implements OnInit {
       )
       .filter(b =>
         this.selectedCreators.has(
-          this.bundleListService.getUserOrOthers(this.username, b)
+          this.bls.getUserOrOthers(this.username, b)
         )
       );
   }
