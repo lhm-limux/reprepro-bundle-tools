@@ -38,7 +38,7 @@ def ManagedBundle(bundle, **kwargs):
 
     return {
         'id': bundle.getID(),
-        'distribution': bundle.getAptSuite(),
+        'distribution': bundle.getAptSuite() or "unknown",
         'status': WorkflowMetadata(bundle.getStatus()),
         'target': bundle.getTarget(),
         'ticket': ticket,
