@@ -120,6 +120,8 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   private _storeSettings($event: any = null): void {
     const settings: { [key: string]: string[] } = {};
     settings.selectedWorkflow = Array.from(this.selectedWorkflow.values());
+    settings.selectedDistributions = Array.from(this.selectedDistributions.values());
+    settings.selectedTargets = Array.from(this.selectedTargets.values());
     localStorage.setItem(
       "stored-workflow-status-editor-settings",
       JSON.stringify(settings)
@@ -136,6 +138,9 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     try {
       const settings: { [key: string]: string[] } = JSON.parse(stored);
       this.selectedWorkflow = new Set<string>(settings.selectedWorkflow);
+      this.selectedDistributions = new Set<string>(settings.selectedDistributions);
+      this.selectedTargets = new Set<string>(settings.selectedTargets);
+      this.needInit = false;
     } catch (e) {
       console.error(e);
     }
