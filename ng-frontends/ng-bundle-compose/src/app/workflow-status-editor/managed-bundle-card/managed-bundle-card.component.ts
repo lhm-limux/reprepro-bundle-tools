@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { ManagedBundleInfo, ManagedBundle, WorkflowMetadata } from "shared";
 
 @Component({
@@ -7,6 +7,8 @@ import { ManagedBundleInfo, ManagedBundle, WorkflowMetadata } from "shared";
   styleUrls: ["./managed-bundle-card.component.css"]
 })
 export class ManagedBundleCardComponent implements OnInit {
+  active: false;
+
   @Input()
   info: ManagedBundleInfo;
 
@@ -16,12 +18,19 @@ export class ManagedBundleCardComponent implements OnInit {
   @Input()
   dropStatus: WorkflowMetadata;
 
-  active: false;
+  @Output()
+  markedForStage = new EventEmitter<{
+    stage: WorkflowMetadata;
+    bundles: ManagedBundle[];
+  }>();
 
   constructor() {}
   ngOnInit() {}
 
   markForStage(status) {
-
+    this.markedForStage.next({
+      stage: status,
+      bundles: [ this.info.managedBundle ]
+    });
   }
 }

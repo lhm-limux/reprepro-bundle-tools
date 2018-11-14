@@ -1,5 +1,5 @@
-import { WorkflowMetadata, ManagedBundleInfo } from "shared";
-import { Component, OnInit, Input } from "@angular/core";
+import { WorkflowMetadata, ManagedBundleInfo, ManagedBundle } from "shared";
+import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 
 @Component({
   selector: "app-workflow-status-card",
@@ -25,13 +25,26 @@ export class WorkflowStatusCardComponent implements OnInit {
   @Input()
   dropStatus: WorkflowMetadata;
 
+  @Output()
+  markedForStage = new EventEmitter<{
+    stage: WorkflowMetadata;
+    bundles: ManagedBundle[];
+  }>();
+
   active = false;
 
   constructor() {}
 
   ngOnInit() {}
 
-  markForStage(status) {
+  doMarkedForStage(event) {
+    this.markedForStage.next(event);
+  }
 
+  markForStage(newStatus) {
+    this.markedForStage.next({
+      stage: newStatus,
+      bundles: this.managedBundleInfos.map(i => i.managedBundle)
+    });
   }
 }

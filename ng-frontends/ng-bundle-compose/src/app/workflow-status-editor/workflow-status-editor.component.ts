@@ -130,6 +130,10 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     return null;
   }
 
+  doMarkedForStage(event) {
+    console.log(JSON.stringify(event));
+  }
+
   @HostListener("window:beforeunload", ["$event"])
   private _storeSettings($event: any = null): void {
     const settings: { [key: string]: string[] } = {};

@@ -27,4 +27,5 @@
   [managedBundleInfos]="getManagedBundleInfosForStatus(status)"
   [candidateForStages]="getCandidateForStages(status)"
   [dropStatus]="getDropStatus(status)"
+  (markedForStage)="doMarkedForStage($event)"
 ></app-workflow-status-card>

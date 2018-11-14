@@ -44,14 +44,15 @@
             [info]="bi"
             [candidateForStages]="candidateForStages"
             [dropStatus]="dropStatus"
+            (markedForStage)="doMarkedForStage($event)"
           ></app-managed-bundle-card>
         </div>
 
         <div *ngIf="candidateForStages.length > 0">
-          <div *ngFor="let status of candidateForStages">
-            <button class="btn btn-secondary" (click)="markForStage(status)">
+          <div *ngFor="let newStatus of candidateForStages">
+            <button class="btn btn-secondary" (click)="markForStage(newStatus)">
               <b
-                >Mark All These Candidates for Stage {{ status.stage | uppercase }}</b
+                >Mark All These Candidates for Stage {{ newStatus.stage | uppercase }}</b
               >
             </button>
           </div>
