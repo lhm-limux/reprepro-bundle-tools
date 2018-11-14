@@ -1,0 +1,55 @@
+<div [ngClass]="'card my-2 ' + cardFormat" style="width: 100%">
+  <div class="card-header">
+    <b>{{ status.ord }}) {{ status.name }}</b>
+    <div
+      *ngIf="status.tracStatus"
+      [ngClass]="
+        'badge-pill float-right mx-2 ' +
+        (validStage ? 'badge-light' : 'badge-info')
+      "
+    >
+      <b
+        >Trac: {{ status.tracStatus | uppercase
+        }}<span *ngIf="status.tracResolution">
+          as "{{ status.tracResolution }}"</span
+        ></b
+      ><i
+        [ngClass]="
+          status.override ? 'fa fa-chevron-right ml-2' : 'fa fa-lock ml-2'
+        "
+        aria-hidden="true"
+      ></i>
+    </div>
+    <div
+      *ngIf="status.repoSuiteTag"
+      class="badge-pill badge-success float-right mx-2"
+    >
+      <b>Bundle-Tag: {{ status.repoSuiteTag | uppercase }}</b>
+    </div>
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">
+      {{ status.comment }}
+      <div *ngIf="validStage" class="float-right my-2" style="font-size:larger">
+        <b>Stage: {{ status.stage | uppercase }}</b>
+      </div>
+    </h5>
+
+    <div class="card-columns">
+      <app-managed-bundle-card
+        *ngFor="let bi of managedBundleInfos"
+        [info]="bi"
+        [candidateForStages]="candidateForStages"
+      ></app-managed-bundle-card>
+    </div>
+
+    <div *ngIf="candidateForStages.length > 0" class="float-right">
+      <b
+        >Candiates For Stage:
+        <span *ngFor="let stage of candidateForStages">{{
+          stage.stage | uppercase
+        }}</span></b
+      >
+    </div>
+  </div>
+</div>
