@@ -31,10 +31,18 @@
           Ticket: <b>#{{ info.managedBundle.ticket }}</b>
         </div>
       </div>
-      <div class="col" *ngIf="active">
-        <div *ngFor="let status of candidateForStages" class="float-right">
+      <div class="col" *ngIf="active && (dropStatus || candidateForStages.length > 0)">
+        <button
+          *ngIf="dropStatus"
+          class="btn btn-block btn-danger float-right mb-2"
+          (click)="markForStage(dropStatus)"
+        >
+          <b>Drop</b>
+        </button>
+
+        <div *ngFor="let status of candidateForStages">
           <button
-            class="btn btn-block btn-light"
+            class="btn btn-block btn-light mt-2"
             (click)="markForStage(status)"
           >
             <b>Mark for Stage {{ status.stage | uppercase }}</b>

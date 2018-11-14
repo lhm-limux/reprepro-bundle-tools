@@ -22,6 +22,9 @@ export class WorkflowStatusCardComponent implements OnInit {
   @Input()
   candidateForStages: WorkflowMetadata[];
 
+  @Input()
+  dropStatus: WorkflowMetadata;
+
   active = false;
 
   constructor() {}

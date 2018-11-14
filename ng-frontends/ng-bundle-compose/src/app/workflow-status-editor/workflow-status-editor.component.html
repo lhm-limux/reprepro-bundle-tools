@@ -25,5 +25,6 @@
   [cardFormat]="getCardFormat(status)"
   [validStage]="isValidStage(status)"
   [managedBundleInfos]="getManagedBundleInfosForStatus(status)"
-  [candidateForStages]="candidateForStages(status)"
+  [candidateForStages]="getCandidateForStages(status)"
+  [dropStatus]="getDropStatus(status)"
 ></app-workflow-status-card>

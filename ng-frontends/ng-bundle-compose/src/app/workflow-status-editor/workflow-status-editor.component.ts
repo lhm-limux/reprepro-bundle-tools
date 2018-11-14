@@ -74,7 +74,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
         st =>
           (this.selectedWorkflow.has(STAGES_AND_CANDIDATES) &&
             (this.isValidStage(st) ||
-              this.candidateForStages(st).length > 0)) ||
+              this.getCandidateForStages(st).length > 0)) ||
           this.selectedWorkflow.has(OTHERS)
       );
   }
@@ -113,10 +113,21 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     return status.stage && this.configuredStages.indexOf(status.stage) >= 0;
   }
 
-  candidateForStages(status: WorkflowMetadata) {
+  getCandidateForStages(status: WorkflowMetadata) {
     return this.workflowMetadata.filter(
       st => this.isValidStage(st) && st.candidates === status.name
     );
+  }
+
+  getDropStatus(status: WorkflowMetadata) {
+    if (status.stage === "drop" || status.stage === "prod") {
+      return null;
+    }
+    const res = this.workflowMetadata.filter(st => st.stage === "drop");
+    if (res.length > 0) {
+      return res[0];
+    }
+    return null;
   }
 
   @HostListener("window:beforeunload", ["$event"])

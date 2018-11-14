@@ -13,6 +13,9 @@ export class ManagedBundleCardComponent implements OnInit {
   @Input()
   candidateForStages: WorkflowMetadata[];
 
+  @Input()
+  dropStatus: WorkflowMetadata;
+
   active: false;
 
   constructor() {}
