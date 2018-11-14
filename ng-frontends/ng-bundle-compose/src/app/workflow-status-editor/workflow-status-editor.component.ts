@@ -57,11 +57,14 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
 
   initSelections() {
     if (this.needInit && this.managedBundleService.hasElements()) {
-      this.selectedDistributions = new Set(this.managedBundleService.getAvailableDistributions());
-      this.selectedTargets = new Set(this.managedBundleService.getAvailableTargets());
+      this.selectedDistributions = new Set(
+        this.managedBundleService.getAvailableDistributions()
+      );
+      this.selectedTargets = new Set(
+        this.managedBundleService.getAvailableTargets()
+      );
       this.needInit = false;
     }
-
   }
 
   getWorkflow() {
@@ -77,7 +80,8 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   }
 
   getManagedBundleInfosForStatus(status: WorkflowMetadata) {
-    return this.managedBundleService.getManagedBundleInfosForStatus(status)
+    return this.managedBundleService
+      .getManagedBundleInfosForStatus(status)
       .filter(b => this.selectedDistributions.has(b.managedBundle.distribution))
       .filter(b => this.selectedTargets.has(b.managedBundle.target));
   }
@@ -119,7 +123,9 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   private _storeSettings($event: any = null): void {
     const settings: { [key: string]: string[] } = {};
     settings.selectedWorkflow = Array.from(this.selectedWorkflow.values());
-    settings.selectedDistributions = Array.from(this.selectedDistributions.values());
+    settings.selectedDistributions = Array.from(
+      this.selectedDistributions.values()
+    );
     settings.selectedTargets = Array.from(this.selectedTargets.values());
     localStorage.setItem(
       "stored-workflow-status-editor-settings",
@@ -137,7 +143,9 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     try {
       const settings: { [key: string]: string[] } = JSON.parse(stored);
       this.selectedWorkflow = new Set<string>(settings.selectedWorkflow);
-      this.selectedDistributions = new Set<string>(settings.selectedDistributions);
+      this.selectedDistributions = new Set<string>(
+        settings.selectedDistributions
+      );
       this.selectedTargets = new Set<string>(settings.selectedTargets);
       this.needInit = false;
     } catch (e) {
