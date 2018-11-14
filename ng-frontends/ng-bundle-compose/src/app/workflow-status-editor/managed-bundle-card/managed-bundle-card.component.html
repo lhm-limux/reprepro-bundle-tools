@@ -1,0 +1,46 @@
+<div
+  [ngClass]="'card ' + (active ? 'text-white bg-secondary' : 'border-info')"
+  (mouseover)="active = true"
+  (mouseleave)="active = false"
+>
+  <div class="card-header">
+    <b>{{ info.managedBundle.id }}</b>
+    <div
+      [ngClass]="
+        'badge-pill float-right mx-2 ' + (active ? 'badge-light' : 'badge-dark')
+      "
+    >
+      <b>Target: {{ info.managedBundle.target | uppercase }}</b>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <h5 class="card-title">{{ info.subject }}</h5>
+        <div>Creator: {{ info.creator }}</div>
+        <div *ngIf="info.managedBundle.ticketUrl">
+          Ticket:
+          <a
+            href="{{ info.managedBundle.ticketUrl }}"
+            target="_blank"
+            style="color: inherit; outline: 0;"
+            ><b>#{{ info.managedBundle.ticket }}</b></a
+          >
+        </div>
+        <div *ngIf="!info.managedBundle.ticketUrl">
+          Ticket: <b>#{{ info.managedBundle.ticket }}</b>
+        </div>
+      </div>
+      <div class="col" *ngIf="active">
+        <div *ngFor="let status of candidateForStages" class="float-right">
+          <button
+            class="btn btn-block btn-light"
+            (click)="markForStage(status)"
+          >
+            <b>Mark for Stage {{ status.stage | uppercase }}</b>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

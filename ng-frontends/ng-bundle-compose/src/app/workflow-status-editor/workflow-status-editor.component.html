@@ -19,19 +19,8 @@
         </h5>
 
         <div class="card-columns">
-          <div *ngFor="let bi of getManagedBundleInfosForStatus(status)" [ngClass]="'card ' + ((bi.managedBundle === highlighted) ? 'text-white bg-secondary' : 'border-info')"
-            (mouseover)="highlighted = bi.managedBundle" (mouseleave)="highlighted = null">
-            <div class="card-header">
-              <b> {{ bi.managedBundle.id }}</b> --> [{{ bi.managedBundle.target }}]
-            </div>
-            <div class="card-body">
-              <h5 class="card-title">{{ bi.subject }}</h5>
-              <div>Creator: {{ bi.creator }}</div>
-              <div *ngIf="bi.managedBundle.ticketUrl">Ticket: <a href="{{ bi.managedBundle.ticketUrl }}" target="_blank" style="color: inherit; outline: 0;"><b>#{{ bi.managedBundle.ticket }}</b></a></div>
-            </div>
-            <!--div>{{ bi | json}}</div>
-            <div>{{ status | json}}</div-->
-          </div>
+          <app-managed-bundle-card *ngFor="let bi of getManagedBundleInfosForStatus(status)"
+            [info]="bi" [candidateForStages]="candidateForStages(status)"></app-managed-bundle-card>
         </div>
 
         <div *ngIf="candidateForStages(status).length > 0" class="float-right"><b>Candiates For Stage: <span *ngFor="let stage of candidateForStages(status)">{{ stage.stage | uppercase }}</span></b></div>

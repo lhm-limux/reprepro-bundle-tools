@@ -19,7 +19,6 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
 
   workflowMetadata: WorkflowMetadata[] = [];
   configuredStages: string[] = [];
-  highlighted: ManagedBundle;
 
   availableWorkflow = [STAGES_AND_CANDIDATES, OTHERS];
   selectedWorkflow = new Set<string>();
