@@ -1,4 +1,9 @@
-<div [ngClass]="'card my-2 ' + cardFormat" style="width: 100%">
+<div
+  [ngClass]="'card my-2 ' + cardFormat"
+  style="width: 100%"
+  (mouseover)="active = true"
+  (mouseleave)="active = false"
+>
   <div class="card-header">
     <b>{{ status.ord }}) {{ status.name }}</b>
     <div
@@ -27,29 +32,35 @@
       <b>Bundle-Tag: {{ status.repoSuiteTag | uppercase }}</b>
     </div>
   </div>
+
   <div class="card-body">
-    <h5 class="card-title">
-      {{ status.comment }}
-      <div *ngIf="validStage" class="float-right my-2" style="font-size:larger">
-        <b>Stage: {{ status.stage | uppercase }}</b>
+    <div class="row">
+      <div class="col-sm">
+        <h5 class="card-title">{{ status.comment }}</h5>
+
+        <div class="card-columns">
+          <app-managed-bundle-card
+            *ngFor="let bi of managedBundleInfos"
+            [info]="bi"
+            [candidateForStages]="candidateForStages"
+          ></app-managed-bundle-card>
+        </div>
+
+        <div *ngIf="candidateForStages.length > 0">
+          <div *ngFor="let status of candidateForStages">
+            <button class="btn btn-secondary" (click)="markForStage(status)">
+              <b
+                >Mark All These Candidates for Stage {{ status.stage | uppercase }}</b
+              >
+            </button>
+          </div>
+        </div>
       </div>
-    </h5>
-
-    <div class="card-columns">
-      <app-managed-bundle-card
-        *ngFor="let bi of managedBundleInfos"
-        [info]="bi"
-        [candidateForStages]="candidateForStages"
-      ></app-managed-bundle-card>
-    </div>
-
-    <div *ngIf="candidateForStages.length > 0" class="float-right">
-      <b
-        >Candiates For Stage:
-        <span *ngFor="let stage of candidateForStages">{{
-          stage.stage | uppercase
-        }}</span></b
-      >
+      <div class="col-sm-1">
+        <div *ngIf="validStage" class="float-right" style="font-size:larger">
+          <b>Stage: {{ status.stage | uppercase }}</b>
+        </div>
+      </div>
     </div>
   </div>
 </div>

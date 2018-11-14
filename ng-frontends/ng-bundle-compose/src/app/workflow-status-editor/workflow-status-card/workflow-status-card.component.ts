@@ -22,7 +22,13 @@ export class WorkflowStatusCardComponent implements OnInit {
   @Input()
   candidateForStages: WorkflowMetadata[];
 
+  active = false;
+
   constructor() {}
 
   ngOnInit() {}
+
+  markForStage(status) {
+
+  }
 }
