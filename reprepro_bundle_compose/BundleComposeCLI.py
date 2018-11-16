@@ -29,7 +29,7 @@ import re
 import subprocess
 import apt_pkg
 import apt_repos
-from reprepro_bundle_compose import trac_api, PROJECT_DIR
+from reprepro_bundle_compose import trac_api, PROJECT_DIR, BUNDLES_LIST_FILE
 from reprepro_bundle_compose.bundle_status import BundleStatus
 from reprepro_bundle_compose.managed_bundle import ManagedBundle
 from reprepro_bundle_compose.distribution import Distribution
@@ -318,7 +318,7 @@ def parseBundles(repoSuites=None):
         Parses the file `bundles` and returns a dict of ID to ManagedBundle-Objects mappings
     '''
     res = dict()
-    bundles = os.path.join(PROJECT_DIR, 'bundles')
+    bundles = os.path.join(PROJECT_DIR, BUNDLES_LIST_FILE)
     if not os.path.isfile(bundles):
         logger.warning("File {} not found.".format(bundles))
         return res

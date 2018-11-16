@@ -8,7 +8,7 @@
 
 import logging
 import os
-from reprepro_bundle_compose import trac_api, PROJECT_DIR, git_commit
+from reprepro_bundle_compose import trac_api, PROJECT_DIR, BUNDLES_LIST_FILE, git_commit
 from reprepro_bundle_appserver import common_app_server, common_interfaces
 from aiohttp import web
 from reprepro_bundle_compose.BundleComposeCLI import getTargetRepoSuites, getBundleRepoSuites, parseBundles, getTracConfig, update_bundles, markBundlesForStatus
@@ -37,7 +37,7 @@ async def handle_update_bundles(request):
     res = "ok"
     logger.info("update bundles called")
     update_bundles()
-    git_commit(list(['bundles']), "UPDATED bundles")
+    git_commit(list([BUNDLES_LIST_FILE]), "UPDATED bundles")
     return web.json_response(res)
 
 
