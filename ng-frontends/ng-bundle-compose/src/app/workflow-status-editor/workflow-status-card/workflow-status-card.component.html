@@ -5,6 +5,15 @@
   (mouseleave)="active = false"
 >
   <div class="card-header">
+    <span
+      (click)="showContent = !showContent"
+      (mouseenter)="onFolder(true)"
+      (mouseleave)="onFolder(false)"
+      title="fold / unfold"
+      [ngClass]="'mr-3 folder ' + (mouseOnFolder ? 'folder-hover' : '')"
+    >
+      <i [ngClass]="'fa ' + (showContent ? 'fa-folder-open' : 'fa-folder')"></i>
+    </span>
     <b>{{ status.ord }}) {{ status.name }}</b>
     <div
       *ngIf="status.tracStatus"
@@ -33,7 +42,7 @@
     </div>
   </div>
 
-  <div class="card-body">
+  <div *ngIf="showContent" class="card-body">
     <div class="row">
       <div class="col-sm">
         <h5 class="card-title">{{ status.comment }}</h5>
@@ -52,7 +61,8 @@
           <div *ngFor="let newStatus of candidateForStages">
             <button class="btn btn-secondary" (click)="markForStage(newStatus)">
               <b
-                >Mark All These Candidates for Stage {{ newStatus.stage | uppercase }}</b
+                >Mark All These Candidates for Stage
+                {{ newStatus.stage | uppercase }}</b
               >
             </button>
           </div>

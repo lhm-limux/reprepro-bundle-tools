@@ -120,14 +120,22 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   }
 
   getDropStatus(status: WorkflowMetadata) {
-    if (status.stage === "drop" || status.stage === "prod") {
+    if (
+      status.name === "DROPPED" ||
+      status.name === "PRODUCTION" ||
+      status.name === "STAGING"
+    ) {
       return null;
     }
-    const res = this.workflowMetadata.filter(st => st.stage === "drop");
+    const res = this.workflowMetadata.filter(st => st.name === "DROPPED");
     if (res.length > 0) {
       return res[0];
     }
     return null;
+  }
+
+  getShowContent(status: WorkflowMetadata) {
+    return !(status.name === "DROPPED" || status.name === "STAGING");
   }
 
   doMarkedForStage(event) {

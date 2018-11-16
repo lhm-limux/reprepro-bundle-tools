@@ -17,6 +17,9 @@ export class WorkflowStatusCardComponent implements OnInit {
   validStage: boolean;
 
   @Input()
+  showContent: boolean;
+
+  @Input()
   managedBundleInfos: ManagedBundleInfo[];
 
   @Input()
@@ -32,6 +35,7 @@ export class WorkflowStatusCardComponent implements OnInit {
   }>();
 
   active = false;
+  mouseOnFolder = false;
 
   constructor() {}
 
@@ -46,5 +50,9 @@ export class WorkflowStatusCardComponent implements OnInit {
       stage: newStatus,
       bundles: this.managedBundleInfos.map(i => i.managedBundle)
     });
+  }
+
+  onFolder(b: boolean) {
+    this.mouseOnFolder = b;
   }
 }
