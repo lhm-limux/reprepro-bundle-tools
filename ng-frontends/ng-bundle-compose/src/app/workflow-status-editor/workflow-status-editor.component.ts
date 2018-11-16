@@ -4,6 +4,7 @@ import { WorkflowMetadataService } from "./workflow-metadata.service";
 import { Router } from "@angular/router";
 import { ManagedBundleService } from "./managed-bundle.service";
 import { Subscription } from "rxjs";
+import { BundleComposeActionService } from "./bundle-compose-action.service";
 
 const STAGES_AND_CANDIDATES = "Stages And Candidates";
 const OTHERS = "Others";
@@ -29,6 +30,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   constructor(
     private workflowMetadataService: WorkflowMetadataService,
     public managedBundleService: ManagedBundleService,
+    public actionService: BundleComposeActionService,
     private router: Router
   ) {}
 
@@ -46,6 +48,11 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     );
     this.subscriptions.push(
       this.managedBundleService.cast.subscribe(() => this.initSelections())
+    );
+    this.subscriptions.push(
+      this.actionService.cast.subscribe(() =>
+        this.managedBundleService.update()
+      )
     );
     this.workflowMetadataService.update();
     this.managedBundleService.update();
@@ -138,8 +145,23 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     return !(status.name === "DROPPED" || status.name === "STAGING");
   }
 
-  doMarkedForStage(event) {
-    console.log(JSON.stringify(event));
+  markForStage(event: { stage: WorkflowMetadata; bundles: ManagedBundle[] }) {
+    this.markForStatus(event.stage, event.bundles);
+  }
+
+  markForStatus(status: WorkflowMetadata, bundles: ManagedBundle[]) {
+    console.log(
+      "markForStatus: " +
+        JSON.stringify(bundles.map(b => b.id)) +
+        " --> " +
+        status.name
+    );
+    this.actionService.markForStatus(status, bundles);
+  }
+
+  synchronizeBundles(event) {
+    console.log("synchronizeBundles: " + JSON.stringify(event));
+    this.actionService.updateBundles();
   }
 
   @HostListener("window:beforeunload", ["$event"])

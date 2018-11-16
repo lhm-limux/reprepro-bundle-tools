@@ -1,4 +1,9 @@
 <div class="row">
+  <div class="col-sm-2">
+    <div class="btn btn-primary mt-3" (click)="synchronizeBundles()">
+      <b>Synchronize Bundle-Status</b>
+    </div>
+  </div>
   <select-filter
     class="col col-sm-3"
     field="Show Workflow Steps"
@@ -28,5 +33,5 @@
   [candidateForStages]="getCandidateForStages(status)"
   [dropStatus]="getDropStatus(status)"
   [showContent]="getShowContent(status)"
-  (markedForStage)="doMarkedForStage($event)"
+  (markedForStage)="markForStage($event)"
 ></app-workflow-status-card>
