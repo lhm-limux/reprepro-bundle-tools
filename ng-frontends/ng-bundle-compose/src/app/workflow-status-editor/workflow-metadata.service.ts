@@ -7,7 +7,6 @@ import { HttpClient } from "@angular/common/http";
   providedIn: "root"
 })
 export class WorkflowMetadataService {
-
   private workflowMetadata = new BehaviorSubject<WorkflowMetadata[]>([]);
   castWorkflowMetadata = this.workflowMetadata.asObservable();
 
@@ -17,21 +16,25 @@ export class WorkflowMetadataService {
   constructor(private config: ConfigService, private http: HttpClient) {}
 
   update(): void {
-    this.http.get<WorkflowMetadata[]>(this.config.getApiUrl("workflowMetadata")).subscribe(
-      (workflowMetadata: WorkflowMetadata[]) => {
-        this.workflowMetadata.next(workflowMetadata);
-      },
-      errResp => {
-        console.error("Error loading workflow metadata", errResp);
-      }
-    );
-    this.http.get<string[]>(this.config.getApiUrl("configuredStages")).subscribe(
-      (configuredStages: string[]) => {
-        this.configuredStages.next(configuredStages);
-      },
-      errResp => {
-        console.error("Error loading configured stages", errResp);
-      }
-    );
+    this.http
+      .get<WorkflowMetadata[]>(this.config.getApiUrl("workflowMetadata"))
+      .subscribe(
+        (workflowMetadata: WorkflowMetadata[]) => {
+          this.workflowMetadata.next(workflowMetadata);
+        },
+        errResp => {
+          console.error("Error loading workflow metadata", errResp);
+        }
+      );
+    this.http
+      .get<string[]>(this.config.getApiUrl("configuredStages"))
+      .subscribe(
+        (configuredStages: string[]) => {
+          this.configuredStages.next(configuredStages);
+        },
+        errResp => {
+          console.error("Error loading configured stages", errResp);
+        }
+      );
   }
 }
