@@ -22,6 +22,10 @@
 """
 import os
 import sys
+import logging
+import subprocess
+
+logger = logging.getLogger(__name__)
 
 PROJECT_DIR = os.getcwd()
 local_apt_repos = os.path.join(PROJECT_DIR, "apt-repos")
@@ -32,3 +36,17 @@ import apt_repos
 HERE = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/..")
 if os.path.isdir(os.path.join(HERE, "reprepro_bundle_compose")):
     sys.path.insert(0, HERE)
+
+
+def git_commit(git_add_list, msg):
+    if len(git_add_list) == 0:
+        logger.info("Nothing to add for git commit --> skipping git commit")
+        return
+    try:
+        add_cmd = ['git', 'add']
+        add_cmd.extend(git_add_list)
+        subprocess.check_call(add_cmd)
+        subprocess.check_call(('git', 'commit', '-m', msg))
+    except subprocess.CalledProcessError as e:
+        for line in "Committing '{}' failed for folder '{}':\n{}".format(msg, os.getcwd(), e).split("\n"):
+            logger.warning(line)

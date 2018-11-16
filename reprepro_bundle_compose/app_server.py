@@ -8,7 +8,7 @@
 
 import logging
 import os
-from reprepro_bundle_compose import trac_api, PROJECT_DIR
+from reprepro_bundle_compose import trac_api, PROJECT_DIR, git_commit
 from reprepro_bundle_appserver import common_app_server, common_interfaces
 from aiohttp import web
 from reprepro_bundle_compose.BundleComposeCLI import getTargetRepoSuites, getBundleRepoSuites, parseBundles, getTracConfig, update_bundles, markBundlesForStatus
@@ -25,17 +25,21 @@ APP_DIST = './ng-bundle-compose/'
 async def handle_mark_for_status(request):
     res = "ok"
     status = BundleStatus.getByName(request.rel_url.query['status'])
-    ids = set(json.loads(request.rel_url.query['bundles']))
+    ids = json.loads(request.rel_url.query['bundles'])
     logger.info("mark for status: {} --> {}".format(ids, status))
     bundles = parseBundles(getBundleRepoSuites())
-    markBundlesForStatus(bundles, ids, status, True)
+    markBundlesForStatus(bundles, set(ids), status, True)
+    git_commit(list(['bundles']), "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids))))
     return web.json_response(res)
+
 
 async def handle_update_bundles(request):
     res = "ok"
     logger.info("update bundles called")
     update_bundles()
+    git_commit(list(['bundles']), "UPDATED bundles")
     return web.json_response(res)
+
 
 async def handle_get_managed_bundles(request):
     # faster (doesn't need to resolve info file)
