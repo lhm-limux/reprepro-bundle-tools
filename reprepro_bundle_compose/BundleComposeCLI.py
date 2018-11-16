@@ -343,7 +343,7 @@ def storeBundles(bundlesDict):
         Expects a dict of ID to ManagedBundle-Objects and stores it's content in alpabetical
         order back to the file `bundles`
     '''
-    with open(os.path.join(PROJECT_DIR, "bundles"), "w") as bundles:
+    with open(os.path.join(PROJECT_DIR, BUNDLES_LIST_FILE), "w") as bundles:
         bundles.write("\n".join([bundle.serialize() for (_, bundle) in sorted(bundlesDict.items())]))
         logger.info("Updated file `bundles`")
 

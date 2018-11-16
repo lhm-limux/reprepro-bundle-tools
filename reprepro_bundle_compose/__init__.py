@@ -27,7 +27,7 @@ import subprocess
 
 logger = logging.getLogger(__name__)
 
-BUNDLES_LIST_FILE = 'bundles'
+BUNDLES_LIST_FILE = 'bundle-compose.status'
 
 PROJECT_DIR = os.getcwd()
 local_apt_repos = os.path.join(PROJECT_DIR, "apt-repos")
