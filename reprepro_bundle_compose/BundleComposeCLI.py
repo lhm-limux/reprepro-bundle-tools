@@ -138,62 +138,17 @@ def cmd_update_bundles(args):
         Updates the file `bundles` against the currently available (rolled out) bundles
         and synchronizes or creates the corresponding trac-Tickets.
     '''
-    repo_suites = getBundleRepoSuites()
-    managed_bundles = parseBundles()
-    ids = set(repo_suites.keys()).union(managed_bundles.keys())
-
-    trac = None
+    tracApi = None
     if not args.no_trac:
         try:
             config = getTracConfig()
-            trac = trac_api.TracApi(config['TracUrl'], config['User'], config.get('Password'))
+            tracApi = trac_api.TracApi(config['TracUrl'], config['User'], config.get('Password'))
         except KeyError as e:
             logger.warn("Missing Key {} in config file '{}' --> no synchronization with trac will be done!".format(e, config['__file__']))
         except Exception as e:
             logger.warn("Trac will not be synchronized: {}".format(e))
 
-    for id in sorted(ids):
-        logger.debug("Updating {}".format(id))
-        bundle = managed_bundles.get(id)
-        suite = repo_suites.get(id)
-        if not bundle and suite:
-            bundle = ManagedBundle(None, suite)
-            managed_bundles[id] = bundle
-        elif bundle and not suite:
-            if bundle.getStatus() != BundleStatus.DROPPED:
-                logger.warn("Das verwendete {} kann derzeit physikalisch nicht gefunden werden. Bitte überprüfen!".format(bundle))
-        else:
-            bundle.setRepoSuite(suite)
-            if bundle.getInfo().get("Target") != bundle.getTarget():
-                logger.warn("Das Target-Feld für {} ist nicht mehr aktuell. Bitte manuell im File `bundles` von '{}' auf '{}' umstellen.".format(bundle, bundle.getTarget(), bundle.getInfo().get("Target")))
-            suiteStatus = BundleStatus.getByTags(suite.getTags())
-            if bundle.getStatus() < suiteStatus:
-                if bundle.getStatus().allowsOverride():
-                    bundle.setStatus(suiteStatus)
-                else:
-                    logger.warn("Es gibt einen neuen Status im Bundle-Repository. Bitte manuell im File `bundles` das {} von Status '{}' auf '{}' umstellen.".format(bundle, bundle.getStatus(), suiteStatus))
-        if trac:
-            if not bundle.getTrac():
-                if bundle.getStatus() > BundleStatus.STAGING:
-                    tid = createTracTicketForBundle(trac, bundle)
-                    bundle.setTrac(tid)
-                else:
-                    continue
-            ticket = trac.getTicketValues(bundle.getTrac())
-            fetchedTracStatus = BundleStatus.getByTracStatus(ticket['status'], ticket.get('resolution'))
-            if bundle.getStatus() < fetchedTracStatus:
-                if bundle.getStatus().allowsOverride():
-                    bundle.setStatus(fetchedTracStatus)
-                else:
-                    logger.warn("Es gibt einen neuen Status im Trac-Ticket #{}. Bitte manuell im File `bundles` das {} von Status '{}' auf '{}' umstellen.".format(bundle.getTrac(), bundle, bundle.getStatus(), fetchedTracStatus))
-                    continue
-            pushTracStatus = bundle.getStatus().getTracStatus()
-            pushTracResolution = bundle.getStatus().getTracResolution()
-            if pushTracStatus and ticket['status'] != pushTracStatus:
-                trac.updateTicket(bundle.getTrac(), "Bundle Status-Update durch Broker", None, pushTracStatus, pushTracResolution if pushTracResolution else "")
-                logger.info("Updated {}, Trac-Ticket #{} to '{}'".format(bundle, bundle.getTrac(), (pushTracStatus + " as " + pushTracResolution) if pushTracResolution else pushTracStatus))
-
-    storeBundles(managed_bundles)
+    update_bundles(tracApi)
 
 
 def cmd_stage(args):
@@ -236,6 +191,55 @@ def cmd_apply(args):
     '''
     bundles = parseBundles(getBundleRepoSuites())
     createTargetRepreproConfigs(bundles)
+
+
+def update_bundles(tracApi=None):
+    repo_suites = getBundleRepoSuites()
+    managed_bundles = parseBundles()
+    ids = set(repo_suites.keys()).union(managed_bundles.keys())
+
+    for id in sorted(ids):
+        logger.debug("Updating {}".format(id))
+        bundle = managed_bundles.get(id)
+        suite = repo_suites.get(id)
+        if not bundle and suite:
+            bundle = ManagedBundle(None, suite)
+            managed_bundles[id] = bundle
+        elif bundle and not suite:
+            if bundle.getStatus() != BundleStatus.DROPPED:
+                logger.warn("Das verwendete {} kann derzeit physikalisch nicht gefunden werden. Bitte überprüfen!".format(bundle))
+        else:
+            bundle.setRepoSuite(suite)
+            if bundle.getInfo().get("Target") != bundle.getTarget():
+                logger.warn("Das Target-Feld für {} ist nicht mehr aktuell. Bitte manuell im File `bundles` von '{}' auf '{}' umstellen.".format(bundle, bundle.getTarget(), bundle.getInfo().get("Target")))
+            suiteStatus = BundleStatus.getByTags(suite.getTags())
+            if bundle.getStatus() < suiteStatus:
+                if bundle.getStatus().allowsOverride():
+                    bundle.setStatus(suiteStatus)
+                else:
+                    logger.warn("Es gibt einen neuen Status im Bundle-Repository. Bitte manuell im File `bundles` das {} von Status '{}' auf '{}' umstellen.".format(bundle, bundle.getStatus(), suiteStatus))
+        if tracApi:
+            if not bundle.getTrac():
+                if bundle.getStatus() > BundleStatus.STAGING:
+                    tid = createTracTicketForBundle(tracApi, bundle)
+                    bundle.setTrac(tid)
+                else:
+                    continue
+            ticket = tracApi.getTicketValues(bundle.getTrac())
+            fetchedTracStatus = BundleStatus.getByTracStatus(ticket['status'], ticket.get('resolution'))
+            if bundle.getStatus() < fetchedTracStatus:
+                if bundle.getStatus().allowsOverride():
+                    bundle.setStatus(fetchedTracStatus)
+                else:
+                    logger.warn("Es gibt einen neuen Status im Trac-Ticket #{}. Bitte manuell im File `bundles` das {} von Status '{}' auf '{}' umstellen.".format(bundle.getTrac(), bundle, bundle.getStatus(), fetchedTracStatus))
+                    continue
+            pushTracStatus = bundle.getStatus().getTracStatus()
+            pushTracResolution = bundle.getStatus().getTracResolution()
+            if pushTracStatus and ticket['status'] != pushTracStatus:
+                trac.updateTicket(bundle.getTrac(), "Bundle Status-Update durch Broker", None, pushTracStatus, pushTracResolution if pushTracResolution else "")
+                logger.info("Updated {}, Trac-Ticket #{} to '{}'".format(bundle, bundle.getTrac(), (pushTracStatus + " as " + pushTracResolution) if pushTracResolution else pushTracStatus))
+
+    storeBundles(managed_bundles)
 
 
 def markBundlesForStatus(bundles, ids, status, force=False):
@@ -459,7 +463,7 @@ def createTargetRepreproConfigForRepository(bundles, repoTargets, repoConfDir, b
 
 
 def getBundleDist(targetRepoSuite):
-    ''' 
+    '''
         Returns the bundle-dist defined as a "bundle-dist.*"-tag within the supplied
         targetRepoSuite-object or None, if no such tag is available.
         This defines the suitename of a bundle the targetRepoSuite  is responsible for.

@@ -11,8 +11,9 @@ import os
 from reprepro_bundle_compose import trac_api, PROJECT_DIR
 from reprepro_bundle_appserver import common_app_server, common_interfaces
 from aiohttp import web
-from reprepro_bundle_compose.BundleComposeCLI import getTargetRepoSuites, getBundleRepoSuites, parseBundles, getTracConfig
+from reprepro_bundle_compose.BundleComposeCLI import getTargetRepoSuites, getBundleRepoSuites, parseBundles, getTracConfig, update_bundles, markBundlesForStatus
 from reprepro_bundle_compose.bundle_status import BundleStatus
+import json
 
 
 progname = "bundle-compose-app"
@@ -20,6 +21,21 @@ logger = logging.getLogger(progname)
 
 APP_DIST = './ng-bundle-compose/'
 
+
+async def handle_mark_for_status(request):
+    res = "ok"
+    status = BundleStatus.getByName(request.rel_url.query['status'])
+    ids = set(json.loads(request.rel_url.query['bundles']))
+    logger.info("mark for status: {} --> {}".format(ids, status))
+    bundles = parseBundles(getBundleRepoSuites())
+    markBundlesForStatus(bundles, ids, status, True)
+    return web.json_response(res)
+
+async def handle_update_bundles(request):
+    res = "ok"
+    logger.info("update bundles called")
+    update_bundles()
+    return web.json_response(res)
 
 async def handle_get_managed_bundles(request):
     # faster (doesn't need to resolve info file)
@@ -70,6 +86,8 @@ def registerRoutes(args, app):
         web.get('/api/configuredStages', handle_get_configured_stages),
         web.get('/api/managedBundles', handle_get_managed_bundles),
         web.get('/api/managedBundleInfos', handle_get_managed_bundle_infos),
+        web.get('/api/updateBundles', handle_update_bundles),
+        web.get('/api/markForStatus', handle_mark_for_status),
     ])
     if not args.no_static_files:
         app.add_routes([
