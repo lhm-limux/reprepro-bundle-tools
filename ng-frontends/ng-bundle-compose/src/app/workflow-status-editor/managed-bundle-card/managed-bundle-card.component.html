@@ -18,7 +18,7 @@
       <div class="col">
         <h5 class="card-title">{{ info.subject }}</h5>
         <div>Creator: {{ info.creator }}</div>
-        <div *ngIf="info.managedBundle.ticketUrl">
+        <div *ngIf="info.managedBundle.ticket && info.managedBundle.ticketUrl">
           Ticket:
           <a
             href="{{ info.managedBundle.ticketUrl }}"
@@ -27,11 +27,14 @@
             ><b>#{{ info.managedBundle.ticket }}</b></a
           >
         </div>
-        <div *ngIf="!info.managedBundle.ticketUrl">
+        <div *ngIf="info.managedBundle.ticket && !info.managedBundle.ticketUrl">
           Ticket: <b>#{{ info.managedBundle.ticket }}</b>
         </div>
       </div>
-      <div class="col" *ngIf="active && (dropStatus || candidateForStages.length > 0)">
+      <div
+        class="col"
+        *ngIf="active && (dropStatus || candidateForStages.length > 0)"
+      >
         <button
           *ngIf="dropStatus"
           class="btn btn-block btn-danger float-right mb-2"
