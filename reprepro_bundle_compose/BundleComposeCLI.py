@@ -236,7 +236,7 @@ def update_bundles(tracApi=None):
             pushTracStatus = bundle.getStatus().getTracStatus()
             pushTracResolution = bundle.getStatus().getTracResolution()
             if pushTracStatus and ticket['status'] != pushTracStatus:
-                trac.updateTicket(bundle.getTrac(), "Bundle Status-Update durch Broker", None, pushTracStatus, pushTracResolution if pushTracResolution else "")
+                tracApi.updateTicket(bundle.getTrac(), "Bundle Status-Update durch Broker", None, pushTracStatus, pushTracResolution if pushTracResolution else "")
                 logger.info("Updated {}, Trac-Ticket #{} to '{}'".format(bundle, bundle.getTrac(), (pushTracStatus + " as " + pushTracResolution) if pushTracResolution else pushTracStatus))
 
     storeBundles(managed_bundles)
