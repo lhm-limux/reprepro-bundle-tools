@@ -27,6 +27,8 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   selectedDistributions = new Set<string>();
   selectedTargets = new Set<string>();
 
+  error_msg: string = null;
+
   constructor(
     private workflowMetadataService: WorkflowMetadataService,
     public managedBundleService: ManagedBundleService,
@@ -50,9 +52,10 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
       this.managedBundleService.cast.subscribe(() => this.initSelections())
     );
     this.subscriptions.push(
-      this.actionService.cast.subscribe(() =>
-        this.managedBundleService.update()
-      )
+      this.actionService.cast.subscribe(data => {
+        this.error_msg = data;
+        this.managedBundleService.update();
+      })
     );
     this.workflowMetadataService.update();
     this.managedBundleService.update();

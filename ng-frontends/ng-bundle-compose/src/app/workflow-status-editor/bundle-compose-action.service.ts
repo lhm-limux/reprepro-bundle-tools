@@ -1,13 +1,13 @@
 import { Injectable } from "@angular/core";
 import { ConfigService, ManagedBundle, WorkflowMetadata } from "shared";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { Subject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 
 @Injectable({
   providedIn: "root"
 })
 export class BundleComposeActionService {
-  private changed = new Subject();
+  private changed = new BehaviorSubject<string>("");
   cast = this.changed.asObservable();
 
   constructor(private config: ConfigService, private http: HttpClient) {}
@@ -15,10 +15,10 @@ export class BundleComposeActionService {
   updateBundles(): void {
     this.http.get<string>(this.config.getApiUrl("updateBundles")).subscribe(
       (data: string) => {
-        this.changed.next();
+        this.changed.next(data);
       },
       errResp => {
-        console.error("Update Bundles failed:", errResp);
+        this.changed.next("Update Bundles failed: " + errResp);
       }
     );
   }
@@ -29,10 +29,10 @@ export class BundleComposeActionService {
       .set("bundles", JSON.stringify(bundles.map(b => b.id)));
     this.http.get<string>(this.config.getApiUrl("markForStatus"), { params: params }).subscribe(
       (data: string) => {
-        this.changed.next();
+        this.changed.next(data);
       },
       errResp => {
-        console.error("Mark for stage failed: ", errResp);
+        this.changed.next("Mark for stage failed: " + errResp);
       }
     );
   }
