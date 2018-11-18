@@ -7,17 +7,17 @@
 '''
 
 import logging
-import os
-from reprepro_bundle_compose import trac_api, PROJECT_DIR, BUNDLES_LIST_FILE, git_commit
-from reprepro_bundle_appserver import common_app_server, common_interfaces
-from aiohttp import web
-from reprepro_bundle_compose.BundleComposeCLI import getTargetRepoSuites, getBundleRepoSuites, parseBundles, getTracConfig, update_bundles, markBundlesForStatus
-from reprepro_bundle_compose.bundle_status import BundleStatus
 import json
+import os
+import io
+from aiohttp import web
+import reprepro_bundle_compose
+from reprepro_bundle_compose import PROJECT_DIR, BUNDLES_LIST_FILE, BundleStatus, getTargetRepoSuites, getBundleRepoSuites, parseBundles, updateBundles, trac_api, getTracConfig, markBundlesForStatus, git_commit
+from reprepro_bundle_appserver import common_app_server, common_interfaces
 
 
 progname = "bundle-compose-app"
-logger = logging.getLogger(progname)
+logger = logging.getLogger("reprepro_bundle_appserver.bundle_compose_app")
 
 APP_DIST = './ng-bundle-compose/'
 
@@ -26,17 +26,23 @@ async def handle_mark_for_status(request):
     status = BundleStatus.getByName(request.rel_url.query['status'])
     ids = json.loads(request.rel_url.query['bundles'])
     logger.info("mark for status: {} --> {}".format(ids, status))
-    bundles = parseBundles(getBundleRepoSuites())
-    markBundlesForStatus(bundles, set(ids), status, True)
-    err = git_commit(list([BUNDLES_LIST_FILE]), "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids))))
-    return web.json_response(err or "", status=500 if err else 200)
+    res = ""
+    with common_app_server.logging_redirect_for_webapp() as log:
+      bundles = parseBundles(getBundleRepoSuites())
+      markBundlesForStatus(bundles, set(ids), status, True)
+      git_commit(list([BUNDLES_LIST_FILE]), "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids))))
+      res = log.getvalue()
+    return web.json_response(res)
 
 
 async def handle_update_bundles(request):
     logger.info("update bundles called")
-    update_bundles()
-    err = git_commit(list([BUNDLES_LIST_FILE]), "UPDATED bundles")
-    return web.json_response(err or "", status=500 if err else 200)
+    res = ""
+    with common_app_server.logging_redirect_for_webapp() as log:
+      updateBundles()
+      git_commit(list([BUNDLES_LIST_FILE]), "UPDATED {}".format(BUNDLES_LIST_FILE))
+      res = log.getvalue()
+    return web.json_response(res)
 
 
 async def handle_get_managed_bundles(request):

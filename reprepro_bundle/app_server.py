@@ -13,7 +13,7 @@ from aiohttp import web
 from reprepro_bundle.BundleCLI import scanBundles
 
 progname = "bundle-app"
-logger = logging.getLogger(progname)
+logger = logging.getLogger("reprepro_bundle_appserver.bundle_app")
 
 APP_DIST = './ng-bundle/'
 

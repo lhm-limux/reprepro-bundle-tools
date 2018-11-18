@@ -13,6 +13,7 @@ import logging
 import argparse
 import sys
 import os
+import io
 import subprocess
 from aiohttp import web
 from aiohttp.web import run_app
@@ -21,7 +22,7 @@ import apt_repos
 from reprepro_bundle_compose import PROJECT_DIR
 
 PROGNAME = "common_app_server"
-logger = logging.getLogger(PROGNAME)
+logger = logging.getLogger(__name__)
 
 DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = 4253
@@ -103,7 +104,7 @@ async def websocket_handler(request):
                 await ws.close()
             else:
                 event = asyncio.Event()
-                events.add(event) 
+                events.add(event)
                 while True:
                     await event.wait()
                     if event.data == "quit":
@@ -169,7 +170,7 @@ async def run_webserver(args, registerAdditionalRoutes=None, serveDistPath=None)
         web.get('/api/register', handle_register)
     ])
     if registerAdditionalRoutes:
-        registerAdditionalRoutes(args, app) 
+        registerAdditionalRoutes(args, app)
     if serveDistPath and not args.no_static_files:
         app.add_routes([ web.static('/', serveDistPath) ])
 
@@ -185,3 +186,19 @@ async def run_webserver(args, registerAdditionalRoutes=None, serveDistPath=None)
     except OSError as e:
         logger.info("could not start backend: {}".format(e))
     return (started, runner, url)
+
+
+import contextlib
+@contextlib.contextmanager
+def logging_redirect_for_webapp():
+    log = io.StringIO()
+    hndlr = logging.StreamHandler(log)
+    logger.addHandler(hndlr)
+    logging.getLogger('reprepro_bundle').addHandler(hndlr)
+    logging.getLogger('reprepro_bundle_compose').addHandler(hndlr)
+    logging.getLogger('apt_repos').addHandler(hndlr)
+    yield log
+    logging.getLogger('apt_repos').removeHandler(hndlr)
+    logging.getLogger('reprepro_bundle_compose').removeHandler(hndlr)
+    logging.getLogger('reprepro_bundle').removeHandler(hndlr)
+    logger.removeHandler(hndlr)

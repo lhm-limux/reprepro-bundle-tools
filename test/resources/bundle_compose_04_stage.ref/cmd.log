@@ -1,2 +1,2 @@
-INFO[bundle-compose]: setting bundle:mybionic/0001 to status 'test_cust'
-INFO[bundle-compose]: Updated file `bundles`
+INFO[reprepro_bundle_compose]: setting bundle:mybionic/0001 to status 'test_cust'
+INFO[reprepro_bundle_compose]: Updated file 'bundle-compose.status'
