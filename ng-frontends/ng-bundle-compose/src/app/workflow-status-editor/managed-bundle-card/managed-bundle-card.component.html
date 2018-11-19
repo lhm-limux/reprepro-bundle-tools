@@ -33,11 +33,12 @@
       </div>
       <div
         class="col"
-        *ngIf="active && (dropStatus || candidateForStages.length > 0)"
+        *ngIf="dropStatus || candidateForStages.length > 0"
       >
         <button
           *ngIf="dropStatus"
-          class="btn btn-block btn-danger float-right mb-2"
+          class="btn btn-block float-right mb-2"
+          [ngClass]="active ? 'btn-danger' : 'btn-light text-light'"
           (click)="markForStage(dropStatus)"
         >
           <b>Drop</b>
@@ -46,6 +47,7 @@
         <div *ngFor="let status of candidateForStages">
           <button
             class="btn btn-block btn-light mt-2"
+            [ngClass]="active ? 'text-dark' : 'text-light'"
             (click)="markForStage(status)"
           >
             <b>Mark for Stage {{ status.stage | uppercase }}</b>
