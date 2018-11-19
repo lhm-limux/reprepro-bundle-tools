@@ -32,7 +32,6 @@ async def handle_mark_for_status(request):
         markBundlesForStatus(bundles, set(ids), status, True)
         git_commit(list([BUNDLES_LIST_FILE]), "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids))))
         res = logs.toBackendLogEntryList()
-    logger.info("RES={}".format(res))
     return web.json_response(res)
 
 

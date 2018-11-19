@@ -128,7 +128,7 @@ def storeBundles(bundlesDict):
     '''
     with open(os.path.join(PROJECT_DIR, BUNDLES_LIST_FILE), "w") as bundles:
         bundles.write("\n".join([bundle.serialize() for (_, bundle) in sorted(bundlesDict.items())]))
-        logger.info("Updated file '{}'".format(BUNDLES_LIST_FILE))
+        logger.debug("Updated file '{}'".format(BUNDLES_LIST_FILE))
 
 
 def getBundleRepoSuites():
@@ -234,6 +234,10 @@ def git_commit(git_add_list, msg):
         add_cmd = ['git', 'add']
         add_cmd.extend(git_add_list)
         subprocess.check_output(add_cmd)
+        if subprocess.call(('git', 'diff', '--cached', '--quiet', '--exit-code')) == 0:
+          logger.info("No changes, no commit")
+          return
         subprocess.check_output(('git', 'commit', '-m', msg))
+        logger.info("New commit '{}'".format(msg.split('\n')[0]))
     except subprocess.CalledProcessError as e:
         logger.warning("Committing '{}' failed:\n{}".format(msg, e.output.decode('utf-8')))
