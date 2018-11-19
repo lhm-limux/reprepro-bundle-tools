@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
-import { WorkflowMetadata, ManagedBundle, SelectFilterComponent } from "shared";
+import { WorkflowMetadata, ManagedBundle, SelectFilterComponent, BackendLogEntry } from "shared";
 import { WorkflowMetadataService } from "./workflow-metadata.service";
 import { Router } from "@angular/router";
 import { ManagedBundleService } from "./managed-bundle.service";
@@ -27,7 +27,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   selectedDistributions = new Set<string>();
   selectedTargets = new Set<string>();
 
-  error_msg: string = null;
+  lastLogs: BackendLogEntry[] = [];
 
   constructor(
     private workflowMetadataService: WorkflowMetadataService,
@@ -53,7 +53,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     );
     this.subscriptions.push(
       this.actionService.cast.subscribe(data => {
-        this.error_msg = data;
+        this.lastLogs = data;
         this.managedBundleService.update();
       })
     );

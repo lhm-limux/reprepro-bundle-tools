@@ -40,3 +40,9 @@ export interface WorkflowMetadata {
   override: boolean,
   candidates: string
 }
+
+export interface BackendLogEntry {
+  logger: string,
+  level: string,
+  message: string
+}

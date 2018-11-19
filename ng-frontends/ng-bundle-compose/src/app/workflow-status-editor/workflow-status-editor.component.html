@@ -1,7 +1,30 @@
-<div *ngIf="error_msg">
-  <div class="alert alert-warning alert-dismissible fade show" role="alert">
-    <strong>Error:</strong> {{ error_msg }}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="error_msg=null">
+<div *ngIf="lastLogs.length > 0">
+  <div
+    *ngFor="let log of lastLogs; let i = index"
+    [ngClass]="
+      'row alert alert-dismissible fade show ' +
+      (log.level === 'WARNING'
+        ? 'alert-warning'
+        : log.level === 'ERROR'
+        ? 'alert-error'
+        : 'alert-success')
+    "
+    role="alert"
+  >
+    <div class="col-sm-2">
+      <strong>{{ log.level }}</strong> [{{ log.logger }}]
+    </div>
+    <div class="col">
+      <p *ngFor="let line of log.message.split('\n')">{{ line }}</p>
+    </div>
+    <button
+      *ngIf="i === 0"
+      type="button"
+      class="close"
+      data-dismiss="alert"
+      aria-label="Close"
+      (click)="lastLogs = []"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
