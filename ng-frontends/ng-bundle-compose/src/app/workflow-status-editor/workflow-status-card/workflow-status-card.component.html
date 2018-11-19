@@ -13,6 +13,9 @@
       [ngClass]="'mr-3 folder ' + (mouseOnFolder ? 'folder-hover' : '')"
     >
       <i [ngClass]="'fa ' + (showContent ? 'fa-folder-open' : 'fa-folder')"></i>
+      <span class="badge-pill badge-light counter mr-3">{{
+        managedBundleInfos.length
+      }}</span>
     </span>
     <b>{{ status.ord }}) {{ status.name }}</b>
     <div
