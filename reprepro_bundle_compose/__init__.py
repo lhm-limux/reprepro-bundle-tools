@@ -236,5 +236,4 @@ def git_commit(git_add_list, msg):
         subprocess.check_output(add_cmd)
         subprocess.check_output(('git', 'commit', '-m', msg))
     except subprocess.CalledProcessError as e:
-        for line in "Committing '{}' failed:\n{}".format(msg, e.output.decode('utf-8')).split("\n"):
-            logger.warning(line)
+        logger.warning("Committing '{}' failed:\n{}".format(msg, e.output.decode('utf-8')))

@@ -10,16 +10,19 @@
 import time
 import aiohttp
 import logging
+from logging import handlers
 import argparse
 import sys
 import os
 import io
+import queue
 import subprocess
 from aiohttp import web
 from aiohttp.web import run_app
 import asyncio
 import apt_repos
 from reprepro_bundle_compose import PROJECT_DIR
+from reprepro_bundle_appserver.common_interfaces import BackendLogEntry
 
 PROGNAME = "common_app_server"
 logger = logging.getLogger(__name__)
@@ -188,16 +191,24 @@ async def run_webserver(args, registerAdditionalRoutes=None, serveDistPath=None)
     return (started, runner, url)
 
 
+class WebappLoggingHandler(logging.handlers.QueueHandler):
+    def toBackendLogEntryList(self):
+        res = list()
+        while not self.queue.empty():
+          res.append(BackendLogEntry(self.queue.get()))
+        return res
+
+
 import contextlib
 @contextlib.contextmanager
 def logging_redirect_for_webapp():
-    log = io.StringIO()
-    hndlr = logging.StreamHandler(log)
+    que = queue.Queue(-1)
+    hndlr = WebappLoggingHandler(que)
     logger.addHandler(hndlr)
     logging.getLogger('reprepro_bundle').addHandler(hndlr)
     logging.getLogger('reprepro_bundle_compose').addHandler(hndlr)
     logging.getLogger('apt_repos').addHandler(hndlr)
-    yield log
+    yield hndlr
     logging.getLogger('apt_repos').removeHandler(hndlr)
     logging.getLogger('reprepro_bundle_compose').removeHandler(hndlr)
     logging.getLogger('reprepro_bundle').removeHandler(hndlr)

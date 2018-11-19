@@ -66,3 +66,10 @@ def WorkflowMetadata(status):
         'tracResolution': status.value.get('tracResolution'),
         'candidates': status.value.get('candidates')
     }
+
+def BackendLogEntry(record):
+    return {
+        'logger': record.name,
+        'level': record.levelname,
+        'message': record.message
+    }

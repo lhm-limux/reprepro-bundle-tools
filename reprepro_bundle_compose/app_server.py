@@ -27,21 +27,22 @@ async def handle_mark_for_status(request):
     ids = json.loads(request.rel_url.query['bundles'])
     logger.info("mark for status: {} --> {}".format(ids, status))
     res = ""
-    with common_app_server.logging_redirect_for_webapp() as log:
-      bundles = parseBundles(getBundleRepoSuites())
-      markBundlesForStatus(bundles, set(ids), status, True)
-      git_commit(list([BUNDLES_LIST_FILE]), "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids))))
-      res = log.getvalue()
+    with common_app_server.logging_redirect_for_webapp() as logs:
+        bundles = parseBundles(getBundleRepoSuites())
+        markBundlesForStatus(bundles, set(ids), status, True)
+        git_commit(list([BUNDLES_LIST_FILE]), "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids))))
+        res = logs.toBackendLogEntryList()
+    logger.info("RES={}".format(res))
     return web.json_response(res)
 
 
 async def handle_update_bundles(request):
     logger.info("update bundles called")
     res = ""
-    with common_app_server.logging_redirect_for_webapp() as log:
-      updateBundles()
-      git_commit(list([BUNDLES_LIST_FILE]), "UPDATED {}".format(BUNDLES_LIST_FILE))
-      res = log.getvalue()
+    with common_app_server.logging_redirect_for_webapp() as logs:
+        updateBundles()
+        git_commit(list([BUNDLES_LIST_FILE]), "UPDATED {}".format(BUNDLES_LIST_FILE))
+        res = logs.toBackendLogEntryList()
     return web.json_response(res)
 
 
