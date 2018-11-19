@@ -2,7 +2,7 @@
   <div
     *ngFor="let log of lastLogs; let i = index"
     [ngClass]="
-      'row alert alert-dismissible fade show ' +
+      'row alert alert-dismissible fade show my-0 ' +
       (log.level === 'WARNING'
         ? 'alert-warning'
         : log.level === 'ERROR'
@@ -15,7 +15,7 @@
       <strong>{{ log.level }}</strong> [{{ log.logger }}]
     </div>
     <div class="col">
-      <p *ngFor="let line of log.message.split('\n')">{{ line }}</p>
+      <div *ngFor="let line of log.message.split('\n')">{{ line }}</div>
     </div>
     <button
       *ngIf="i === 0"
@@ -29,7 +29,7 @@
     </button>
   </div>
 </div>
-<div class="row">
+<div class="row mt-3">
   <div class="col-sm-2">
     <div class="btn btn-primary mt-3" (click)="synchronizeBundles()">
       <b>Synchronize Bundle-Status</b>
