@@ -1,0 +1,26 @@
+<div class="card bg-light">
+  <div class="card-body py-1 px-1">
+    <div class="card-title text-center"><span class="badge-pill badge-warning counter mr-2"><b>{{ unpublishedChanges.length }}</b></span> Unpublished Changes</div>
+    <div class="row">
+      <div class="col">
+        <button
+          class="btn btn-sm btn-block btn-primary mb-1"
+          (click)="undoLastChange()"
+        >
+          Undo last change
+        </button>
+      </div>
+      <div class="col">
+        <button class="btn btn-sm btn-block btn-primary mb-1" (click)="publish()">
+          Publish changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="showChangelog">
+  <p *ngFor="let change of unpublishedChanges">
+    {{ change.date }} {{ change.id }} &lt;{{ change.author }}&gt;
+    {{ change.message.split("\n")[0] }}
+  </p>
+</div>

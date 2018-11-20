@@ -46,3 +46,10 @@ export interface BackendLogEntry {
   level: string,
   message: string
 }
+
+export interface VersionedChange {
+  id: string,
+  author: string,
+  message: string,
+  date: number
+}
