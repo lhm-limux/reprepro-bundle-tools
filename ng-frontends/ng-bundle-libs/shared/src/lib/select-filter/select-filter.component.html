@@ -4,7 +4,7 @@
     <div class="row">
       <div *ngFor="let value of values" class="col">
         <button
-          class="btn btn-sm btn-block"
+          class="btn btn-sm btn-block mb-1"
           (click)="toggle(value)"
           [ngClass]="selected.has(value) ? 'btn-secondary' : 'btn-light'"
         >
