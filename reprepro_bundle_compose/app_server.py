@@ -11,6 +11,7 @@ import json
 import os
 import io
 from aiohttp import web
+import git
 import reprepro_bundle_compose
 from reprepro_bundle_compose import PROJECT_DIR, BUNDLES_LIST_FILE, BundleStatus, getTargetRepoSuites, getBundleRepoSuites, parseBundles, updateBundles, trac_api, getTracConfig, markBundlesForStatus, git_commit
 from reprepro_bundle_appserver import common_app_server, common_interfaces
@@ -20,6 +21,27 @@ progname = "bundle-compose-app"
 logger = logging.getLogger("reprepro_bundle_appserver.bundle_compose_app")
 
 APP_DIST = './ng-bundle-compose/'
+MAX_VERSIONS = 200
+
+
+async def handle_latest_published_change(request):
+    repo = git.Repo(PROJECT_DIR)
+    remoteMaster = repo.remotes.origin.refs.master.commit
+    res = common_interfaces.VersionedChange(remoteMaster)
+    return web.json_response(res)
+
+
+async def handle_list_changes(request):
+    res = []
+    repo = git.Repo(PROJECT_DIR)
+    head = repo.head.commit
+    commit = head
+    listMax = MAX_VERSIONS
+    while commit and listMax > 0:
+        res.append(common_interfaces.VersionedChange(commit))
+        commit = commit.parents[0] if len(commit.parents) > 0 else None
+        listMax -= 1
+    return web.json_response(res)
 
 
 async def handle_mark_for_status(request):
@@ -96,6 +118,8 @@ def registerRoutes(args, app):
         web.get('/api/managedBundleInfos', handle_get_managed_bundle_infos),
         web.get('/api/updateBundles', handle_update_bundles),
         web.get('/api/markForStatus', handle_mark_for_status),
+        web.get('/api/listChanges', handle_list_changes),
+        web.get('/api/latestPublishedChange', handle_latest_published_change),
     ])
     if not args.no_static_files:
         app.add_routes([

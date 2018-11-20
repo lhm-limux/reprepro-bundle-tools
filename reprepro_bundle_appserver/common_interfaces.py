@@ -73,3 +73,11 @@ def BackendLogEntry(record):
         'level': record.levelname,
         'message': record.message
     }
+
+def VersionedChange(commit):
+    return {
+        'id': commit.hexsha,
+        'author': commit.author.name,
+        'message': commit.message,
+        'date': commit.authored_date
+    }
