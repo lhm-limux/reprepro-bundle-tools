@@ -1,5 +1,12 @@
 import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
-import { WorkflowMetadata, ManagedBundle, SelectFilterComponent, BackendLogEntry } from "shared";
+import {
+  WorkflowMetadata,
+  ManagedBundle,
+  SelectFilterComponent,
+  BackendLogEntry,
+  UnpublishedChangesComponent,
+  VersionedChangesService
+} from "shared";
 import { WorkflowMetadataService } from "./workflow-metadata.service";
 import { Router } from "@angular/router";
 import { ManagedBundleService } from "./managed-bundle.service";
@@ -31,6 +38,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
 
   constructor(
     private workflowMetadataService: WorkflowMetadataService,
+    public changesService: VersionedChangesService,
     public managedBundleService: ManagedBundleService,
     public actionService: BundleComposeActionService,
     private router: Router
@@ -59,6 +67,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     );
     this.workflowMetadataService.update();
     this.managedBundleService.update();
+    this.changesService.update();
   }
 
   ngOnDestroy() {

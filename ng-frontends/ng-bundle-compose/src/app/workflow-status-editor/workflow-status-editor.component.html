@@ -29,30 +29,36 @@
     </button>
   </div>
 </div>
-<div class="row mt-3">
+<div class="row mt-2
+">
   <div class="col-sm-2">
     <div class="btn btn-primary mt-3" (click)="synchronizeBundles()">
       <b>Synchronize Bundle-Status</b>
     </div>
   </div>
   <select-filter
-    class="col col-sm-3"
+    class="col col-sm-2"
     field="Show Workflow Steps"
     [values]="availableWorkflow"
     [(selected)]="selectedWorkflow"
   ></select-filter>
   <select-filter
-    class="col col-sm-3"
+    class="col col-sm-2"
     field="Distributions"
     [values]="managedBundleService.getAvailableDistributions()"
     [(selected)]="selectedDistributions"
   ></select-filter>
   <select-filter
-    class="col col-sm-3"
+    class="col col-sm-2"
     field="Targets"
     [values]="managedBundleService.getAvailableTargets()"
     [(selected)]="selectedTargets"
   ></select-filter>
+  <div class="col col-sm-2">
+    <lib-unpublished-changes
+      [unpublishedChanges]="changesService.getUnpublishedChanges()"
+    ></lib-unpublished-changes>
+  </div>
 </div>
 <app-workflow-status-card
   class="row m-1"
