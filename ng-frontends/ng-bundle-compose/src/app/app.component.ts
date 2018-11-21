@@ -1,5 +1,9 @@
 import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
 import { BackendRegisterService } from "shared";
+import localeDe from "@angular/common/locales/de";
+import { registerLocaleData } from "@angular/common";
+
+registerLocaleData(localeDe, "de");
 
 @Component({
   selector: "app-root",
