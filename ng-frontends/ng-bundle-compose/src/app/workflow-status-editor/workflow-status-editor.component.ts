@@ -63,6 +63,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
       this.actionService.cast.subscribe(data => {
         this.lastLogs = data;
         this.managedBundleService.update();
+        this.changesService.update();
       })
     );
     this.workflowMetadataService.update();

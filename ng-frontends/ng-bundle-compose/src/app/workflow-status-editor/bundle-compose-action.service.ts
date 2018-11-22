@@ -47,4 +47,30 @@ export class BundleComposeActionService {
         }
       );
   }
+
+  undoLastChange(): void {
+    this.http
+      .get<BackendLogEntry[]>(this.config.getApiUrl("undoLastChange"))
+      .subscribe(
+        (data: BackendLogEntry[]) => {
+          this.changed.next(data);
+        },
+        errResp => {
+          console.error("Undo last Change failed: ", errResp);
+        }
+      );
+  }
+
+  publishChanges(): void {
+    this.http
+      .get<BackendLogEntry[]>(this.config.getApiUrl("publishChanges"))
+      .subscribe(
+        (data: BackendLogEntry[]) => {
+          this.changed.next(data);
+        },
+        errResp => {
+          console.error("Publish Changes failed: ", errResp);
+        }
+      );
+  }
 }
