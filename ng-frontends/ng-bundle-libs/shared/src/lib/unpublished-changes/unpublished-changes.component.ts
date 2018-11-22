@@ -10,7 +10,7 @@ export class UnpublishedChangesComponent {
   changelogVisible = false;
 
   @Input()
-  unpublishedChanges: VersionedChange[];
+  changes: VersionedChange[];
 
   @Output()
   undoLastChange = new EventEmitter<void>();
@@ -24,5 +24,13 @@ export class UnpublishedChangesComponent {
 
   emitPublish() {
     this.publish.next();
+  }
+
+  getUnpublishedChanges(): VersionedChange[] {
+    return this.changes.filter(c => !c.published);
+  }
+
+  hasUnpublished(): boolean {
+    return this.getUnpublishedChanges().length > 0;
   }
 }

@@ -1,16 +1,19 @@
 <div class="card bg-light">
   <div class="card-body py-1 px-1">
     <div class="card-title text-center">
-      <span class="badge-pill badge-warning counter mr-2"
-        ><b>{{ unpublishedChanges.length }}</b></span
-      >
-      Unpublished Changes
+      <span *ngIf="hasUnpublished()">
+        <span class="badge-pill badge-warning counter mr-2"
+          ><b>{{ getUnpublishedChanges().length }}</b></span
+        >
+        Unpublished Changes
+      </span>
+      <span *ngIf="!hasUnpublished()">Change-History</span>
       <lib-fontawsome-toggle-button
         class="float-right mr-2"
         titleOff="Show Changelog"
         titleOn="Hide Changelog"
         symbolOn="fa-ellipsis-h"
-        symbolOff="fa-list-ol"
+        symbolOff="fa-list"
         style="font-size: x-large"
         [(status)]="changelogVisible"
       ></lib-fontawsome-toggle-button>
@@ -20,6 +23,7 @@
         <div class="col p-1">
           <button
             class="btn btn-sm btn-block btn-primary"
+            [disabled]="!hasUnpublished()"
             (click)="emitUndoLastChange()"
           >
             Undo last change
@@ -31,7 +35,11 @@
           </button>
         </div>
         <div class="col p-1">
-          <button class="btn btn-sm btn-block btn-primary" (click)="emitPublish()">
+          <button
+            class="btn btn-sm btn-block btn-primary"
+            [disabled]="!hasUnpublished()"
+            (click)="emitPublish()"
+          >
             Publish changes
             <i
               class="fa fa-upload ml-2"
@@ -44,9 +52,13 @@
     </div>
     <div *ngIf="changelogVisible">
       <ul class="list-group">
-        <li *ngFor="let change of unpublishedChanges" class="list-group-item">
+        <li *ngFor="let change of changes" class="list-group-item">
           <div>
-            [{{ change.id.substring(0, 7) }}]
+            <i
+              class="fa"
+              [ngClass]="change.published ? 'fa-ban' : 'fa-user'"
+            ></i>
+            {{ change.id.substring(0, 7) }}
             <b> {{ change.message.split("\n")[0] }}</b>
           </div>
           <div>

@@ -52,12 +52,6 @@ export class VersionedChangesService {
   }
 
   getUnpublishedChanges(): VersionedChange[] {
-    let published = false;
-    return this.versionedChanges.filter(c => {
-      published =
-        published ||
-        (this.latestPublishedChange && c.id === this.latestPublishedChange.id);
-      return !published;
-    });
+    return this.versionedChanges.filter(c => !c.published);
   }
 }

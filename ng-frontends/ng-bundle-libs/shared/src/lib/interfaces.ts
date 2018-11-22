@@ -51,5 +51,6 @@ export interface VersionedChange {
   id: string,
   author: string,
   message: string,
-  date: number
+  date: number,
+  published: boolean
 }
