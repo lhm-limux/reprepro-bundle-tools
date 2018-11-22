@@ -5,21 +5,15 @@
         ><b>{{ unpublishedChanges.length }}</b></span
       >
       Unpublished Changes
-      <span
-        (click)="showChangelog(!changelogVisible)"
-        (mouseenter)="onBurger(true)"
-        (mouseleave)="onBurger(false)"
-        title="show / hide Changelog"
-        class="mr-2 float-right"
-        [ngClass]="mouseOnBurger ? 'burger-hover' : ''"
+      <lib-fontawsome-toggle-button
+        class="float-right mr-2"
+        titleOff="Show Changelog"
+        titleOn="Hide Changelog"
+        symbolOn="fa-ellipsis-h"
+        symbolOff="fa-list-ol"
         style="font-size: x-large"
-        ><i
-          [ngClass]="
-            'fa ' + (changelogVisible ? 'fa-ellipsis-h' : 'fa-list-ol')
-          "
-          aria-hidden="true"
-        ></i
-      ></span>
+        [(status)]="changelogVisible"
+      ></lib-fontawsome-toggle-button>
     </div>
     <div class="container container-fluid">
       <div class="row">

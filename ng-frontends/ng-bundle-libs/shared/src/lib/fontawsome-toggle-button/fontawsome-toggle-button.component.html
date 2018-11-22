@@ -1,0 +1,13 @@
+<span
+  (click)="setStatus(!status)"
+  (mouseenter)="hovered = true"
+  (mouseleave)="hovered = false"
+  [title]="status ? titleOn : titleOff"
+  [ngClass]="hovered ? 'hover' : ''"
+  ><i
+    class="fa"
+    [ngClass]="status ? symbolOn : symbolOff"
+    aria-hidden="true"
+  ></i
+  ><ng-content></ng-content
+></span>

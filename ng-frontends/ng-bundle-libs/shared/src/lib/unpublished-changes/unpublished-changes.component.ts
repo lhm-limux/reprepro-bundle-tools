@@ -8,23 +8,13 @@ import { VersionedChange } from '../interfaces';
 })
 export class UnpublishedChangesComponent {
   changelogVisible = false;
-  mouseOnBurger = false;
 
   @Input()
   unpublishedChanges: VersionedChange[];
 
   undoLastChange() {
-
   }
 
   publish() {
-  }
-
-  onBurger(mouseOver) {
-    this.mouseOnBurger = mouseOver;
-  }
-
-  showChangelog(visible) {
-    this.changelogVisible = visible;
   }
 }
