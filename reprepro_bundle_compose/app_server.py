@@ -21,27 +21,36 @@ progname = "bundle-compose-app"
 logger = logging.getLogger("reprepro_bundle_appserver.bundle_compose_app")
 
 APP_DIST = './ng-bundle-compose/'
-MAX_VERSIONS = 200
 
 
 async def handle_latest_published_change(request):
     repo = git.Repo(PROJECT_DIR)
-    remoteMaster = repo.remotes.origin.refs.master.commit
-    res = common_interfaces.VersionedChange(remoteMaster)
-    return web.json_response(res)
+    tracking = repo.head.ref.tracking_branch()
+    if tracking:
+      res = common_interfaces.VersionedChange(tracking.commit, True)
+      return web.json_response(res)
+    return web.json_response(None)
 
 
 async def handle_list_changes(request):
     res = []
     repo = git.Repo(PROJECT_DIR)
-    head = repo.head.commit
-    commit = head
-    listMax = MAX_VERSIONS
-    while commit and listMax > 0:
-        res.append(common_interfaces.VersionedChange(commit))
-        commit = commit.parents[0] if len(commit.parents) > 0 else None
-        listMax -= 1
+    published = getPublishedCommits(repo)
+    c = repo.head.commit
+    while c:
+        res.append(common_interfaces.VersionedChange(c, c.hexsha in published))
+        c = c.parents[0] if len(c.parents) > 0 else None
     return web.json_response(res)
+
+
+def getPublishedCommits(repo):
+    commits = set()
+    remote = repo.head.ref.tracking_branch()
+    c = remote.commit if remote else None
+    while c:
+      commits.add(c.hexsha)
+      c = c.parents[0] if len(c.parents) > 0 else None
+    return commits
 
 
 async def handle_undo_last_change(request):
