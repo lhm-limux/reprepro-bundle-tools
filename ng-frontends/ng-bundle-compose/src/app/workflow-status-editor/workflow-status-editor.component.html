@@ -13,7 +13,7 @@
       role="alert"
     >
       <div class="col col-sm-1">
-        <span title="{{ log.logger }}"><strong>{{ log.level }}</strong></span>
+        <span title="{{ log.level }} from {{ log.logger }}"><strong>{{ log.level }}</strong></span>
       </div>
       <div class="col">
         <div *ngFor="let line of log.message.split('\n')">{{ line }}</div>
@@ -61,7 +61,7 @@
     ></select-filter>
     <div class="col mb-1">
       <lib-unpublished-changes
-        [unpublishedChanges]="changesService.getUnpublishedChanges()"
+        [changes]="changesService.getVersionedChanges()"
         (undoLastChange)="actionService.undoLastChange()"
         (publish)="actionService.publishChanges()"
       ></lib-unpublished-changes>
