@@ -14,50 +14,54 @@
         [ngClass]="mouseOnBurger ? 'burger-hover' : ''"
         style="font-size: x-large"
         ><i
-          [ngClass]="'fa ' + (changelogVisible ? 'fa-ellipsis-h' : 'fa-list-ol')"
+          [ngClass]="
+            'fa ' + (changelogVisible ? 'fa-ellipsis-h' : 'fa-list-ol')
+          "
           aria-hidden="true"
         ></i
       ></span>
     </div>
-    <div class="row">
-      <div class="col">
-        <button
-          class="btn btn-sm btn-block btn-primary mb-1"
-          (click)="undoLastChange()"
-        >
-        Undo last change
-        <i
-          class="fa fa-undo ml-2"
-          aria-hidden="true"
-          style="font-size: large"
-        ></i>
-        </button>
-      </div>
-      <div class="col">
-        <button
-          class="btn btn-sm btn-block btn-primary mb-1"
-          (click)="publish()"
-        >
-        Publish changes
-        <i
-          class="fa fa-upload ml-2"
-          aria-hidden="true"
-          style="font-size: large"
-        ></i>
-        </button>
+    <div class="container container-fluid">
+      <div class="row">
+        <div class="col p-1">
+          <button
+            class="btn btn-sm btn-block btn-primary"
+            (click)="undoLastChange()"
+          >
+            Undo last change
+            <i
+              class="fa fa-undo ml-2"
+              aria-hidden="true"
+              style="font-size: large"
+            ></i>
+          </button>
+        </div>
+        <div class="col p-1">
+          <button class="btn btn-sm btn-block btn-primary" (click)="publish()">
+            Publish changes
+            <i
+              class="fa fa-upload ml-2"
+              aria-hidden="true"
+              style="font-size: large"
+            ></i>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-  <div *ngIf="changelogVisible">
-    <ul class="list-group">
-      <li *ngFor="let change of unpublishedChanges" class="list-group-item">
-        <div>
-          <b>{{ change.message.split("\n")[0] }}</b> [{{
-            change.id.substring(0, 7)
-          }}]
-        </div>
-        <div>{{ change.date * 1000 | date: "medium":null:"de" }}, {{ change.author }}</div>
-      </li>
-    </ul>
+    <div *ngIf="changelogVisible">
+      <ul class="list-group">
+        <li *ngFor="let change of unpublishedChanges" class="list-group-item">
+          <div>
+            <b>{{ change.message.split("\n")[0] }}</b> [{{
+              change.id.substring(0, 7)
+            }}]
+          </div>
+          <div>
+            {{ change.date * 1000 | date: "medium":null:"de" }},
+            {{ change.author }}
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>

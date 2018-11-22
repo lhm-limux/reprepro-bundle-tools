@@ -1,15 +1,17 @@
 <div class="card bg-light">
   <div class="card-body py-1 px-1">
     <div class="card-title text-center">{{ field }}</div>
-    <div class="row">
-      <div *ngFor="let value of values" class="col">
-        <button
-          class="btn btn-sm btn-block mb-1"
-          (click)="toggle(value)"
-          [ngClass]="selected.has(value) ? 'btn-secondary' : 'btn-light'"
-        >
-          {{ value }}
-        </button>
+    <div class="container container-fluid">
+      <div class="row">
+        <div *ngFor="let value of values" class="col p-1">
+          <button
+            class="btn btn-sm btn-block"
+            (click)="toggle(value)"
+            [ngClass]="selected.has(value) ? 'btn-secondary' : 'btn-light'"
+          >
+            {{ value }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
