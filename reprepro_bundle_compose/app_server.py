@@ -44,11 +44,39 @@ async def handle_list_changes(request):
     return web.json_response(res)
 
 
+async def handle_undo_last_change(request):
+    logger.info("undoing last change")
+    res = []
+    with common_app_server.logging_redirect_for_webapp() as logs:
+        try:
+            repo = git.Repo(PROJECT_DIR)
+            repo.git.reset('--hard', "HEAD^1")
+            logger.info("Undoing last Change was successfull. Head is now at {}".format(repo.head.commit.hexsha))
+        except git.exc.GitCommandError as e:
+            logger.error("Undoing last Change failed:\n{}".format(e))
+        res = logs.toBackendLogEntryList()
+    return web.json_response(res)
+
+
+async def handle_publish_changes(request):
+    logger.info("publishing changes")
+    res = ["default"]
+    with common_app_server.logging_redirect_for_webapp() as logs:
+        try:
+            repo = git.Repo(PROJECT_DIR)
+            repo.git.push()
+            logger.info("Successfully Pushed changes")
+        except git.exc.GitCommandError as e:
+            logger.error("Publishing Changes failed:\n{}".format(e))
+        res = logs.toBackendLogEntryList()
+    return web.json_response(res)
+
+
 async def handle_mark_for_status(request):
     status = BundleStatus.getByName(request.rel_url.query['status'])
     ids = json.loads(request.rel_url.query['bundles'])
     logger.info("mark for status: {} --> {}".format(ids, status))
-    res = ""
+    res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         bundles = parseBundles(getBundleRepoSuites())
         markBundlesForStatus(bundles, set(ids), status, True)
@@ -59,7 +87,7 @@ async def handle_mark_for_status(request):
 
 async def handle_update_bundles(request):
     logger.info("update bundles called")
-    res = ""
+    res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         updateBundles()
         git_commit(list([BUNDLES_LIST_FILE]), "UPDATED {}".format(BUNDLES_LIST_FILE))
@@ -120,6 +148,8 @@ def registerRoutes(args, app):
         web.get('/api/markForStatus', handle_mark_for_status),
         web.get('/api/listChanges', handle_list_changes),
         web.get('/api/latestPublishedChange', handle_latest_published_change),
+        web.get('/api/undoLastChange', handle_undo_last_change),
+        web.get('/api/publishChanges', handle_publish_changes),
     ])
     if not args.no_static_files:
         app.add_routes([

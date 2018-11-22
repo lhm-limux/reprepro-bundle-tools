@@ -207,9 +207,11 @@ def logging_redirect_for_webapp():
     logger.addHandler(hndlr)
     logging.getLogger('reprepro_bundle').addHandler(hndlr)
     logging.getLogger('reprepro_bundle_compose').addHandler(hndlr)
+    logging.getLogger('reprepro_bundle_appserver').addHandler(hndlr)
     logging.getLogger('apt_repos').addHandler(hndlr)
     yield hndlr
     logging.getLogger('apt_repos').removeHandler(hndlr)
+    logging.getLogger('reprepro_bundle_appserver').removeHandler(hndlr)
     logging.getLogger('reprepro_bundle_compose').removeHandler(hndlr)
     logging.getLogger('reprepro_bundle').removeHandler(hndlr)
     logger.removeHandler(hndlr)
