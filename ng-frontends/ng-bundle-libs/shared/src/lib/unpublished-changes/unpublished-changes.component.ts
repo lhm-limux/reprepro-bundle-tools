@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { VersionedChange } from '../interfaces';
 
 @Component({
@@ -12,9 +12,17 @@ export class UnpublishedChangesComponent {
   @Input()
   unpublishedChanges: VersionedChange[];
 
-  undoLastChange() {
+  @Output()
+  undoLastChange = new EventEmitter<void>();
+
+  @Output()
+  publish = new EventEmitter<void>();
+
+  emitUndoLastChange() {
+    this.undoLastChange.next();
   }
 
-  publish() {
+  emitPublish() {
+    this.publish.next();
   }
 }

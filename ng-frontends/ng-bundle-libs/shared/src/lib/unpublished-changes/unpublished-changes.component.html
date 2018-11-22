@@ -15,12 +15,12 @@
         [(status)]="changelogVisible"
       ></lib-fontawsome-toggle-button>
     </div>
-    <div class="container container-fluid">
+    <div class="container-fluid">
       <div class="row">
         <div class="col p-1">
           <button
             class="btn btn-sm btn-block btn-primary"
-            (click)="undoLastChange()"
+            (click)="emitUndoLastChange()"
           >
             Undo last change
             <i
@@ -31,7 +31,7 @@
           </button>
         </div>
         <div class="col p-1">
-          <button class="btn btn-sm btn-block btn-primary" (click)="publish()">
+          <button class="btn btn-sm btn-block btn-primary" (click)="emitPublish()">
             Publish changes
             <i
               class="fa fa-upload ml-2"
@@ -46,9 +46,8 @@
       <ul class="list-group">
         <li *ngFor="let change of unpublishedChanges" class="list-group-item">
           <div>
-            <b>{{ change.message.split("\n")[0] }}</b> [{{
-              change.id.substring(0, 7)
-            }}]
+            [{{ change.id.substring(0, 7) }}]
+            <b> {{ change.message.split("\n")[0] }}</b>
           </div>
           <div>
             {{ change.date * 1000 | date: "medium":null:"de" }},
