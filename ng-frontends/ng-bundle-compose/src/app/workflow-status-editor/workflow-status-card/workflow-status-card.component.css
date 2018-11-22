@@ -4,10 +4,6 @@
   z-index: 2;
 }
 
-.folder-hover {
-  opacity: 0.7;
-}
-
 .counter {
   position: absolute;
   right: -20px;

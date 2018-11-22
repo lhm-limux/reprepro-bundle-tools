@@ -5,18 +5,18 @@
   (mouseleave)="active = false"
 >
   <div class="card-header">
-    <span
-      (click)="showContent = !showContent"
-      (mouseenter)="onFolder(true)"
-      (mouseleave)="onFolder(false)"
-      title="fold / unfold"
-      [ngClass]="'mr-3 folder ' + (mouseOnFolder ? 'folder-hover' : '')"
-    >
-      <i [ngClass]="'fa ' + (showContent ? 'fa-folder-open' : 'fa-folder')"></i>
-      <span class="badge-pill badge-light counter mr-3">{{
+    <lib-fontawsome-toggle-button
+      class="folder mr-3"
+      titleOff="Show Bundles"
+      titleOn="Hide Bundles"
+      symbolOn="fa-folder-open"
+      symbolOff="fa-folder"
+      style="font-size: x-large"
+      [(status)]="showContent"
+      ><span class="badge-pill badge-light counter mr-3">{{
         managedBundleInfos.length
-      }}</span>
-    </span>
+      }}</span></lib-fontawsome-toggle-button
+    >
     <b>{{ status.ord }}) {{ status.name }}</b>
     <div
       *ngIf="status.tracStatus"

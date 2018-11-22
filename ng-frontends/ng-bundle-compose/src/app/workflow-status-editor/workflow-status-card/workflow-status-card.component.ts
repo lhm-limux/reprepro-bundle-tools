@@ -1,12 +1,17 @@
-import { WorkflowMetadata, ManagedBundleInfo, ManagedBundle } from "shared";
-import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
+import {
+  WorkflowMetadata,
+  ManagedBundleInfo,
+  ManagedBundle,
+  FontawsomeToggleButtonComponent
+} from "shared";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 
 @Component({
   selector: "app-workflow-status-card",
   templateUrl: "./workflow-status-card.component.html",
   styleUrls: ["./workflow-status-card.component.css"]
 })
-export class WorkflowStatusCardComponent implements OnInit {
+export class WorkflowStatusCardComponent {
   @Input()
   cardFormat: string;
 
@@ -35,11 +40,8 @@ export class WorkflowStatusCardComponent implements OnInit {
   }>();
 
   active = false;
-  mouseOnFolder = false;
 
   constructor() {}
-
-  ngOnInit() {}
 
   doMarkedForStage(event) {
     this.markedForStage.next(event);
@@ -50,9 +52,5 @@ export class WorkflowStatusCardComponent implements OnInit {
       stage: newStatus,
       bundles: this.managedBundleInfos.map(i => i.managedBundle)
     });
-  }
-
-  onFolder(b: boolean) {
-    this.mouseOnFolder = b;
   }
 }
