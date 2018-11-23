@@ -78,7 +78,7 @@ async def handle_publish_changes(request):
         try:
             repo = git.Repo(PROJECT_DIR)
             repo.git.push()
-            logger.info("Successfully Pusblished changes")
+            logger.info("Successfully published Changes")
         except git.exc.GitCommandError as e:
             logger.error("Publishing Changes failed:\n{}".format(e))
         res = logs.toBackendLogEntryList()
