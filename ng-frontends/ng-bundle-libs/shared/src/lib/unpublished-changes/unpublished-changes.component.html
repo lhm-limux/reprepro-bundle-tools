@@ -26,7 +26,7 @@
             [disabled]="!hasUnpublished()"
             (click)="emitUndoLastChange()"
           >
-            Undo last change
+            Undo last Change
             <i
               class="fa fa-undo ml-2"
               aria-hidden="true"
@@ -40,7 +40,7 @@
             [disabled]="!hasUnpublished()"
             (click)="emitPublish()"
           >
-            Publish changes
+            Publish Changes
             <i
               class="fa fa-upload ml-2"
               aria-hidden="true"
@@ -54,10 +54,14 @@
       <ul class="list-group">
         <li *ngFor="let change of changes" class="list-group-item">
           <div>
-            <i
-              class="fa"
-              [ngClass]="change.published ? 'fa-ban' : 'fa-user'"
-            ></i>
+            <span
+              title="{{ change.published ? 'Published Change' : 'Unpublished (personal) Change' }}"
+            >
+              <i
+                class="fa"
+                [ngClass]="change.published ? 'fa-ban' : 'fa-user'"
+              ></i
+            ></span>
             {{ change.id.substring(0, 7) }}
             <b> {{ change.message.split("\n")[0] }}</b>
           </div>
