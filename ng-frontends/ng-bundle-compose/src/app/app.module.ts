@@ -9,13 +9,15 @@ import { SharedModule } from "shared";
 import { WorkflowStatusEditorComponent } from "./workflow-status-editor/workflow-status-editor.component";
 import { ManagedBundleCardComponent } from "./workflow-status-editor/managed-bundle-card/managed-bundle-card.component";
 import { WorkflowStatusCardComponent } from "./workflow-status-editor/workflow-status-card/workflow-status-card.component";
+import { ManagedBundleEditorComponent } from './managed-bundle-editor/managed-bundle-editor.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     WorkflowStatusEditorComponent,
     ManagedBundleCardComponent,
-    WorkflowStatusCardComponent
+    WorkflowStatusCardComponent,
+    ManagedBundleEditorComponent
   ],
   imports: [
     BrowserModule,
