@@ -185,7 +185,7 @@ def registerRoutes(args, app):
             web.get('/', handle_router_link),
             web.get('/workflow-status-editor', handle_router_link),
             web.get('/workflow-status-editor/{tail:.*}', handle_router_link),
-            #web.get('/bundle/{tail:.*}', handle_router_link),
+            web.get('/managed-bundle/{tail:.*}', handle_router_link),
         ])
 
 
