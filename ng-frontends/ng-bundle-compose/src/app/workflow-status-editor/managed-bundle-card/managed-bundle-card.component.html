@@ -2,6 +2,7 @@
   [ngClass]="'card ' + (active ? 'text-light bg-secondary' : 'text-dark border-info')"
   (mouseover)="active = true"
   (mouseleave)="active = false"
+  (click)="emitClicked()"
 >
   <div class="card-header">
     <b>{{ info.managedBundle.id }}</b>

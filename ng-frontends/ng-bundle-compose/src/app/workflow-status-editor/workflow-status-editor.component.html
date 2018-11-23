@@ -79,4 +79,5 @@
   [dropStatus]="getDropStatus(status)"
   [showContent]="getShowContent(status)"
   (markedForStage)="markForStage($event)"
+  (clicked)="navigateTo($event)"
 ></app-workflow-status-card>

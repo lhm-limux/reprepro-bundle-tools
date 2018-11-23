@@ -177,6 +177,15 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     this.actionService.updateBundles();
   }
 
+  navigateTo(bundle: ManagedBundle): void {
+      this._storeSettings();
+      this.router.navigate([
+        "/managed-bundle/",
+        bundle.distribution,
+        bundle.id.split("/")[1]
+      ]);
+  }
+
   @HostListener("window:beforeunload", ["$event"])
   private _storeSettings($event: any = null): void {
     const settings: { [key: string]: string[] } = {};

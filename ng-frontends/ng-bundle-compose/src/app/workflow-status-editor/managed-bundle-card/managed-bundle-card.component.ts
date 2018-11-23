@@ -24,6 +24,9 @@ export class ManagedBundleCardComponent implements OnInit {
     bundles: ManagedBundle[];
   }>();
 
+  @Output()
+  clicked = new EventEmitter<ManagedBundle>();
+
   constructor() {}
   ngOnInit() {}
 
@@ -32,5 +35,9 @@ export class ManagedBundleCardComponent implements OnInit {
       stage: status,
       bundles: [ this.info.managedBundle ]
     });
+  }
+
+  emitClicked() {
+    this.clicked.next(this.info.managedBundle);
   }
 }

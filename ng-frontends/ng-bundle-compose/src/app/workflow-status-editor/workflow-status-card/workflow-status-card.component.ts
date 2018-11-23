@@ -39,12 +39,19 @@ export class WorkflowStatusCardComponent {
     bundles: ManagedBundle[];
   }>();
 
+  @Output()
+  clicked = new EventEmitter<ManagedBundle>();
+
   active = false;
 
   constructor() {}
 
   doMarkedForStage(event) {
     this.markedForStage.next(event);
+  }
+
+  doClicked(event) {
+    this.clicked.next(event);
   }
 
   markForStage(newStatus) {
