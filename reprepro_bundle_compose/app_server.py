@@ -13,7 +13,7 @@ import io
 from aiohttp import web
 import git
 import reprepro_bundle_compose
-from reprepro_bundle_compose import PROJECT_DIR, BUNDLES_LIST_FILE, BundleStatus, getTargetRepoSuites, getBundleRepoSuites, parseBundles, updateBundles, trac_api, getTracConfig, markBundlesForStatus, git_commit
+from reprepro_bundle_compose import PROJECT_DIR, BUNDLES_LIST_FILE, BundleStatus, getTargetRepoSuites, getBundleRepoSuites, parseBundles, updateBundles, trac_api, getTracConfig, markBundlesForStatus, git_commit, ensure_clean_git_repo, GitNotCleanException
 from reprepro_bundle_appserver import common_app_server, common_interfaces
 
 
@@ -59,11 +59,15 @@ async def handle_undo_last_change(request):
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
             repo = git.Repo(PROJECT_DIR)
+            ensure_clean_git_repo(repo)
             repo.git.reset('--hard', "HEAD^1")
             logger.info("Undoing last Change was successfull")
         except git.exc.GitCommandError as e:
             logger.error("Undoing last Change failed:\n{}".format(e))
-        res = logs.toBackendLogEntryList()
+        except GitNotCleanException as e:
+            logger.error(e)
+        finally:
+            res = logs.toBackendLogEntryList()
     return web.json_response(res)
 
 
@@ -87,14 +91,19 @@ async def handle_mark_for_status(request):
     logger.info("mark for status: {} --> {}".format(ids, status))
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
-        bundles = parseBundles(getBundleRepoSuites())
-        markBundlesForStatus(bundles, set(ids), status, True)
-        msg = "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids)))
-        if len(ids) == 1:
-          msg = "MARKED {} for status '{}'".format("".join(ids), status)
-        repo = git.Repo(PROJECT_DIR)
-        git_commit(repo, [BUNDLES_LIST_FILE], msg)
-        res = logs.toBackendLogEntryList()
+        try:
+            repo = git.Repo(PROJECT_DIR)
+            ensure_clean_git_repo(repo)
+            bundles = parseBundles(getBundleRepoSuites())
+            markBundlesForStatus(bundles, set(ids), status, True)
+            msg = "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids)))
+            if len(ids) == 1:
+              msg = "MARKED {} for status '{}'".format("".join(ids), status)
+            git_commit(repo, [BUNDLES_LIST_FILE], msg)
+        except GitNotCleanException as e:
+            logger.error(e)
+        finally:
+            res = logs.toBackendLogEntryList()
     return web.json_response(res)
 
 
@@ -102,10 +111,15 @@ async def handle_update_bundles(request):
     logger.info("handling 'Update Bundles'")
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
-        updateBundles()
-        repo = git.Repo(PROJECT_DIR)
-        git_commit(repo, [BUNDLES_LIST_FILE], "UPDATED {}".format(BUNDLES_LIST_FILE))
-        res = logs.toBackendLogEntryList()
+        try:
+            repo = git.Repo(PROJECT_DIR)
+            ensure_clean_git_repo(repo)
+            updateBundles()
+            git_commit(repo, [BUNDLES_LIST_FILE], "UPDATED {}".format(BUNDLES_LIST_FILE))
+        except GitNotCleanException as e:
+            logger.error(e)
+        finally:
+            res = logs.toBackendLogEntryList()
     return web.json_response(res)
 
 

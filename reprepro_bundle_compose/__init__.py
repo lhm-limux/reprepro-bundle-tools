@@ -239,3 +239,13 @@ def git_commit(repo, git_add_list, msg):
             logger.info("No Changes --> No new Commit")
     except git.exc.GitCommandError as e:
         logger.error("Committing '{}' failed:\n{}".format(msg, e))
+
+
+class GitNotCleanException(Exception):
+    def __init__(self):
+        Exception.__init__(self, "Action denied since the GIT-Repository is not clean.")
+
+
+def ensure_clean_git_repo(repo):
+    if len(repo.index.diff(None)) > 0 or len(repo.index.diff(repo.head.commit)) > 0:
+        raise GitNotCleanException()
