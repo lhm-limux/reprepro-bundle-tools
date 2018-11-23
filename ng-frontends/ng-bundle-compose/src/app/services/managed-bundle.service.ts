@@ -50,6 +50,13 @@ export class ManagedBundleService {
     return this.managedBundles.length > 0;
   }
 
+  getManagedBundleInfo(bundlename: string): ManagedBundleInfo {
+    const found = this.managedBundleInfos.filter(
+      i => i.managedBundle.id === bundlename
+    );
+    return found.length >= 0 ? found[0] : null;
+  }
+
   getManagedBundleInfosForStatus(
     status: WorkflowMetadata
   ): ManagedBundleInfo[] {
@@ -72,10 +79,14 @@ export class ManagedBundleService {
   }
 
   getAvailableDistributions(): string[] {
-    return Array.from(new Set(this.managedBundles.map(bundle => bundle.distribution)));
+    return Array.from(
+      new Set(this.managedBundles.map(bundle => bundle.distribution))
+    );
   }
 
   getAvailableTargets(): string[] {
-    return Array.from(new Set(this.managedBundles.map(bundle => bundle.target)));
+    return Array.from(
+      new Set(this.managedBundles.map(bundle => bundle.target))
+    );
   }
 }
