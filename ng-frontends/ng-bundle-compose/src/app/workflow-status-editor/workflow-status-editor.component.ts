@@ -7,11 +7,11 @@ import {
   UnpublishedChangesComponent,
   VersionedChangesService
 } from "shared";
-import { WorkflowMetadataService } from "./workflow-metadata.service";
+import { WorkflowMetadataService } from "../services/workflow-metadata.service";
 import { Router } from "@angular/router";
-import { ManagedBundleService } from "./managed-bundle.service";
+import { ManagedBundleService } from "../services/managed-bundle.service";
 import { Subscription } from "rxjs";
-import { BundleComposeActionService } from "./bundle-compose-action.service";
+import { BundleComposeActionService } from "../services/bundle-compose-action.service";
 
 const STAGES_AND_CANDIDATES = "Stages And Candidates";
 const OTHERS = "Others";
