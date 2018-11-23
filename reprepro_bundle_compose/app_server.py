@@ -54,13 +54,13 @@ def getPublishedCommits(repo):
 
 
 async def handle_undo_last_change(request):
-    logger.info("undoing last change")
+    logger.info("handling 'Undo last Change'")
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
             repo = git.Repo(PROJECT_DIR)
             repo.git.reset('--hard', "HEAD^1")
-            logger.info("Undoing last Change was successfull. Head is now at {}".format(repo.head.commit.hexsha))
+            logger.info("Undoing last Change was successfull")
         except git.exc.GitCommandError as e:
             logger.error("Undoing last Change failed:\n{}".format(e))
         res = logs.toBackendLogEntryList()
@@ -68,13 +68,13 @@ async def handle_undo_last_change(request):
 
 
 async def handle_publish_changes(request):
-    logger.info("publishing changes")
+    logger.info("handling 'Publish Changes'")
     res = ["default"]
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
             repo = git.Repo(PROJECT_DIR)
             repo.git.push()
-            logger.info("Successfully Pushed changes")
+            logger.info("Successfully Pusblished changes")
         except git.exc.GitCommandError as e:
             logger.error("Publishing Changes failed:\n{}".format(e))
         res = logs.toBackendLogEntryList()
@@ -89,17 +89,22 @@ async def handle_mark_for_status(request):
     with common_app_server.logging_redirect_for_webapp() as logs:
         bundles = parseBundles(getBundleRepoSuites())
         markBundlesForStatus(bundles, set(ids), status, True)
-        git_commit(list([BUNDLES_LIST_FILE]), "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids))))
+        msg = "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids)))
+        if len(ids) == 1:
+          msg = "MARKED {} for status '{}'".format("".join(ids), status)
+        repo = git.Repo(PROJECT_DIR)
+        git_commit(repo, [BUNDLES_LIST_FILE], msg)
         res = logs.toBackendLogEntryList()
     return web.json_response(res)
 
 
 async def handle_update_bundles(request):
-    logger.info("update bundles called")
+    logger.info("handling 'Update Bundles'")
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         updateBundles()
-        git_commit(list([BUNDLES_LIST_FILE]), "UPDATED {}".format(BUNDLES_LIST_FILE))
+        repo = git.Repo(PROJECT_DIR)
+        git_commit(repo, [BUNDLES_LIST_FILE], "UPDATED {}".format(BUNDLES_LIST_FILE))
         res = logs.toBackendLogEntryList()
     return web.json_response(res)
 

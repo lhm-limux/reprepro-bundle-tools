@@ -25,6 +25,7 @@ import sys
 import logging
 import subprocess
 import apt_pkg
+import git
 from reprepro_bundle_compose.bundle_status import BundleStatus
 from reprepro_bundle_compose.managed_bundle import ManagedBundle
 from reprepro_bundle_compose.distribution import Distribution
@@ -226,18 +227,15 @@ def markBundlesForStatus(bundles, ids, status, force=False):
         storeBundles(bundles)
 
 
-def git_commit(git_add_list, msg):
+def git_commit(repo, git_add_list, msg):
     if len(git_add_list) == 0:
-        logger.info("Nothing to add for git commit --> skipping git commit")
+        logger.warning("Nothing to add for git commit --> skipping git commit")
         return
     try:
-        add_cmd = ['git', 'add']
-        add_cmd.extend(git_add_list)
-        subprocess.check_output(add_cmd)
-        if subprocess.call(('git', 'diff', '--cached', '--quiet', '--exit-code')) == 0:
-          logger.info("No changes, no commit")
-          return
-        subprocess.check_output(('git', 'commit', '-m', msg))
-        logger.info("New commit '{}'".format(msg.split('\n')[0]))
-    except subprocess.CalledProcessError as e:
-        logger.warning("Committing '{}' failed:\n{}".format(msg, e.output.decode('utf-8')))
+        repo.index.add(git_add_list)
+        if len(repo.index.diff(repo.head.commit)) > 0:
+            repo.index.commit(msg)
+        else:
+            logger.info("No Changes --> No new Commit")
+    except git.exc.GitCommandError as e:
+        logger.error("Committing '{}' failed:\n{}".format(msg, e))
