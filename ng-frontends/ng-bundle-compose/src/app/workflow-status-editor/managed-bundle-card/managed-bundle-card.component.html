@@ -2,9 +2,8 @@
   [ngClass]="'card ' + (active ? 'text-light bg-secondary' : 'text-dark border-info')"
   (mouseover)="active = true"
   (mouseleave)="active = false"
-  (click)="emitClicked()"
 >
-  <div class="card-header">
+  <div class="card-header" (click)="emitClicked()">
     <b>{{ info.managedBundle.id }}</b>
     <div
       [ngClass]="
@@ -16,7 +15,7 @@
   </div>
   <div class="card-body">
     <div class="row">
-      <div class="col">
+      <div class="col" (click)="emitClicked()">
         <h5 class="card-title">{{ info.subject }}</h5>
         <div>Creator: {{ info.creator }}</div>
         <div *ngIf="info.managedBundle.ticket && info.managedBundle.ticketUrl">
