@@ -4,6 +4,10 @@
   z-index: 2;
 }
 
+.workflow-hovered {
+  opacity: 0.7;
+}
+
 .workflow-label {
   position: absolute;
   font-weight: bold;

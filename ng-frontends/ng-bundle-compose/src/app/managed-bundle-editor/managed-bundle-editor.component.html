@@ -36,7 +36,14 @@
         </div>
         <div class="col" style="text-align: right;">
           <div class="container-fluid">
-            <span *ngFor="let s of getVisibleWorkflow()" class="workflow">
+            <span
+              *ngFor="let s of getVisibleWorkflow()"
+              class="workflow"
+              [ngClass]="(s == hoveredStatus) ? 'workflow-hovered' : ''"
+              (mouseenter)="hoveredStatus = s"
+              (mouseleave)="hoveredStatus = null"
+              (click)="markForStatus(s)"
+            >
               <img
                 [src]="
                   s.name === info.managedBundle.status.name

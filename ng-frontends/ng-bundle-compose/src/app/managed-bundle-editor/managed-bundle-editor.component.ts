@@ -4,6 +4,7 @@ import { Subscription } from "rxjs";
 import { WorkflowMetadata, ManagedBundle, ManagedBundleInfo } from "shared";
 import { ManagedBundleService } from "../services/managed-bundle.service";
 import { WorkflowMetadataService } from "../services/workflow-metadata.service";
+import { BundleComposeActionService } from "../services/bundle-compose-action.service";
 
 @Component({
   selector: "app-managed-bundle-editor",
@@ -27,11 +28,13 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
     subject: "-- No Subject --"
   };
   private workflow: WorkflowMetadata[] = [];
+  hoveredStatus: WorkflowMetadata = null;
 
   constructor(
     private route: ActivatedRoute,
     private bundleService: ManagedBundleService,
-    private workflowMetadataService: WorkflowMetadataService
+    private workflowMetadataService: WorkflowMetadataService,
+    public actionService: BundleComposeActionService
   ) {
     this.subscriptions.push(
       this.workflowMetadataService.castWorkflowMetadata.subscribe(
@@ -49,6 +52,11 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.push(
+      this.actionService.cast.subscribe(data => {
+        this.bundleService.update();
+      })
+    );
+    this.subscriptions.push(
       this.bundleService.cast.subscribe(() => this.update())
     );
     this.bundleService.update();
@@ -60,6 +68,10 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
 
   getVisibleWorkflow(): WorkflowMetadata[] {
     return this.workflow.filter(s => s.name !== "UNKNOWN");
+  }
+
+  markForStatus(s): void {
+    this.actionService.markForStatus(s, [this.info.managedBundle]);
   }
 
   update(): void {
