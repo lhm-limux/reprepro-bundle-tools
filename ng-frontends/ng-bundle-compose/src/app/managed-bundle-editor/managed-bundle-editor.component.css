@@ -1,0 +1,17 @@
+.workflow {
+  position: relative;
+  font-size: x-large;
+  z-index: 2;
+}
+
+.workflow-label {
+  position: absolute;
+  font-weight: bold;
+  vertical-align: middle;
+  text-align: center;
+  width: 7em;
+  right: 10px;
+  top: -20px;
+  font-size: large;
+  z-index: 3;
+}

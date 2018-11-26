@@ -12,26 +12,44 @@
   </div>
   <div class="card-body">
     <h3 class="card-title">{{ info.subject }}</h3>
-    <div>Creator: {{ info.creator }}</div>
-    <div *ngIf="info.managedBundle.ticket && info.managedBundle.ticketUrl">
-      Ticket:
-      <a
-        href="{{ info.managedBundle.ticketUrl }}"
-        target="_blank"
-        style="color: inherit; outline: 0;"
-        ><b>#{{ info.managedBundle.ticket }}</b></a
-      >
-    </div>
-    <div *ngIf="info.managedBundle.ticket && !info.managedBundle.ticketUrl">
-      Ticket: <b>#{{ info.managedBundle.ticket }}</b>
-    </div>
-    <div>Status:</div>
     <div class="container-fluid">
       <div class="row">
-        <div *ngFor="let s of getVisibleWorkflow()" class="col">
-          <div class="card border-info">
-            <img src="./assets/workflow.png">
-            <div class="card-header">{{ s.name | uppercase }}</div>
+        <div class="col-sm-2 pl-0">
+          <div>Creator: {{ info.creator }}</div>
+          <div
+            *ngIf="info.managedBundle.ticket && info.managedBundle.ticketUrl"
+          >
+            Ticket:
+            <a
+              href="{{ info.managedBundle.ticketUrl }}"
+              target="_blank"
+              style="color: inherit; outline: 0;"
+              ><b>#{{ info.managedBundle.ticket }}</b></a
+            >
+          </div>
+          <div>Status: {{ info.managedBundle.status.name | uppercase }}</div>
+          <div
+            *ngIf="info.managedBundle.ticket && !info.managedBundle.ticketUrl"
+          >
+            Ticket: <b>#{{ info.managedBundle.ticket }}</b>
+          </div>
+        </div>
+        <div class="col" style="text-align: right;">
+          <div class="container-fluid">
+            <span *ngFor="let s of getVisibleWorkflow()" class="workflow">
+              <img
+                [src]="
+                  s.name === info.managedBundle.status.name
+                    ? './assets/workflow_sel.png'
+                    : './assets/workflow.png'
+                "
+                class="my-1"
+                width="160px"
+              />
+              <span class="workflow-label mx-2">{{
+                s.name.split("_").join(" ") | uppercase
+              }}</span>
+            </span>
           </div>
         </div>
       </div>
