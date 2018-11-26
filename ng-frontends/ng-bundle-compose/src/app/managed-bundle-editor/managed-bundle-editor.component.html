@@ -1,3 +1,41 @@
-<h2>
-  Bundle {{ info.managedBundle.id }}
-</h2>
+<div class="card border-info">
+  <div class="card-header">
+    <h2>
+      {{ info.managedBundle.id }}
+      <span
+        class="badge-pill float-right mx-2 badge-dark"
+        style="font-size: large;"
+      >
+        <b>Target: {{ info.managedBundle.target | uppercase }}</b>
+      </span>
+    </h2>
+  </div>
+  <div class="card-body">
+    <h3 class="card-title">{{ info.subject }}</h3>
+    <div>Creator: {{ info.creator }}</div>
+    <div *ngIf="info.managedBundle.ticket && info.managedBundle.ticketUrl">
+      Ticket:
+      <a
+        href="{{ info.managedBundle.ticketUrl }}"
+        target="_blank"
+        style="color: inherit; outline: 0;"
+        ><b>#{{ info.managedBundle.ticket }}</b></a
+      >
+    </div>
+    <div *ngIf="info.managedBundle.ticket && !info.managedBundle.ticketUrl">
+      Ticket: <b>#{{ info.managedBundle.ticket }}</b>
+    </div>
+    <div>Status:</div>
+    <div class="container-fluid">
+      <div class="row">
+        <div *ngFor="let s of getVisibleWorkflow()" class="col">
+          <div class="card border-info">
+            <img src="./assets/workflow.png">
+            <div class="card-header">{{ s.name | uppercase }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- iframe [src]="info.managedBundle.ticketUrl" frameborder="0"></iframe -->
+</div>

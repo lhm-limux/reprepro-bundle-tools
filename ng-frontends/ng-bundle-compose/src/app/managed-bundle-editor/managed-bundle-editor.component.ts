@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ManagedBundleService } from "../services/managed-bundle.service";
 import { Subscription } from "rxjs";
-import { ManagedBundle, ManagedBundleInfo } from "shared/shared";
+import { WorkflowMetadata, ManagedBundle, ManagedBundleInfo } from "shared";
+import { ManagedBundleService } from "../services/managed-bundle.service";
+import { WorkflowMetadataService } from "../services/workflow-metadata.service";
 
 @Component({
   selector: "app-managed-bundle-editor",
@@ -23,19 +24,27 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
       ticket: "",
       ticketUrl: ""
     },
-    subject: "-- No Subject --",
+    subject: "-- No Subject --"
   };
+  private workflow: WorkflowMetadata[] = [];
 
   constructor(
     private route: ActivatedRoute,
-    private bundleService: ManagedBundleService
+    private bundleService: ManagedBundleService,
+    private workflowMetadataService: WorkflowMetadataService
   ) {
+    this.subscriptions.push(
+      this.workflowMetadataService.castWorkflowMetadata.subscribe(
+        data => (this.workflow = data)
+      )
+    );
     this.subscriptions.push(
       this.route.params.subscribe(p => {
         this.bundlename = "bundle:" + p["dist"] + "/" + p["id"];
         this.update();
       })
     );
+    this.workflowMetadataService.update();
   }
 
   ngOnInit() {
@@ -47,6 +56,10 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
+  }
+
+  getVisibleWorkflow(): WorkflowMetadata[] {
+    return this.workflow.filter(s => s.name !== "UNKNOWN");
   }
 
   update(): void {
