@@ -16,6 +16,18 @@
       <div class="row">
         <div class="col-sm-2 pl-0">
           <div>Creator: {{ info.creator }}</div>
+          <div>
+            Target:
+            <select
+              #targetSelect
+              class="ml-1"
+              ngModel="info.managedBundle.target"
+              (change)="setTarget()"
+            >
+              <option value="plus">Standard (PLUS)</option>
+              <option value="unattended">Unattended Security</option>
+            </select>
+          </div>
           <div
             *ngIf="info.managedBundle.ticket && info.managedBundle.ticketUrl"
           >
@@ -39,7 +51,7 @@
             <span
               *ngFor="let s of getVisibleWorkflow()"
               class="workflow"
-              [ngClass]="(s == hoveredStatus) ? 'workflow-hovered' : ''"
+              [ngClass]="s == hoveredStatus ? 'workflow-hovered' : ''"
               (mouseenter)="hoveredStatus = s"
               (mouseleave)="hoveredStatus = null"
               (click)="markForStatus(s)"

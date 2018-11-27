@@ -48,6 +48,24 @@ export class BundleComposeActionService {
       );
   }
 
+  setTarget(target: string, bundles: ManagedBundle[]): void {
+    const params = new HttpParams()
+      .set("target", target)
+      .set("bundles", JSON.stringify(bundles.map(b => b.id)));
+    this.http
+      .get<BackendLogEntry[]>(this.config.getApiUrl("setTarget"), {
+        params: params
+      })
+      .subscribe(
+        (data: BackendLogEntry[]) => {
+          this.changed.next(data);
+        },
+        errResp => {
+          console.error("Set Target failed: " + errResp);
+        }
+      );
+  }
+
   undoLastChange(): void {
     this.http
       .get<BackendLogEntry[]>(this.config.getApiUrl("undoLastChange"))

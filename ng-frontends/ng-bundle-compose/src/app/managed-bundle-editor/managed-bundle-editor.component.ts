@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
 import { WorkflowMetadata, ManagedBundle, ManagedBundleInfo } from "shared";
@@ -29,6 +29,9 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
   };
   private workflow: WorkflowMetadata[] = [];
   hoveredStatus: WorkflowMetadata = null;
+
+  @ViewChild("targetSelect")
+  targetSelect;
 
   constructor(
     private route: ActivatedRoute,
@@ -72,6 +75,12 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
 
   markForStatus(s): void {
     this.actionService.markForStatus(s, [this.info.managedBundle]);
+  }
+
+  setTarget(): void {
+    const sel = this.targetSelect.nativeElement;
+    const newTarget = sel.options[sel.selectedIndex].value;
+    this.actionService.setTarget(newTarget, [this.info.managedBundle]);
   }
 
   update(): void {
