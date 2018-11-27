@@ -41,13 +41,13 @@ async def handle_router_link(request):
 
 
 def registerRoutes(args, app):
-    app.add_routes([
+    app.router.add_routes([
         # api routes
         web.get('/api/bundleList', handle_get_bundleList),
         web.get('/api/bundleMetadata', handle_get_metadata),
     ])
     if not args.no_static_files:
-        app.add_routes([
+        app.router.add_routes([
             # angular router-links
             web.get('/', handle_router_link),
             web.get('/bundle-list', handle_router_link),

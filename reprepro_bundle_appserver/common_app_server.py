@@ -166,7 +166,7 @@ async def start_browser(url):
 async def run_webserver(args, registerAdditionalRoutes=None, serveDistPath=None):
     app = web.Application()
 
-    app.add_routes([
+    app.router.add_routes([
         # api routes
         web.get('/api/log', websocket_handler),
         web.get('/api/unregister', handle_unregister),
@@ -175,7 +175,7 @@ async def run_webserver(args, registerAdditionalRoutes=None, serveDistPath=None)
     if registerAdditionalRoutes:
         registerAdditionalRoutes(args, app)
     if serveDistPath and not args.no_static_files:
-        app.add_routes([ web.static('/', serveDistPath) ])
+        app.router.add_static('/', serveDistPath)
 
     runner = web.AppRunner(app)
     await runner.setup()

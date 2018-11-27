@@ -196,7 +196,7 @@ async def handle_router_link(request):
 
 
 def registerRoutes(args, app):
-    app.add_routes([
+    app.router.add_routes([
         # api routes
         web.get('/api/workflowMetadata', handle_get_workflow_metadata),
         web.get('/api/configuredStages', handle_get_configured_stages),
@@ -212,7 +212,7 @@ def registerRoutes(args, app):
         web.get('/api/publishChanges', handle_publish_changes),
     ])
     if not args.no_static_files:
-        app.add_routes([
+        app.router.add_routes([
             # angular router-links
             web.get('/', handle_router_link),
             web.get('/workflow-status-editor', handle_router_link),
