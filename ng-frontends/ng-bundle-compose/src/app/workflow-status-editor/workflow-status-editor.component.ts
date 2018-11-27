@@ -47,12 +47,12 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this._restoreSettings();
     this.subscriptions.push(
-      this.workflowMetadataService.castWorkflowMetadata.subscribe(
+      this.workflowMetadataService.workflowMetadata.subscribe(
         data => (this.workflowMetadata = data)
       )
     );
     this.subscriptions.push(
-      this.workflowMetadataService.castConfiguredStages.subscribe(
+      this.workflowMetadataService.configuredStages.subscribe(
         data => (this.configuredStages = data)
       )
     );
@@ -178,12 +178,12 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   }
 
   navigateTo(bundle: ManagedBundle): void {
-      this._storeSettings();
-      this.router.navigate([
-        "/managed-bundle/",
-        bundle.distribution,
-        bundle.id.split("/")[1]
-      ]);
+    this._storeSettings();
+    this.router.navigate([
+      "/managed-bundle/",
+      bundle.distribution,
+      bundle.id.split("/")[1]
+    ]);
   }
 
   @HostListener("window:beforeunload", ["$event"])

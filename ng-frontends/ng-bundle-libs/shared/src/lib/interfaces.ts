@@ -54,3 +54,8 @@ export interface VersionedChange {
   date: number,
   published: boolean
 }
+
+export interface TargetDescription {
+  value: string,
+  description: string
+}

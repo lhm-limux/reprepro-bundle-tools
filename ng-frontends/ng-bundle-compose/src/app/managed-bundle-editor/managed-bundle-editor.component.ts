@@ -1,3 +1,4 @@
+import { TargetDescription } from './../../../reference/projects/shared/src/lib/interfaces';
 import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
@@ -28,6 +29,7 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
     subject: "-- No Subject --"
   };
   private workflow: WorkflowMetadata[] = [];
+  private targets: TargetDescription[] = [];
   hoveredStatus: WorkflowMetadata = null;
 
   @ViewChild("targetSelect")
@@ -36,12 +38,17 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private bundleService: ManagedBundleService,
-    private workflowMetadataService: WorkflowMetadataService,
+    private metadataService: WorkflowMetadataService,
     public actionService: BundleComposeActionService
   ) {
     this.subscriptions.push(
-      this.workflowMetadataService.castWorkflowMetadata.subscribe(
+      this.metadataService.workflowMetadata.subscribe(
         data => (this.workflow = data)
+      )
+    );
+    this.subscriptions.push(
+      this.metadataService.configuredTargets.subscribe(
+        data => (this.targets = data)
       )
     );
     this.subscriptions.push(
@@ -50,7 +57,7 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
         this.update();
       })
     );
-    this.workflowMetadataService.update();
+    this.metadataService.update();
   }
 
   ngOnInit() {
@@ -71,6 +78,10 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
 
   getVisibleWorkflow(): WorkflowMetadata[] {
     return this.workflow.filter(s => s.name !== "UNKNOWN");
+  }
+
+  getTargets(): TargetDescription[] {
+    return this.targets;
   }
 
   markForStatus(s): void {

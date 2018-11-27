@@ -21,11 +21,16 @@
             <select
               #targetSelect
               class="ml-1"
-              ngModel="info.managedBundle.target"
               (change)="setTarget()"
             >
-              <option value="plus">Standard (PLUS)</option>
-              <option value="unattended">Unattended Security</option>
+              <option
+                *ngFor="let o of getTargets()"
+                [value]="o.value"
+                [selected]="
+                  info.managedBundle.target === o.value ? 'selected' : ''
+                "
+                >{{ o.description }}</option
+              >
             </select>
           </div>
           <div
