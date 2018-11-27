@@ -227,6 +227,25 @@ def markBundlesForStatus(bundles, ids, status, force=False):
         storeBundles(bundles)
 
 
+def markBundlesForTarget(bundles, ids, target):
+    changed = False
+    for (bid, bundle) in sorted(bundles.items()):
+        if not bid in ids:
+            continue
+        elif bundle.getTarget() == target:
+            logger.info("{} is already in target '{}'.".format(bid, target))
+            ids.remove(bid)
+            continue
+        ids.remove(bid)
+        logger.info("setting {} to target '{}'".format(bid, target))
+        bundle.setTarget(target)
+        changed = True
+    if len(ids) > 0:
+        logger.error("the following bundles are not defined: '{}'".format("', '".join(ids)))
+    if changed:
+        storeBundles(bundles)
+
+
 def git_commit(repo, git_add_list, msg):
     if len(git_add_list) == 0:
         logger.warning("Nothing to add for git commit --> skipping git commit")

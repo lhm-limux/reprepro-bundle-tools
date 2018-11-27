@@ -141,6 +141,9 @@ class ManagedBundle:
     def setStatus(self, status):
         self.__status = status
 
+    def setTarget(self, target):
+        self.__target = target
+
     def setTrac(self, tid):
         self.__trac = str(tid)
 

@@ -82,3 +82,9 @@ def VersionedChange(commit, published):
         'date': commit.authored_date,
         'published': published
     }
+
+def TargetDescription(value, description):
+    return {
+        'value': value,
+        'description': description
+    }

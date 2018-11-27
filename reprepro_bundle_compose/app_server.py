@@ -13,7 +13,7 @@ import io
 from aiohttp import web
 import git
 import reprepro_bundle_compose
-from reprepro_bundle_compose import PROJECT_DIR, BUNDLES_LIST_FILE, BundleStatus, getTargetRepoSuites, getBundleRepoSuites, parseBundles, updateBundles, trac_api, getTracConfig, markBundlesForStatus, git_commit, ensure_clean_git_repo, GitNotCleanException
+from reprepro_bundle_compose import PROJECT_DIR, BUNDLES_LIST_FILE, BundleStatus, getTargetRepoSuites, getBundleRepoSuites, parseBundles, updateBundles, trac_api, getTracConfig, markBundlesForStatus, markBundlesForTarget, git_commit, ensure_clean_git_repo, GitNotCleanException
 from reprepro_bundle_appserver import common_app_server, common_interfaces
 
 
@@ -107,6 +107,28 @@ async def handle_mark_for_status(request):
     return web.json_response(res)
 
 
+async def handle_set_target(request):
+    target = request.rel_url.query['target']
+    ids = json.loads(request.rel_url.query['bundles'])
+    logger.info("mark for target: {} --> {}".format(ids, target))
+    res = []
+    with common_app_server.logging_redirect_for_webapp() as logs:
+        try:
+            repo = git.Repo(PROJECT_DIR)
+            ensure_clean_git_repo(repo)
+            bundles = parseBundles(getBundleRepoSuites())
+            markBundlesForTarget(bundles, set(ids), target)
+            msg = "MARKED for target '{}'\n\n - {}".format(target, "\n - ".join(sorted(ids)))
+            if len(ids) == 1:
+              msg = "MARKED {} for target '{}'".format("".join(ids), target)
+            git_commit(repo, [BUNDLES_LIST_FILE], msg)
+        except GitNotCleanException as e:
+            logger.error(e)
+        finally:
+            res = logs.toBackendLogEntryList()
+    return web.json_response(res)
+
+
 async def handle_update_bundles(request):
     logger.info("handling 'Update Bundles'")
     res = []
@@ -149,6 +171,14 @@ async def handle_get_configured_stages(request):
             res.append(stage)
     return web.json_response(res)
 
+async def handle_get_configured_targets(request):
+    # TODO: read this config from some config files
+    res = [
+        common_interfaces.TargetDescription('plus', 'Standard (PLUS)'),
+        common_interfaces.TargetDescription('unattended', 'Unattended Security')
+    ]
+    return web.json_response(res)
+
 
 async def handle_get_workflow_metadata(request):
     res = list()
@@ -170,10 +200,12 @@ def registerRoutes(args, app):
         # api routes
         web.get('/api/workflowMetadata', handle_get_workflow_metadata),
         web.get('/api/configuredStages', handle_get_configured_stages),
+        web.get('/api/configuredTargets', handle_get_configured_targets),
         web.get('/api/managedBundles', handle_get_managed_bundles),
         web.get('/api/managedBundleInfos', handle_get_managed_bundle_infos),
         web.get('/api/updateBundles', handle_update_bundles),
         web.get('/api/markForStatus', handle_mark_for_status),
+        web.get('/api/setTarget', handle_set_target),
         web.get('/api/listChanges', handle_list_changes),
         web.get('/api/latestPublishedChange', handle_latest_published_change),
         web.get('/api/undoLastChange', handle_undo_last_change),
