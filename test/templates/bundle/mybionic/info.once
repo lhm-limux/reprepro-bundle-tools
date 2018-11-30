@@ -1,6 +1,7 @@
 Bundlename: {{ bundleName }}
 BasedOn: {{ baseBundleName }}
 Distribution: {{ release }}
+Rollout: false
 Target: plus
 Creator: {{ creator }}
 Releasenotes: <Subject>
