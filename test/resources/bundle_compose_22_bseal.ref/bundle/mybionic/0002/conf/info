@@ -1,6 +1,7 @@
 Bundlename: mybionic/0002
 BasedOn: mybionic/0001
 Distribution: mybionic
+Rollout: true
 Target: plus
 Creator: …USER…
 Releasenotes: This is my improved best test bundle

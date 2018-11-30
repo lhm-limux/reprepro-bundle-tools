@@ -2,8 +2,9 @@ INFO[bundle]: You are now using bundle 'mybionic/0001'
 INFO[apt_repos]: Using basedir '.apt-repos'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0002'
-INFO[reprepro_bundle.bundle]: Setting Bundlename in infofile to 'mybionic/0002'
-INFO[reprepro_bundle.bundle]: Setting BasedOn in infofile to 'mybionic/0001'
+INFO[reprepro_bundle.bundle]: Changed Bundlename in infofile to 'mybionic/0002'
+INFO[reprepro_bundle.bundle]: Changed BasedOn in infofile to 'mybionic/0001'
+INFO[reprepro_bundle.bundle]: Changed Rollout in infofile to 'false'
 INFO[bundle]: Setting reference-suites to 'None'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 INFO[bundle]: Setting supplier-suites to 'bundle:mybionic/0001'

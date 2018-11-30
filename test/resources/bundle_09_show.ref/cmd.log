@@ -6,6 +6,7 @@ INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybioni
 Bundlename: mybionic/0001
 BasedOn: NEW
 Distribution: mybionic
+Rollout: false
 Target: plus
 Creator: …USER…
 
