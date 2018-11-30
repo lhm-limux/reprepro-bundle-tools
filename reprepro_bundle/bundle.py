@@ -25,9 +25,8 @@ import getpass
 import apt_repos
 
 from reprepro_bundle import PROJECT_DIR,BundleError
-from reprepro_bundle.package_status import PackageStatus
-from reprepro_bundle.deployment_status import DeploymentStatus
-from reprepro_bundle.package import Package
+from .package_status import PackageStatus
+from .package import Package
 from apt_repos import PackageField
 from jinja2 import Environment, FileSystemLoader
 
@@ -170,7 +169,7 @@ class Bundle():
         return os.path.join(self.basedir, '.apt-repos')
     
 
-    def createConfigFiles(self, updateRules, readOnly=False, deploymentStatus=DeploymentStatus.STAGING):
+    def createConfigFiles(self, updateRules, readOnly=False):
         '''
             This method creates config Files for this bundle based on the files found in the path
             provided by getTemplateDir(). `updateRules` is a list of UpdateRule objects.
@@ -182,7 +181,7 @@ class Bundle():
             the suffix .once). FilterSrcFiles are also created based on the provided
             `updateRules`. The value of `readOnly` will be transformed to "Yes" and "No"
             and passed as a value to the template evaluation (for the creation of a distributions
-            file). The string value of `deploymentStatus` is also to the template evaluation.
+            file).
             
             This method returns the path to the bundle's conf-Folder.
         '''
@@ -203,7 +202,6 @@ class Bundle():
                     creator=getpass.getuser(),
                     release=self.distribution,
                     readOnly=readOnly,
-                    deploymentStatus=str(deploymentStatus),
                     bundleName=self.bundleName,
                     baseBundleName="NEW",
                     updateRules=" ".join([r.getRuleName() for r in updateRules])))
@@ -402,26 +400,34 @@ class Bundle():
         self._writeBlacklist(already_blacklisted, proposed, cancel_remark)
 
 
-    def updateInfofile(self, basedOn=None):
+    def updateInfofile(self, bundleName=None, basedOn=None, rollout=None):
         '''
-            Rewrites the value of the properties 'Bundlename' and 'BasedOn' of the bundles infofile
+            Rewrites the value of the properties 'Bundlename', 'BasedOn' and 'Rollout' of the bundles infofile
             to self.bundleName and basedOn (if basedOn is set).
 
             This method returns the path to the updated infofile
         '''
-        logger.info("Setting Bundlename in infofile to '{}'".format(self.bundleName))
-        if basedOn:
-            logger.info("Setting BasedOn in infofile to '{}'".format(basedOn))
-        content = None
+        content = list()
         with open(self.getInfoFile(), "r", encoding="utf-8") as infile:
             content = infile.readlines()
-        if content:  
-            with open(self.getInfoFile(), "w", encoding="utf-8") as out:
-                for line in content:
-                    line = re.sub("^Bundlename: (.*)$", "Bundlename: {}".format(self.bundleName), line)
-                    if basedOn:
-                        line = re.sub("^BasedOn: (.*)$", "BasedOn: {}".format(basedOn), line)
-                    print(line, file=out, end='')
+        with open(self.getInfoFile(), "w", encoding="utf-8") as out:
+            for line in content:
+                if bundleName != None:
+                    repline = re.sub("^Bundlename: (.*)$", "Bundlename: {}".format(self.bundleName), line)
+                    if repline != line:
+                        line = repline
+                        logger.info("Changed Bundlename in infofile to '{}'".format(self.bundleName))
+                if basedOn != None:
+                    repline = re.sub("^BasedOn: (.*)$", "BasedOn: {}".format(basedOn), line)
+                    if repline != line:
+                        line = repline
+                        logger.info("Changed BasedOn in infofile to '{}'".format(basedOn))
+                if rollout != None:
+                    repline = re.sub("^Rollout: (.*)$", "Rollout: {}".format(str(rollout).lower()), line)
+                    if repline != line:
+                        line = repline
+                        logger.info("Changed Rollout in infofile to '{}'".format(str(rollout).lower()))
+                print(line, file=out, end='')
         return self.getInfoFile()
                 
 

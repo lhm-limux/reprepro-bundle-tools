@@ -41,9 +41,8 @@ from contextlib import contextmanager
 CANCEL_REMARK = "# Note: clean this file completely to CANCEL this current '{action}' action\n"
 
 from reprepro_bundle import BundleError
-from reprepro_bundle.update_rule import UpdateRule
-from reprepro_bundle.deployment_status import DeploymentStatus
-from reprepro_bundle.bundle import Bundle
+from .update_rule import UpdateRule
+from .bundle import Bundle
 
 progname = "bundle"
 logger = logging.getLogger(progname)
@@ -280,8 +279,8 @@ def cmd_seal(args):
         if not infofile:
             return
         git_add.append(infofile)
-        readOnly = True
-        git_add.append(create_reprepro_config(bundle, readOnly, DeploymentStatus.ROLLOUT))
+        git_add.append(bundle.updateInfofile(rollout=True))
+        git_add.append(create_reprepro_config(bundle, readOnly=True))
         git_add.append(updateReposConfig())
 
 
@@ -325,7 +324,7 @@ def cmd_clone(args):
     with choose_commit_context(None, args, "CLONED bundle '{srcBundleName} --> '{bundleName}'".format(srcBundleName=bundle.bundleName, bundleName="{bundleName}"), bundle.distribution) as (newBundle, git_add):
         git_add.append(create_reprepro_config(newBundle))
         shutil.copy(bundle.getInfoFile(), newBundle.getInfoFile())
-        git_add.append(newBundle.updateInfofile(bundle.bundleName))
+        git_add.append(newBundle.updateInfofile(bundleName=True, basedOn=bundle.bundleName, rollout=False))
         if os.path.exists(bundle.getBlacklistFile()):
             shutil.copy(bundle.getBlacklistFile(), newBundle.getBlacklistFile())
         srcSuiteName = bundle.getOwnSuiteName()
@@ -391,8 +390,12 @@ def updateReposConfig():
                 print('    "Suites":', file=out)
                 print('    ["--------",', file=out)
                 liEnd='    "---------"]\n }'
-            deploymentStatus = DeploymentStatus.STAGING if bundle.isEditable() else DeploymentStatus.ROLLOUT
-            print('    {{ "Suite": "{}", "Url": "{}", "Tags": [ "{}" ] }},'.format(bundle.bundleName, bundle.bundleName, deploymentStatus), file=out)
+            tags = list()
+            tags.append("staging" if bundle.isEditable() else "sealed")
+            rollout = bundle.getInfo().get("Rollout")
+            if rollout and rollout.lower() == "true":
+                tags.append("rollout")
+            print('    {{ "Suite": "{}", "Url": "{}", "Tags": [ "{}" ] }},'.format(bundle.bundleName, bundle.bundleName, '", "'.join(tags)), file=out)
         if liEnd:
             print(liEnd, file=out)
         print(']', file=out)
@@ -442,7 +445,7 @@ def update_blacklist(bundle, args, cancel_remark=None):
     return bundle.getBlacklistFile()
 
 
-def create_reprepro_config(bundle, readOnly=False, deploymentStatus=DeploymentStatus.STAGING):
+def create_reprepro_config(bundle, readOnly=False):
     sourcesDict = bundle.parseSourcesControlList()
     updateRules = list()
     suiteDict = dict()
@@ -454,7 +457,7 @@ def create_reprepro_config(bundle, readOnly=False, deploymentStatus=DeploymentSt
     for suite, packages in suiteDict.items():
         logger.info("Adding Update-Rules for suite {} with {} entries".format(suite, len(packages)))
         updateRules.append(UpdateRule(suite, sorted(packages)))
-    return bundle.createConfigFiles(updateRules, readOnly=readOnly, deploymentStatus=deploymentStatus)
+    return bundle.createConfigFiles(updateRules, readOnly=readOnly)
 
 
 def edit_meta(bundle, cancel_remark=None):
