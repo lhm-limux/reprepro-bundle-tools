@@ -20,7 +20,8 @@ endif
 
 #====================================================================
 HR=echo "========================================================="
-T = function testcase {\
+T = export GNUPGHOME=$(CURDIR)/.gnupg; \
+    function testcase {\
         local name=$$1; shift; \
         local retExp=$$1; shift; \
         local syncArgs=$$1; shift; \
@@ -155,6 +156,7 @@ export_targets:
 
 configure_gnupg: export GNUPGHOME = $(CURDIR)/.gnupg
 configure_gnupg:
+	@echo "GNUPGHOME is set to $$GNUPGHOME"
 	mkdir -p $$GNUPGHOME
 	chmod 700 $$GNUPGHOME
 	gpg --import .apt-repos/gpg/*
