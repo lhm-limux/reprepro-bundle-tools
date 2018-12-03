@@ -1,15 +1,15 @@
-# Note: clean this file completely to CANCEL this current 'seal' action
+# Note: clean this file completely to CANCEL this current 'meta' action
 
 = BUNDLE-METADATA =
 Bundlename: mybionic/0002
 BasedOn: mybionic/0001
 Distribution: mybionic
-Rollout: true
+Rollout: false
 Target: plus
 Creator: …USER…
 
 = RELEASENOTES =
-This is my improved best test bundle
+This is my best test bundle
 
 We just need this bundle for the test automation.
 

@@ -1,0 +1,13 @@
+Bundlename: mybionic/0002
+BasedOn: mybionic/0001
+Distribution: mybionic
+Rollout: true
+Target: plus
+Creator: …USER…
+Releasenotes: This is my best test bundle
+ .
+ We just need this bundle for the test automation.
+ .
+ __DYNAMIC_PACKAGE_LIST__
+ .
+
