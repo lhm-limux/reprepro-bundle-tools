@@ -250,6 +250,7 @@ def cmd_meta(args):
         infofile = edit_meta(bundle, CANCEL_REMARK.format(action="meta"))
         if infofile:
             git_add.append(infofile)
+            git_add.append(updateReposConfig())
 
 
 def cmd_show(args):
