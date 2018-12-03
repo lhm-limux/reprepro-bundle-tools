@@ -1,0 +1,6 @@
+reprepro-bundle-tools (0.0.1) bionic; urgency=medium
+
+    * started to setup debian packaging for the reprepro-bundle-tools
+
+ -- Christoph Lutz <christoph.lutz@interface-ag.de>  Mon, 23 Jul 2018 16:34:07 +0200
+

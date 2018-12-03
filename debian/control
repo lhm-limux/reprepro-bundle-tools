@@ -1,0 +1,53 @@
+Source: reprepro-bundle-tools
+Section: main
+Priority: optional
+Build-Depends:
+ pandoc,
+ perl,
+ cdbs,
+ config-package-dev,
+ debhelper (>= 9),
+ dh-python,
+ python3,
+ python3-debian,
+ python3-urllib3,
+ python3-apt,
+ python3-git,
+ python3-apt-repos,
+ nodejs,
+ npm
+Standards-Version: 3.9.8
+X-Python3-Version: >= 3.3
+Maintainer: Christph Lutz <christoph.lutz@interface-ag.de>
+
+Package: reprepro-bundle-tools
+Architecture: all
+Depends:
+ ${misc:Depends},
+ python3,
+ python3-reprepro-bundle-tools
+Description: Create and Manage the delivery bundles in a delivery workflow
+
+Package: reprepro-bundle-apps
+Architecture: all
+Depends:
+ ${misc:Depends},
+ python3,
+ python3-aiohttp,
+ python3-reprepro-bundle-tools
+Description: GUI programs for the reprepro-bundle-tools
+
+Package: python3-reprepro-bundle-tools
+Architecture: all
+Section: python
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+ reprepro,
+ python3-apt,
+ python3-apt-repos,
+ python3-urllib3,
+ python3-git,
+ python3-jinja2
+Description: ${pkg:Description}
+ ${pkg:Longdescription}

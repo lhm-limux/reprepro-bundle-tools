@@ -1,0 +1,10 @@
+tar-ignore=.apt-repos_cache
+tar-ignore=__pycache__
+tar-ignore=.git
+tar-ignore=.gitignore
+tar-ignore=node_modules
+tar-ignore=ng-frontends/ng-bundle-compose/dist
+tar-ignore=ng-frontends/ng-bundle/dist
+tar-ignore=test/repo
+tar-ignore=test/apt-repos
+tar-ignore=test/resources/*.res
