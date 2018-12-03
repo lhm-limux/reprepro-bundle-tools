@@ -94,6 +94,7 @@ bundle_workflow_part2: prepare bundle_workflow_part1
 	@$(T) bundle_17_list         0 $(sync) $(BUNDLE) list mybionic/0002
 	@$(T) bundle_18_apply        0 $(sync) $(BUNDLE) apply mybionic/0002
 	@$(T) bundle_19_list         0 $(sync) $(BUNDLE) list mybionic/0002
+	@$(T) bundle_20_meta         0 $(sync) $(BUNDLE) meta mybionic/0002
 
 bundle_compose_workflow_part2: prepare bundle_compose_workflow_part1 bundle_workflow_part2
 	rm repo/bundles_file

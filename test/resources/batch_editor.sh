@@ -56,6 +56,12 @@ function bundle_13_seal {
   cat "$1" >repo/editor.out
 }
 
+function bundle_20_meta {
+  cat "$1" >repo/editor.in
+  sed -i "s/^Rollout: false/Rollout: true/" "$1"
+  cat "$1" >repo/editor.out
+}
+
 function bundle_compose_22_bseal {
   cat "$1" >repo/editor.in
   sed -i "s/best test bundle/improved best test bundle/" "$1"
