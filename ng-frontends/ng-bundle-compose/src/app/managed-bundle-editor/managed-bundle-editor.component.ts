@@ -1,8 +1,7 @@
-import { TargetDescription } from './../../../reference/projects/shared/src/lib/interfaces';
 import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
-import { WorkflowMetadata, ManagedBundle, ManagedBundleInfo } from "shared";
+import { WorkflowMetadata, ManagedBundle, ManagedBundleInfo, TargetDescription } from "shared";
 import { ManagedBundleService } from "../services/managed-bundle.service";
 import { WorkflowMetadataService } from "../services/workflow-metadata.service";
 import { BundleComposeActionService } from "../services/bundle-compose-action.service";
