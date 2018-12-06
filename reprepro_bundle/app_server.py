@@ -16,6 +16,8 @@ progname = "bundle-app"
 logger = logging.getLogger("reprepro_bundle_appserver.bundle_app")
 
 APP_DIST = './ng-bundle/'
+if not os.path.exists(APP_DIST):
+    APP_DIST = "/usr/lib/reprepro-bundle-apps/ng-bundle/"
 
 
 async def handle_get_bundleList(request):

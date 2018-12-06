@@ -27,7 +27,7 @@ from reprepro_bundle_appserver.common_interfaces import BackendLogEntry
 PROGNAME = "common_app_server"
 logger = logging.getLogger(__name__)
 
-DEFAULT_HOST = "0.0.0.0"
+DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 4253
 RE_REGISTER_DELAY_SECONDS = 2
 

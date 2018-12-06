@@ -21,6 +21,8 @@ progname = "bundle-compose-app"
 logger = logging.getLogger("reprepro_bundle_appserver.bundle_compose_app")
 
 APP_DIST = './ng-bundle-compose/'
+if not os.path.exists(APP_DIST):
+    APP_DIST = "/usr/lib/reprepro-bundle-apps/ng-bundle-compose/"
 
 
 async def handle_latest_published_change(request):
