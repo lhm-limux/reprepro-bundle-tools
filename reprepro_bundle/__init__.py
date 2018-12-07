@@ -22,7 +22,7 @@
     into a separate apt repository (managed by reprepro in the background), the so called "bundle".
     It provides an easy to use workflow for adding new bundles, and selecting packages, Upgrades
     and Downgrades that should be applied to the bundle and sealing a bundle for deployment.
-    Additionally each bundle could be provided with metadata that could be usefull to automate
+    Additionally each bundle could be provided with metadata that could be useful to automate
     deployment processes.
 """
 import os
