@@ -34,6 +34,8 @@ Depends:
  python3,
  python3-reprepro-bundle-tools
 Description: Create and Manage the delivery bundles in a delivery workflow
+ See /usr/share/doc/reprepro-bundle-tools/README.md for more information
+ about the tools and it's usage
 
 Package: reprepro-bundle-apps
 Architecture: all
@@ -43,6 +45,8 @@ Depends:
  python3-aiohttp,
  python3-reprepro-bundle-tools
 Description: GUI programs for the reprepro-bundle-tools
+ in form of a local backend and a web frontend that
+ could be run locally on the host.
 
 Package: python3-reprepro-bundle-tools
 Architecture: all
