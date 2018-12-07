@@ -6,7 +6,7 @@
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the European Union Public Licence (EUPL),
-# version 1.0 (or any later version).
+# version 1.1 (or any later version).
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -59,7 +59,7 @@ def setupLogging(loglevel):
     }
     logging.basicConfig(**kwargs)
     logging.getLogger("urllib3").setLevel(logging.ERROR)
-       
+
 
 def main():
     DEFAULT_SUPPLIERS = "{distribution}-supplier:,user-{user}:{distribution}"
@@ -82,7 +82,7 @@ def main():
     parser.add_argument("-d", "--debug", action="store_true", default=False, help="Show debug messages.")
     subparsers = parser.add_subparsers(help='choose one of these subcommands')
     parser.set_defaults(debug=False)
-    
+
     # subcommand parsers
     parse_init  = subparsers.add_parser("init",  help=cmd_init.__doc__, description=cmd_init.__doc__)
     parse_edit  = subparsers.add_parser("edit",  help=cmd_edit.__doc__, description=cmd_edit.__doc__)
@@ -107,7 +107,7 @@ def main():
     parse_clone.set_defaults(sub_function=cmd_clone, sub_parser=parse_clone)
     parse_bundles.set_defaults(sub_function=cmd_bundles, sub_parser=parse_bundles)
     parse_repos.set_defaults(sub_function=cmd_update_repos_config, sub_parser=parse_repos)
-    
+
     for p in [parse_init, parse_edit, parse_black, parse_meta, parse_seal, parse_clone, parse_apply, parse_show, parse_list]:
         p.add_argument("--own-suite", default=DEFAULT_OWN_SUITE, help="""
                             Suite-Selectors that defines the own suite (the suite of this bundle).
@@ -154,7 +154,7 @@ def main():
                         there will be a new bundle (with a newly incremented bundleID) created for this distribution. To support
                         command line completion, it is also allowed to specify the full path relative to the projects root in the form
                         repo/bundle/<distribution>[/<bundleID>].""")
-    
+
     for p in [parse_bundles]:
         g = p.add_argument_group('''sub command 'bundles' specific options''')
         g.add_argument("-r", "--readonly", action="store_true", default=False, help="Just print bundles that are marked readonly (that are already sealed).")
@@ -293,7 +293,7 @@ def cmd_apply(args):
     if not bundle.isEditable():
         logger.warning("Skipping command 'apply' for {} as it is already sealed.".format(bundle))
         return
-    create_reprepro_config(bundle)   
+    create_reprepro_config(bundle)
     repreproCmd = os.environ.get("REPREPRO_CMD", "reprepro")
     cmd = [repreproCmd, "-b", "repo/bundle/{}".format(bundle.bundleName), "--noskipold", "update"]
     logger.info("Executing '{}'".format(" ".join(cmd)))
@@ -566,13 +566,13 @@ def editFile(filepath):
 def choose_commit_context(bundle, args, commit_msg, bundleName=None):
     '''
         This context manager evaluates the properties args.clean_commit and args.commit to decide
-        how change tracking should be handled. Possible ways are: 
+        how change tracking should be handled. Possible ways are:
 
         a) Don't track and commit changes
         b) track and commit changes inside the current project-folder
         c) clone the git project into a temporary folder, track and commit changes and push
            the results back to the git server.
-        
+
         in case ob c), the arguments args.git_repo_url, args.git_branch and args.own_suite are
         required.
 
@@ -615,7 +615,7 @@ def git_clean_commit_and_push_context(git_repo_url, git_branch, bundle, own_suit
     subprocess.check_call(('git', 'clone', git_repo_url, basedir))
     os.chdir(basedir)
     subprocess.check_call(('git', 'checkout', git_branch))
-    
+
     if bundle:
         bundle = Bundle(bundle.bundleName, basedir)
     elif bundleName:

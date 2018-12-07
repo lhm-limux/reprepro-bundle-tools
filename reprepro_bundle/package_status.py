@@ -6,7 +6,7 @@
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the European Union Public Licence (EUPL),
-# version 1.0 (or any later version).
+# version 1.1 (or any later version).
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -60,8 +60,8 @@ class PackageStatus(Enum):
     def __lt__(self, other):
         # pylint: disable=E1136
         return self.value[0] < other.value[0]
-    
-    @staticmethod    
+
+    @staticmethod
     def getByAction(strVal):
         for p in PackageStatus:
             if strVal.upper() == p.value[1]:

@@ -6,7 +6,7 @@
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the European Union Public Licence (EUPL),
-# version 1.0 (or any later version).
+# version 1.1 (or any later version).
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -157,7 +157,7 @@ class Bundle():
 
     def getInfoFile(self):
         return os.path.join(self.__confDir, self._infofile)
-    
+
     def getUpdatesFile(self):
         return os.path.join(self.__confDir, self._updatesfile)
 
@@ -167,7 +167,7 @@ class Bundle():
             Returns the path to the apt-repos configuration relative to this bundles basedir.
         '''
         return os.path.join(self.basedir, '.apt-repos')
-    
+
 
     def createConfigFiles(self, updateRules, readOnly=False):
         '''
@@ -182,7 +182,7 @@ class Bundle():
             `updateRules`. The value of `readOnly` will be transformed to "Yes" and "No"
             and passed as a value to the template evaluation (for the creation of a distributions
             file).
-            
+
             This method returns the path to the bundle's conf-Folder.
         '''
         logger.info("Creating config files for bundle '{}'".format(self.bundleName))
@@ -213,7 +213,7 @@ class Bundle():
         # remove old FilterSrcLists:
         for f in os.listdir(self.__confDir):
             if re.match("^FilterSrcList-", f):
-                os.remove(os.path.join(self.__confDir, f))    
+                os.remove(os.path.join(self.__confDir, f))
         # creating FilterSrcLists:
         for r in updateRules:
             filename = os.path.join(self.__confDir, r.getFilterListFilename())
@@ -311,17 +311,17 @@ class Bundle():
            This method scans the provided `supplierSuites`, `refSuites` and the bundles ownSuite to
            create an user editable version of the sources_control.list providing a full overview
            about the bundles content and packages available from all supplierSuites.
-           
+
            `refSuites` and the bundles ownSuite are used to determine if packages from supplierSuites
            should be regarded as new-, same-version-, upgrade- or downgrade-Packages (for a complete
            list of available classifiers see class PackageStatus).
-           
+
            `prevSourcesDict` could be the result of parsing an already existing sources_control.list
            to ensure that the previous version of the sources_control.list can be merged to the
            updated list without loosing active entries (see `parseSourcesControlList(self)`).
 
            `highlightedSuites` defines a list of suites whose packages are sorted on top of the
-           generated sources_control_list (for a better overview). Typically highlightesSuites 
+           generated sources_control_list (for a better overview). Typically highlightesSuites
            contains the bundles ownSuite (and maybe more).
 
            `addFrom` (a) and `upgradeFrom` (b) could be set to the suite identifiers whose packages
@@ -429,7 +429,7 @@ class Bundle():
                         logger.info("Changed Rollout in infofile to '{}'".format(str(rollout).lower()))
                 print(line, file=out, end='')
         return self.getInfoFile()
-                
+
 
     def __len__(self):
         return len(self.bundleName)
@@ -481,7 +481,7 @@ class Bundle():
 
             In this context the lowest priority is given to all packages that are currently
             available (from scanning refSuites and ownSuite).
-            
+
             medium priority to `mergePackages` which contains the packages that were active
             in a previous version of the sources_control.list and thus should set active
             (merged) into the new list.

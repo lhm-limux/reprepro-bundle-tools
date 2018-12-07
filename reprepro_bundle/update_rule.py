@@ -6,7 +6,7 @@
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the European Union Public Licence (EUPL),
-# version 1.0 (or any later version).
+# version 1.1 (or any later version).
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -62,14 +62,14 @@ class UpdateRule:
         if not ownSuiteName or ownSuiteName != self.suite.getSuiteName():
             blacklistFile = None
         rule = skeleton.render(
-            ruleName=self.getRuleName(), repoUrl=suite.getRepoUrl(), 
+            ruleName=self.getRuleName(), repoUrl=suite.getRepoUrl(),
             suiteName=suite.getAptSuite(), architectures=" ".join(suite.getArchitectures()),
             components=" ".join(suite.getComponents()), udebComponents=" ".join(suite.getComponents()),
             publicKeys=("!|".join(keyIds)+"!" if len(keyIds) > 0 else "blindtrust"),
             filterListFile=filterListFile, blacklistFile=blacklistFile
         )
         return re.sub("\n +", "\n", rule)
-    
+
     def getFilterFileContent(self):
         res = ""
         for package in sorted(self.packages):
