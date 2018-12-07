@@ -135,20 +135,29 @@ def main():
         g.add_argument("--add-from", default=None, help="""
                         Comma separated list of Suite-Selectors that define suites whose (all) packages are automatically activated for being added.""")
         g.add_argument("--upgrade-from", default=None, help="""
-                        Comma separated list of Suite-Selectors that define suites whose (upgradable) packages are automatically upgraded if they already exist in the reference-suites.""")
+                        Comma separated list of Suite-Selectors that define suites whose (upgradable) packages are automatically upgraded if they
+                        already exist in the reference-suites.""")
         g.add_argument("--batch", action="store_true", default=False, help="""Run in batch mode which means without user interaction.""")
 
     for p in [parse_init, parse_edit, parse_meta, parse_black, parse_seal, parse_clone, parse_apply, parse_repos]:
         g = p.add_argument_group('additional arguments for git-commit management')
         g.add_argument("--commit", action="store_true", default=False, help="Commit changed files to the (local) project git-repository.")
         if p in [parse_init, parse_clone]:
-            g.add_argument("--no-clean-commit", action="store_false", dest="clean_commit", help="The subcommands 'init' and 'clone' implicitely behave as if --clean-commit was set. This means that a clone of the current git-repository into a temporary folder is created and changes are automatically commited there and pushed back to the server immediately. This is done to ensure that new bundleId's are immediately synced to the server! Use --no-clean-commit to disable this default. With --no-clean-commit this tool would operate on the local project folder without any commits.")
+            g.add_argument("--no-clean-commit", action="store_false", dest="clean_commit", help="""
+                        The subcommands 'init' and 'clone' implicitely behave as if --clean-commit was set. This means that a clone of the current
+                        git-repository into a temporary folder is created and changes are automatically commited there and pushed back to the
+                        server immediately. This is done to ensure that new bundleId's are immediately synced to the server! Use --no-clean-commit
+                        to disable this default. With --no-clean-commit this tool would operate on the local project folder without any commits.""")
             g.set_defaults(clean_commit=True)
         else:
-            g.add_argument("--clean-commit", action="store_true", dest="clean_commit", help="Create a clone of the current git-repository into a temporary folder, automatically commit changes there and immediately push back the changes to the git server.")
+            g.add_argument("--clean-commit", action="store_true", dest="clean_commit", help="""
+                        Create a clone of the current git-repository into a temporary folder, automatically commit changes there and immediately push back
+                        the changes to the git server.""")
             g.set_defaults(clean_commit=False)
-        g.add_argument("--git-repo-url", default=GIT_REPO_URL, help="GIT-Repository URL used to clone the repository during --list-update-auto-commit. The default is the origin of the current git repository that contains the bundle-script: '{}'".format(GIT_REPO_URL))
-        g.add_argument("--git-branch", default=GIT_BRANCH, help="GIT-Repository branch used to pull and push during --list-update-auto-commit. The default is '{}'.".format(GIT_BRANCH))
+        g.add_argument("--git-repo-url", default=GIT_REPO_URL, help="""
+                        GIT-Repository URL used to clone the repository during --clean-commit. Per default the current git tracking branch is used (if set).""")
+        g.add_argument("--git-branch", default=GIT_BRANCH, help="""
+                        GIT-Repository branch used to pull and push during --clean-commit. The default is '{}'.""".format(GIT_BRANCH))
 
     # positional argument
     for p in [parse_init, parse_edit, parse_black, parse_meta, parse_show, parse_list, parse_seal, parse_clone, parse_apply]:

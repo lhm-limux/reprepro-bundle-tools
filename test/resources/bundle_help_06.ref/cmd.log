@@ -32,11 +32,8 @@ additional arguments for git-commit management:
                         server.
   --git-repo-url GIT_REPO_URL
                         GIT-Repository URL used to clone the repository during
-                        --list-update-auto-commit. The default is the origin
-                        of the current git repository that contains the
-                        bundle-script:
-                        'ssh://git.tvc.muenchen.de/srv/git/software/reprepro-
-                        bundle-tools.git'
+                        --clean-commit. Per default the current git tracking
+                        branch is used (if set).
   --git-branch GIT_BRANCH
                         GIT-Repository branch used to pull and push during
-                        --list-update-auto-commit. The default is 'test'.
+                        --clean-commit. The default is 'test'.
