@@ -488,11 +488,12 @@ def list_content(bundle):
 def getGitRepoUrl(alias, default):
     pattern = re.compile(r"^" + alias + r"\s+(.*)\s+\(fetch\)$")
     try:
-        # using the "long" way instead of 'get-url' for compatibility with older git versions
-        for line in subprocess.check_output(["git", "remote", "-v"]).decode("utf-8").split("\n"):
-            m = pattern.match(line)
-            if m:
-                return m.group(1)
+        with open(os.devnull, 'w') as DEV_NULL:
+            # using the "long" way instead of 'get-url' for compatibility with older git versions
+            for line in subprocess.check_output(["git", "remote", "-v"], stderr=DEV_NULL).decode("utf-8").split("\n"):
+                m = pattern.match(line)
+                if m:
+                    return m.group(1)
     except Exception:
         pass
     return default
