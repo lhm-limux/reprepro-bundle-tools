@@ -47,6 +47,10 @@ if os.path.isdir(os.path.join(HERE, "reprepro_bundle_compose")):
 progname = "bundle-compose"
 tracConfFiles = [ os.path.join(PROJECT_DIR, ".trac.conf"), os.path.join(os.path.expanduser("~"), ".config", progname, "trac.conf") ]
 
+APT_REPOS_CMD = os.path.join(PROJECT_DIR, "apt-repos/bin/apt-repos")
+if not os.path.exists(APT_REPOS_CMD):
+    APT_REPOS_CMD = "apt-repos"
+
 
 def updateBundles(tracApi=None):
     repo_suites = getBundleRepoSuites()
@@ -180,7 +184,7 @@ def createTracTicketForBundle(trac, bundle):
     info = bundle.getInfo()
     milestone = Distribution.getByName(info.get('Distribution', '')).getMilestone()
     (subject, description) = splitReleasenotes(info)
-    package_list = subprocess.check_output(["apt-repos/bin/apt-repos", "-b .apt-repos", "ls", "-s", str(bundle.getID()), "-r", "." ])
+    package_list = subprocess.check_output([APT_REPOS_CMD, "-b .apt-repos", "ls", "-s", str(bundle.getID()), "-r", "." ])
     description = description.replace("__DYNAMIC_PACKAGE_LIST__", package_list.decode("utf-8").rstrip())
     title = "[{}] {}".format(bundle.getTarget(), subject)
     return trac.createTicket(title, description, {

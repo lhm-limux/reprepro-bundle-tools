@@ -3,6 +3,9 @@ BUNDLE := ../bin/bundle
 BUNDLE_COMPOSE := ../bin/bundle-compose
 REPREPRO := reprepro -b repo/target
 APT_REPOS := apt-repos/bin/apt-repos -b .apt-repos
+ifeq (no,$(shell test -x apt-repos/bin/apt-repos || echo no))
+  APT_REPOS := apt-repos -b .apt-repos
+endif
 
 # describes which files from the repo-folder should be transferred to resources/*.res
 REPO_RSYNC := rsync -a --delete

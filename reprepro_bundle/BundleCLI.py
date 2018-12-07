@@ -44,6 +44,10 @@ from reprepro_bundle import BundleError
 from .update_rule import UpdateRule
 from .bundle import Bundle
 
+APT_REPOS_CMD = "apt-repos/bin/apt-repos"
+if not os.path.exists(APT_REPOS_CMD):
+    APT_REPOS_CMD = "apt-repos"
+
 progname = "bundle"
 logger = logging.getLogger(progname)
 
@@ -482,7 +486,7 @@ def print_metadata(bundle):
 
 def list_content(bundle):
     if bundle.getOwnSuiteName():
-        subprocess.check_call(["apt-repos/bin/apt-repos", "-b .apt-repos", "ls", "-s", bundle.getOwnSuiteName(), "-r", "." ])
+        subprocess.check_call([APT_REPOS_CMD, "-b .apt-repos", "ls", "-s", bundle.getOwnSuiteName(), "-r", "." ])
 
 
 def getGitRepoUrl(alias, default):
