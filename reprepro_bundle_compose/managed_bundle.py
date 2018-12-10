@@ -63,11 +63,11 @@ class ManagedBundle:
             This returns a dict with the content of the bundle's info-file
             or None if the info file could not be read.
         '''
+        res = dict()
         if not self.__repoSuite:
             logger.warning("Could not read info file of bundle {} as it's suite could not be found.".format(self.__id))
-            return None
+            return res
         url = urljoin(self.__repoSuite.getRepoUrl(), os.path.join('conf', 'info'))
-        res = dict()
         try:
             data = RepositoryScanner.getFromURL(url)
             with tempfile.TemporaryFile() as fp:
@@ -80,7 +80,7 @@ class ManagedBundle:
                 return res
         except Exception as e:
             logger.warning("Could not read info file of bundle {}:\n{}".format(self.__id, e))
-        return None
+        return res
 
     def __unescapeMultiline(self, value):
         lines = list()
