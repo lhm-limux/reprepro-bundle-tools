@@ -41,13 +41,17 @@ APP_DIST = './ng-bundle-compose/'
 if not os.path.exists(APP_DIST):
     APP_DIST = "/usr/lib/reprepro-bundle-apps/ng-bundle-compose/"
 
+MAX_GIT_LIST_CHANGES = 200
+publishedCommitsCache = set()
+publishedCommitsLastHead = None
+
 
 async def handle_latest_published_change(request):
     repo = git.Repo(PROJECT_DIR)
     tracking = repo.head.ref.tracking_branch()
     if tracking:
-      res = common_interfaces.VersionedChange(tracking.commit, True)
-      return web.json_response(res)
+        res = common_interfaces.VersionedChange(tracking.commit, True)
+        return web.json_response(res)
     return web.json_response(None)
 
 
@@ -55,20 +59,28 @@ async def handle_list_changes(request):
     res = []
     repo = git.Repo(PROJECT_DIR)
     published = getPublishedCommits(repo)
+    count = MAX_GIT_LIST_CHANGES
     c = repo.head.commit
-    while c:
+    while c and count > 0:
         res.append(common_interfaces.VersionedChange(c, c.hexsha in published))
         c = c.parents[0] if len(c.parents) > 0 else None
+        count-=1
     return web.json_response(res)
 
 
 def getPublishedCommits(repo):
+    global publishedCommitsLastHead
+    global publishedCommitsCache
     commits = set()
     remote = repo.head.ref.tracking_branch()
+    if publishedCommitsLastHead == remote.commit.hexsha:
+        return publishedCommitsCache
     c = remote.commit if remote else None
     while c:
-      commits.add(c.hexsha)
-      c = c.parents[0] if len(c.parents) > 0 else None
+        commits.add(c.hexsha)
+        c = c.parents[0] if len(c.parents) > 0 else None
+    publishedCommitsCache = commits
+    publishedCommitsLastHead = remote.commit.hexsha
     return commits
 
 
