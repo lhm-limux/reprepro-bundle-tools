@@ -77,3 +77,16 @@ export interface TargetDescription {
   value: string,
   description: string
 }
+
+export interface AuthType {
+  authId: string,
+  userTitle: string,
+  pwdTitle: string,
+  reason: string
+}
+
+export interface AuthRef {
+  authId: string,
+  user: string,
+  pwdKey: string
+}
