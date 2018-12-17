@@ -105,3 +105,11 @@ def TargetDescription(value, description):
         'value': value,
         'description': description
     }
+
+def AuthType(authId, userTitle, pwdTitle, reason=None):
+    return {
+        'authId': authId, # a key identifying the credentials
+        'userTitle': userTitle, # e.g. "LDAP-Username"
+        'pwdTitle': pwdTitle, # e.g. "LDAP-Passwort"
+        'reason': reason # e.g. "Required to Synchronize with GIT"
+    }

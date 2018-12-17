@@ -46,6 +46,12 @@ publishedCommitsCache = set()
 publishedCommitsLastHead = None
 
 
+async def handle_required_auth(request):
+    res = list()
+    res.append(common_interfaces.AuthType("ldap", "GIT-User", "GIT-Password", "Access Shared GIT-Repository to publish changes"))
+    return web.json_response(res)
+
+
 async def handle_latest_published_change(request):
     repo = git.Repo(PROJECT_DIR)
     tracking = repo.head.ref.tracking_branch()
@@ -241,6 +247,7 @@ def registerRoutes(args, app):
         web.get('/api/latestPublishedChange', handle_latest_published_change),
         web.get('/api/undoLastChange', handle_undo_last_change),
         web.get('/api/publishChanges', handle_publish_changes),
+        web.get('/api/requiredAuth', handle_required_auth),
     ])
     if not args.no_static_files:
         app.router.add_routes([
