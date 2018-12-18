@@ -36,13 +36,7 @@ export class BundleComposeActionService {
   private changed = new BehaviorSubject<BackendLogEntry[]>([]);
   cast = this.changed.asObservable();
 
-  private availableCredentials = new Map<string, AuthRef>();
-
-  constructor(
-    private config: ConfigService,
-    private dialogService: BundleDialogService,
-    private http: HttpClient
-  ) {}
+  constructor(private config: ConfigService, private http: HttpClient) {}
 
   updateBundles(): void {
     this.http
@@ -115,36 +109,6 @@ export class BundleComposeActionService {
         },
         errResp => {
           console.error("Publish Changes failed: ", errResp);
-        }
-      );
-  }
-
-  ensureAuthentications(
-    actionMessage: string,
-    actionId: string,
-    action: () => void
-  ): void {
-    const params = new HttpParams().set("action", actionId);
-    this.http
-      .get<AuthType[]>(this.config.getApiUrl("requiredAuth"), {
-        params: params
-      })
-      .subscribe(
-        (data: AuthType[]) => {
-          if (data.length > 0) {
-            this.dialogService
-              .createExtraAuthModal(actionMessage)
-              .subscribe(isConfirmed => {
-                if (isConfirmed) {
-                  action();
-                }
-              });
-          } else {
-            action();
-          }
-        },
-        errResp => {
-          console.error("Get required authentications failed: " + errResp);
         }
       );
   }

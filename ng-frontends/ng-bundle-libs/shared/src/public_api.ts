@@ -21,6 +21,7 @@
  */
 
 export * from './lib/interfaces';
+export * from './lib/authentication.service';
 export * from './lib/bundle-dialog.service';
 export * from './lib/backend-register.service';
 export * from './lib/versioned-changes.service';

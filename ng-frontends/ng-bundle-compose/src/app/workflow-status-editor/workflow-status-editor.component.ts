@@ -24,6 +24,7 @@ import {
   BackendLogEntry,
   UnpublishedChangesComponent,
   BundleDialogService,
+  AuthenticationService,
   VersionedChangesService
 } from "shared";
 import { WorkflowMetadataService } from "../services/workflow-metadata.service";
@@ -57,6 +58,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
 
   constructor(
     private workflowMetadataService: WorkflowMetadataService,
+    private authenticationService: AuthenticationService,
     public changesService: VersionedChangesService,
     public managedBundleService: ManagedBundleService,
     public actionService: BundleComposeActionService,
@@ -193,7 +195,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
 
   synchronizeBundles() {
     console.log("synchronizeBundles called");
-    this.actionService.ensureAuthentications(
+    this.authenticationService.ensureAuthentications(
       "for synchronizing the Bundle-Status",
       "bundleSync",
       () => {
@@ -204,7 +206,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
 
   publishChanges() {
     console.log("publishChanges called");
-    this.actionService.ensureAuthentications(
+    this.authenticationService.ensureAuthentications(
       "for publishing Changes",
       "publishChanges",
       () => {
