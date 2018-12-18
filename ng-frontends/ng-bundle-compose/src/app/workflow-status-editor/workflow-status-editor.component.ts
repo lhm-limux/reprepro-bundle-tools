@@ -191,13 +191,24 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     this.actionService.markForStatus(status, bundles);
   }
 
-  synchronizeBundles(event) {
-    console.log("synchronizeBundles: " + JSON.stringify(event));
+  synchronizeBundles() {
+    console.log("synchronizeBundles called");
     this.actionService.ensureAuthentications(
       "for synchronizing the Bundle-Status",
       "bundleSync",
       () => {
         this.actionService.updateBundles();
+      }
+    );
+  }
+
+  publishChanges() {
+    console.log("publishChanges called");
+    this.actionService.ensureAuthentications(
+      "for publishing Changes",
+      "publishChanges",
+      () => {
+        this.actionService.publishChanges();
       }
     );
   }
