@@ -48,7 +48,7 @@ publishedCommitsLastHead = None
 
 async def handle_required_auth(request):
     res = list()
-    res.append(common_interfaces.AuthType("ldap", "GIT-User", "GIT-Password", "Access Shared GIT-Repository to publish changes"))
+    res.append(common_interfaces.AuthType("ldap", "Required for the shared GIT-Repository to publish changes"))
     return web.json_response(res)
 
 
