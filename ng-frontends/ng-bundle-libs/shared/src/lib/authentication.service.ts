@@ -21,6 +21,7 @@ export class AuthenticationService {
     actionId: string,
     action: () => void
   ): void {
+    const defaultUsers = this.getDefaultUsers();
     const params = new HttpParams().set("action", actionId);
     this.http
       .get<AuthType[]>(this.config.getApiUrl("requiredAuth"), {
@@ -30,7 +31,7 @@ export class AuthenticationService {
         (data: AuthType[]) => {
           if (data.length > 0) {
             this.dialogService
-              .createExtraAuthModal(actionMessage)
+              .createExtraAuthModal(actionMessage, data, defaultUsers)
               .subscribe(isConfirmed => {
                 if (isConfirmed) {
                   action();
@@ -44,5 +45,12 @@ export class AuthenticationService {
           console.error("Get required authentications failed: " + errResp);
         }
       );
+  }
+
+  getDefaultUsers() {
+    const defaultUsers = new Map<string, string>();
+    // TODO: this is just a mock value. Read/write value from/to local storage
+    defaultUsers.set("ldap", "christoph.lutz");
+    return defaultUsers;
   }
 }

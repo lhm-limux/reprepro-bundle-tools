@@ -80,9 +80,7 @@ export interface TargetDescription {
 
 export interface AuthType {
   authId: string,
-  userTitle: string,
-  pwdTitle: string,
-  reason: string
+  requiredFor: string
 }
 
 export interface AuthRef {

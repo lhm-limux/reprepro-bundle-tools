@@ -1,15 +1,62 @@
 <div class="modal-dialog">
   <div class="modal-content">
-     <div class="modal-header">
-       <h4 class="modal-title">{{ title }}</h4>
-       <button type="button" class="close" (click)="close()" >&times;</button>
-     </div>
-     <div class="modal-body">
-       <p>{{ message }}</p>
-     </div>
-     <div class="modal-footer">
-       <button type="button" class="btn btn-primary" (click)="confirm()">OK</button>
-       <button type="button" class="btn btn-default" (click)="close()" >Cancel</button>
-     </div>
-   </div>
+    <div class="modal-header">
+      <h4 class="modal-title">{{ title }}</h4>
+      <button type="button" class="close" (click)="close()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p>{{ message }}</p>
+      <div
+        *ngFor="let a of getRequiredAuths()"
+        class="card text-dark border-info"
+      >
+        <div class="card-header">
+          <b>{{ a.authId | uppercase }}-Credentials</b>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <p *ngFor="let requiredFor of a.requiredFor">{{ requiredFor }}</p>
+          </div>
+          <div class="form-group row">
+            <label for="subject" class="col-sm-4 col-form-label"
+              >Username</label
+            >
+            <div class="col mr-3">
+              <input
+                #inpUser
+                type="text"
+                class="form-control form-control-lg"
+                placeholder="Username"
+                (change)="a.cred.username = inpUser.value"
+                [value]="a.cred.username"
+              />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="password" class="col-sm-4 col-form-label"
+              >Password</label
+            >
+            <div class="col mr-3">
+              <input
+                #inpPwd
+                type="password"
+                class="form-control form-control-lg"
+                placeholder="Password"
+                (change)="a.cred.password = inpPwd.value"
+                [value]="a.cred.password"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="confirm()">
+        OK
+      </button>
+      <button type="button" class="btn btn-default" (click)="close()">
+        Cancel
+      </button>
+    </div>
+  </div>
 </div>
