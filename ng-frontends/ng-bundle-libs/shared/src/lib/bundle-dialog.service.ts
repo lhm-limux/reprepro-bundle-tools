@@ -6,6 +6,9 @@ import { Injectable } from "@angular/core";
   providedIn: "root"
 })
 export class BundleDialogService {
+
+  backdropColor = "rgba(0, 0, 0, 0.5)";
+
   constructor(private dialogService: DialogService) {}
 
   createExtraAuthModal(message: string) {
@@ -16,7 +19,7 @@ export class BundleDialogService {
         message: message
       },
       {
-        backdropColor: "rgba(70, 70, 70, 0.5)"
+        backdropColor: this.backdropColor
       }
     );
   }
