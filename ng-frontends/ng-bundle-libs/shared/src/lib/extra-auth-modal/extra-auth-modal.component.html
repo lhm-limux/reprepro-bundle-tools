@@ -7,7 +7,7 @@
     <div class="modal-body">
       <p>{{ message }}</p>
       <div
-        *ngFor="let a of getRequiredAuths()"
+        *ngFor="let a of authData"
         class="card text-dark border-info"
       >
         <div class="card-header">
@@ -27,8 +27,8 @@
                 type="text"
                 class="form-control form-control-lg"
                 placeholder="Username"
-                (change)="a.cred.username = inpUser.value"
-                [value]="a.cred.username"
+                (change)="a.username = inpUser.value"
+                [value]="a.username"
               />
             </div>
           </div>
@@ -42,8 +42,8 @@
                 type="password"
                 class="form-control form-control-lg"
                 placeholder="Password"
-                (change)="a.cred.password = inpPwd.value"
-                [value]="a.cred.password"
+                (change)="a.password = inpPwd.value"
+                [value]="a.password"
               />
             </div>
           </div>

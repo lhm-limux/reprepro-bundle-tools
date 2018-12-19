@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { ConfigService } from "./config.service";
 import { AuthType, AuthRef } from "./interfaces";
 import { BundleDialogService } from "./bundle-dialog.service";
+import { AuthData } from "./extra-auth-modal/extra-auth-modal.component";
 
 @Injectable({
   providedIn: "root"
@@ -32,8 +33,8 @@ export class AuthenticationService {
           if (data.length > 0) {
             this.dialogService
               .createExtraAuthModal(actionMessage, data, defaultUsers)
-              .subscribe(isConfirmed => {
-                if (isConfirmed) {
+              .subscribe(res => {
+                if (res) {
                   action();
                 }
               });

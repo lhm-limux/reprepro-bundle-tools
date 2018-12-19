@@ -9,7 +9,9 @@ export interface ExtraAuthArgs {
   defaultUsers: Map<string, string>;
 }
 
-export interface RawCredentials {
+export interface AuthData {
+  authId: string;
+  requiredFor: string[];
   username: string;
   password: string;
 }
@@ -19,9 +21,9 @@ export interface RawCredentials {
   styleUrls: ["./extra-auth-modal.component.css"]
 })
 export class ExtraAuthModalComponent
-  extends DialogComponent<ExtraAuthArgs, boolean>
-  implements ExtraAuthArgs {
-  private credentials = new Map<string, RawCredentials>();
+  extends DialogComponent<ExtraAuthArgs, AuthData[]>
+  implements ExtraAuthArgs, OnInit {
+  authData: AuthData[] = [];
 
   defaultUsers: Map<string, string>;
   authTypes: AuthType[];
@@ -33,63 +35,26 @@ export class ExtraAuthModalComponent
   }
 
   confirm() {
-    this.result = true;
+    this.result = this.authData;
     this.close();
   }
 
-  // returns a list of AuthType[], clustered by authId
-  getRequiredAuths(): {
-    authId: string;
-    cred: RawCredentials;
-    requiredFor: string[];
-  }[] {
-    const authMap = new Map<
-      string,
-      { authId: string; cred: RawCredentials; requiredFor: string[] }
-    >();
+  ngOnInit(): void {
+    // clustering AuthType[] by authId
+    const authMap = new Map<string, AuthData>();
     this.authTypes.forEach(t => {
       let e = authMap.get(t.authId) || {
         authId: t.authId,
-        cred: this.getCredentials(t),
+        username: this.defaultUsers.get(t.authId),
+        password: "",
         requiredFor: []
       };
       e.requiredFor.push(t.requiredFor);
       authMap.set(t.authId, e);
     });
-    const res = [];
+    this.authData = [];
     for (let entry of Array.from(authMap.entries()).sort()) {
-      res.push(entry[1]);
+      this.authData.push(entry[1]);
     }
-    return res;
-  }
-
-  getCredentials(auth: AuthType): RawCredentials {
-    const res = this.credentials.get(auth.authId) || {
-      username: this.defaultUsers.get(auth.authId),
-      password: ""
-    };
-    console.log(JSON.stringify(res));
-    this.credentials.set(auth.authId, res);
-    return res;
-  }
-
-  getUser(auth: AuthType) {
-    return this.getCredentials(auth).username;
-  }
-
-  setUser(auth: AuthType, username: string) {
-    const cred = this.getCredentials(auth);
-    cred.username = username;
-    this.credentials.set(auth.authId, cred);
-  }
-
-  getPwd(auth: AuthType) {
-    return this.getCredentials(auth).password;
-  }
-
-  setPwd(auth: AuthType, password: string) {
-    const cred = this.getCredentials(auth);
-    cred.password = password;
-    this.credentials.set(auth.authId, cred);
   }
 }
