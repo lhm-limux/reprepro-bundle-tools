@@ -40,8 +40,8 @@ from aiohttp import web
 from aiohttp.web import run_app
 import asyncio
 import apt_repos
+from reprepro_bundle_appserver import common_interfaces
 from reprepro_bundle_compose import PROJECT_DIR
-from reprepro_bundle_appserver.common_interfaces import BackendLogEntry
 
 PROGNAME = "common_app_server"
 logger = logging.getLogger(__name__)
@@ -49,7 +49,6 @@ logger = logging.getLogger(__name__)
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 4253
 RE_REGISTER_DELAY_SECONDS = 2
-STORE_CRED_MAX = 5
 
 events = set()
 registeredClients = set()
@@ -147,27 +146,20 @@ async def websocket_handler(request):
 
 
 async def handle_store_credentials(request):
-    global STORE_CRED_MAX
     global storedPwds
     res = list()
     try:
-      refs = json.loads(request.rel_url.query['refs'])
-      pwds = json.loads(request.rel_url.query['pwds'])
-      if not isinstance(refs, list) and len(refs) <= STORE_CRED_MAX:
-        raise TypeError()
-      for x, authRef in enumerate(refs):
-          if not isinstance(authRef, dict):
-              raise TypeError()
-          slotId = str(uuid.uuid4())
-          authRef['storageSlotId'] = slotId
-          storedPwds[slotId] = pwds[x]
-          logger.info("storing credentials for authId '{}' and user '{}'".format(authRef.get('authId'), authRef.get('user')))
-          res.append(authRef)
-      return web.json_response(res)
+        refs = common_interfaces.AuthRefList_validate(json.loads(request.rel_url.query['refs']))
+        pwds = json.loads(request.rel_url.query['pwds'])
+        for x, authRef in enumerate(refs):
+            slotId = str(uuid.uuid4())
+            authRef['storageSlotId'] = slotId
+            storedPwds[slotId] = pwds[x]
+            res.append(authRef)
+            logger.info("stored encrypted password for authId '{}'".format(authRef.get('authId')))
+        return web.json_response(res)
     except Exception as e:
-      pass
-    return web.Response(text="IllegalArgumentsProvided", status=400)
-
+        return web.Response(text="IllegalArgumentsProvided:{}".format(e), status=400)
 
 
 async def handle_register(request):
@@ -189,7 +181,7 @@ async def handle_unregister(request):
         return web.json_response("unregistered")
     else:
         logger.debug("ignoring unregister unknown frontend with uuid '{}'".format(uuid))
-        return web.json_response("error")
+        return web.json_response("error", status=400)
 
 
 def stop_backend_if_unused():
@@ -241,7 +233,7 @@ class WebappLoggingHandler(logging.handlers.QueueHandler):
     def toBackendLogEntryList(self):
         res = list()
         while not self.queue.empty():
-          res.append(BackendLogEntry(self.queue.get()))
+          res.append(common_interfaces.BackendLogEntry(self.queue.get()))
         return res
 
 

@@ -20,7 +20,7 @@
     This file contains interface implementations for common/shared interfaces
 '''
 from urllib.parse import urljoin
-
+import re
 
 def Bundle(bundle):
     info = bundle.getInfo() or dict()
@@ -111,3 +111,51 @@ def AuthType(authId, requiredFor=None):
         'authId': authId, # a key identifying the credentials
         'requiredFor': requiredFor # e.g. "Required to Synchronize with GIT"
     }
+
+def AuthRef(authId, user, storageSlotId):
+    return {
+        'authId': authId_validate(authId),
+        'user': user,
+        'storageSlotId': storageSlotId_validate(storageSlotId),
+    }
+
+def authId_validate(authId):
+    if is_identifier(authId):
+        return authId
+    raise TypeError("invalid authId")
+
+def storageSlotId_validate(storageSlotId):
+    if storageSlotId == None: # initially allow None value
+        return None
+    if re.match(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", storageSlotId):
+        return storageSlotId
+    raise TypeError("invalid storageSlotId")
+
+def AuthRef_validate(data):
+    if isinstance(data, dict):
+        return AuthRef(data['authId'], data['user'], data['storageSlotId'])
+    raise TypeError("invalid AuthRef")
+
+def AuthRefList_validate(data):
+    if isinstance(data, list):
+        res = list()
+        for el in data:
+            res.append(AuthRef_validate(el))
+        return res
+    raise TypeError("invalid AuthRefList")
+
+def AuthRequired_validate(data):
+    if isinstance(data, dict):
+      return {
+          'actionId': actionId_validate(data['actionId']),
+          'refs': AuthRefList_validate(data['refs'])
+      }
+    raise TypeError("invalid AuthRequired")
+
+def actionId_validate(actionId):
+    if actionId in ["publishChanges", "bundleSync"]:
+        return actionId
+    raise TypeError("invalid actionId")
+
+def is_identifier(id):
+    return re.match(r"[a-zA-Z][0-9a-zA-Z_]{0,50}", id)
