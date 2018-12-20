@@ -86,5 +86,5 @@ export interface AuthType {
 export interface AuthRef {
   authId: string,
   user: string,
-  pwdKey: string
+  storageSlotId: string,
 }

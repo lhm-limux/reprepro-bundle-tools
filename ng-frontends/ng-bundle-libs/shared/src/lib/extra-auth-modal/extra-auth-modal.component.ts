@@ -45,7 +45,7 @@ export class ExtraAuthModalComponent
     this.authTypes.forEach(t => {
       let e = authMap.get(t.authId) || {
         authId: t.authId,
-        username: this.defaultUsers.get(t.authId),
+        username: this.defaultUsers.get(t.authId) || "",
         password: "",
         requiredFor: []
       };
