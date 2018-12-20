@@ -50,12 +50,19 @@ async def handle_required_auth(request):
     res = list()
     try:
         req = common_interfaces.AuthRequired_validate(json.loads(request.rel_url.query['authRequired']))
+        availableRefs = set()
+        for authRef in req['refs']:
+            if authRef['storageSlotId'] in common_app_server.storedPwds:
+                availableRefs.add(authRef['authId'])
         if "publishChanges" == req['actionId']:
-            res.append(common_interfaces.AuthType("ldap", "Required to publish changes into the shared GIT-Repository"))
+            if not "ldap" in availableRefs:
+                res.append(common_interfaces.AuthType("ldap", "Required to publish changes into the shared GIT-Repository"))
         elif "bundleSync" == req['actionId']:
-            res.append(common_interfaces.AuthType("ldap", "Required for the shared GIT-Repository recieve the latest status"))
-            res.append(common_interfaces.AuthType("ldap", "Required for the synchronization with the Ticket system"))
-            res.append(common_interfaces.AuthType("ldapAdmin", "Required to create FAI-Classes for new bundles"))
+            if not "ldap" in availableRefs:
+                res.append(common_interfaces.AuthType("ldap", "Required for the shared GIT-Repository recieve the latest status"))
+                res.append(common_interfaces.AuthType("ldap", "Required for the synchronization with the Ticket system"))
+            if not "ldapAdmin" in availableRefs:
+                res.append(common_interfaces.AuthType("ldapAdmin", "Required to create FAI-Classes for new bundles"))
         return web.json_response(res)
     except Exception as e:
         return web.Response(text="IllegalArgumentsProvided:{}".format(e), status=400)
