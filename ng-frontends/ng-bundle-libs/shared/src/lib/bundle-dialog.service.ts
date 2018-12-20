@@ -12,11 +12,11 @@ export class BundleDialogService {
 
   constructor(private dialogService: DialogService) {}
 
-  createExtraAuthModal(message: string, authTypes: AuthType[], defaultUsers: Map<string, string> = new Map()) {
+  createExtraAuthModal(authTypes: AuthType[], defaultUsers: Map<string, string> = new Map(), message: string = "") {
     return this.dialogService.addDialog(
       ExtraAuthModalComponent,
       {
-        title: "Authentication required...",
+        title: "Authentication required…",
         message: message,
         authTypes: authTypes,
         defaultUsers: defaultUsers

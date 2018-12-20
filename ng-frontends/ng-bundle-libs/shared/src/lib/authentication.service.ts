@@ -1,7 +1,7 @@
 import { HttpParams, HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ConfigService } from "./config.service";
-import { AuthType, AuthRef } from "./interfaces";
+import { AuthType, AuthRef, AuthRequired } from "./interfaces";
 import { BundleDialogService } from "./bundle-dialog.service";
 import { AuthData } from "./extra-auth-modal/extra-auth-modal.component";
 
@@ -18,13 +18,24 @@ export class AuthenticationService {
   private knownAuthRefs = new Map<string, AuthRef>();
   private knownKeys = new Map<string, string>();
 
-  ensureAuthentications(
-    actionMessage: string,
-    actionId: string,
+  callWithRequiredAuthentications(
+    actionId: "publishChanges" | "bundleSync",
     action: () => void
   ): void {
     const defaultUsers = this.getDefaultUsers();
-    const params = new HttpParams().set("action", actionId);
+
+    const authRequired: AuthRequired = {
+      actionId: actionId,
+      refs: []
+    };
+    this.knownAuthRefs.forEach((value, key) => {
+      authRequired.refs.push(value);
+    });
+    const params = new HttpParams().set(
+      "authRequired",
+      JSON.stringify(authRequired)
+    );
+
     this.http
       .get<AuthType[]>(this.config.getApiUrl("requiredAuth"), {
         params: params
@@ -33,7 +44,7 @@ export class AuthenticationService {
         (data: AuthType[]) => {
           if (data.length > 0) {
             this.dialogService
-              .createExtraAuthModal(actionMessage, data, defaultUsers)
+              .createExtraAuthModal(data, defaultUsers)
               .subscribe((authData: AuthData[]) => {
                 if (authData) {
                   this.storeCredentials(authData).subscribe(
@@ -42,9 +53,7 @@ export class AuthenticationService {
                       action();
                     },
                     errResp => {
-                      console.error(
-                        "Store credentials failed: " + errResp
-                      );
+                      console.error("Store credentials failed: " + errResp);
                     }
                   );
                 }

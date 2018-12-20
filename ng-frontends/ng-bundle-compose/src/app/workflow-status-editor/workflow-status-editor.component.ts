@@ -195,8 +195,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
 
   synchronizeBundles() {
     console.log("synchronizeBundles called");
-    this.authenticationService.ensureAuthentications(
-      "for synchronizing the Bundle-Status",
+    this.authenticationService.callWithRequiredAuthentications(
       "bundleSync",
       () => {
         this.actionService.updateBundles();
@@ -206,8 +205,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
 
   publishChanges() {
     console.log("publishChanges called");
-    this.authenticationService.ensureAuthentications(
-      "for publishing Changes",
+    this.authenticationService.callWithRequiredAuthentications(
       "publishChanges",
       () => {
         this.actionService.publishChanges();

@@ -88,3 +88,8 @@ export interface AuthRef {
   user: string,
   storageSlotId: string,
 }
+
+export interface AuthRequired {
+  actionId: "publishChanges" | "bundleSync",
+  refs: AuthRef[]
+}
