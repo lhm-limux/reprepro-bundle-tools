@@ -25,7 +25,8 @@ import {
   UnpublishedChangesComponent,
   BundleDialogService,
   AuthenticationService,
-  VersionedChangesService
+  VersionedChangesService,
+  AuthRef
 } from "shared";
 import { WorkflowMetadataService } from "../services/workflow-metadata.service";
 import { Router } from "@angular/router";
@@ -197,8 +198,8 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     console.log("synchronizeBundles called");
     this.authenticationService.callWithRequiredAuthentications(
       "bundleSync",
-      () => {
-        this.actionService.updateBundles();
+      (refs: AuthRef[]) => {
+        this.actionService.updateBundles(refs);
       }
     );
   }
@@ -207,7 +208,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     console.log("publishChanges called");
     this.authenticationService.callWithRequiredAuthentications(
       "publishChanges",
-      () => {
+      (refs: AuthRef[]) => {
         this.actionService.publishChanges();
       }
     );

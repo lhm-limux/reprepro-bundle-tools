@@ -16,11 +16,11 @@ export class AuthenticationService {
   ) {}
 
   private knownAuthRefs = new Map<string, AuthRef>();
-  private knownKeys = new Map<string, string>();
+  private tmpKeys = new Map<string, string>();
 
   callWithRequiredAuthentications(
-    actionId: "publishChanges" | "bundleSync",
-    action: () => void
+    actionId: string,
+    action: (refs: AuthRef[]) => void
   ): void {
     const defaultUsers = this.getDefaultUsers();
 
@@ -49,8 +49,12 @@ export class AuthenticationService {
                 if (authData) {
                   this.storeCredentials(authData).subscribe(
                     (refs: AuthRef[]) => {
-                      refs.forEach(r => this.knownAuthRefs.set(r.authId, r));
-                      action();
+                      refs.forEach(r => {
+                        r.key = this.tmpKeys.get(r.authId);
+                        this.tmpKeys.delete(r.authId);
+                        this.knownAuthRefs.set(r.authId, r);
+                      });
+                      action(Array.from(this.knownAuthRefs.values()));
                     },
                     errResp => {
                       console.error("Store credentials failed: " + errResp);
@@ -59,7 +63,7 @@ export class AuthenticationService {
                 }
               });
           } else {
-            action();
+            action(Array.from(this.knownAuthRefs.values()));
           }
         },
         errResp => {
@@ -71,15 +75,15 @@ export class AuthenticationService {
   private storeCredentials(authData: AuthData[]) {
     const refs: AuthRef[] = [];
     const pwds: string[] = [];
-    const keys: string[] = [];
     authData.forEach(auth => {
       refs.push({
         authId: auth.authId,
         user: auth.username,
-        storageSlotId: null
+        storageSlotId: null,
+        key: null
       });
       const key = this.genKey();
-      this.knownKeys.set(auth.authId, key);
+      this.tmpKeys.set(auth.authId, key);
       pwds.push(this.encrypt(auth.password, key));
     });
     const params = new HttpParams()

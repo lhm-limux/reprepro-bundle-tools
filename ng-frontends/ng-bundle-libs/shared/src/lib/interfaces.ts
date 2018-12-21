@@ -86,10 +86,11 @@ export interface AuthType {
 export interface AuthRef {
   authId: string,
   user: string,
-  storageSlotId: string,
+  storageSlotId: string, // comes from the server
+  key: string, // empty unless we got storageSlotId
 }
 
 export interface AuthRequired {
-  actionId: "publishChanges" | "bundleSync",
+  actionId: string,
   refs: AuthRef[]
 }
