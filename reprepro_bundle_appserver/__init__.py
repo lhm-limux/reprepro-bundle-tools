@@ -19,3 +19,7 @@
 '''
    Common Files required to run the backend of a locally hosted appserver
 '''
+
+class IllegalArgumentException(Exception):
+    def __init__(self, msg=None):
+        Exception.__init__(self, "IllegalArguments provided" + (": " + msg) if msg else ".")

@@ -40,7 +40,7 @@ from aiohttp import web
 from aiohttp.web import run_app
 import asyncio
 import apt_repos
-from reprepro_bundle_appserver import common_interfaces
+from reprepro_bundle_appserver import common_interfaces, IllegalArgumentException
 from reprepro_bundle_compose import PROJECT_DIR
 
 PROGNAME = "common_app_server"
@@ -227,6 +227,25 @@ async def run_webserver(args, registerAdditionalRoutes=None, serveDistPath=None)
     except OSError as e:
         logger.info("could not start backend: {}".format(e))
     return (started, runner, url)
+
+
+def get_credentials(authRefs, authId):
+    global storedPwds
+    ref = None
+    for x, r in enumerate(authRefs):
+        if r['authId'] == authId:
+            ref = r
+            break
+    if not ref:
+        raise IllegalArgumentException("No AuthRef for authId='{}' found.".format(authId))
+    slotId = ref['storageSlotId']
+    encryptedPwd = storedPwds[slotId]
+    pwd = decrypt(encryptedPwd, ref['key'])
+    return (ref['user'], pwd)
+
+
+def decrypt(encrypted, key):
+    return encrypted
 
 
 class WebappLoggingHandler(logging.handlers.QueueHandler):

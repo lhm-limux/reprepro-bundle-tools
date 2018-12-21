@@ -55,18 +55,17 @@ async def handle_required_auth(request):
             if authRef['storageSlotId'] in common_app_server.storedPwds:
                 availableRefs.add(authRef['authId'])
         if "publishChanges" == req['actionId']:
-            if not "ldap" in availableRefs:
-                res.append(common_interfaces.AuthType("ldap", "Required to publish changes into the shared GIT-Repository"))
+            '''if not "ldap" in availableRefs:
+                res.append(common_interfaces.AuthType("ldap", "Required to publish changes into the shared GIT-Repository"))'''
         elif "bundleSync" == req['actionId']:
             if not "ldap" in availableRefs:
                 res.append(common_interfaces.AuthType("ldap", "Required for the shared GIT-Repository recieve the latest status"))
-                res.append(common_interfaces.AuthType("ldap", "Required for the synchronization with the Ticket system"))
-            if not "ldapAdmin" in availableRefs:
-                res.append(common_interfaces.AuthType("ldapAdmin", "Required to create FAI-Classes for new bundles"))
+            #    res.append(common_interfaces.AuthType("ldap", "Required for the synchronization with the Ticket system"))
+            #if not "ldapAdmin" in availableRefs:
+            #    res.append(common_interfaces.AuthType("ldapAdmin", "Required to create FAI-Classes for new bundles"))
         return web.json_response(res)
     except Exception as e:
         return web.Response(text="IllegalArgumentsProvided:{}".format(e), status=400)
-
 
 
 async def handle_latest_published_change(request):
@@ -184,15 +183,31 @@ async def handle_set_target(request):
 
 
 async def handle_update_bundles(request):
+    user, password = "", ""
+    try:
+        refs = common_interfaces.AuthRefList_validate(json.loads(request.rel_url.query['refs']))
+        (user, password) = common_app_server.get_credentials(refs, 'ldap')
+        logger.info("got user, password: {}, {}".format(user, password))
+    except Exception as e:
+        return web.Response(text="IllegalArgumentsProvided:{}".format(e), status=400)
+
     logger.info("handling 'Update Bundles'")
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
             repo = git.Repo(PROJECT_DIR)
             ensure_clean_git_repo(repo)
-            updateBundles()
+            tracApi = None
+            try:
+                config = getTracConfig()
+                tracApi = trac_api.TracApi(config['TracUrl'], user, password)
+            except KeyError as e:
+                logger.warn("Missing Key {} in config file '{}' --> no synchronization with trac will be done!".format(e, config['__file__']))
+            updateBundles(tracApi)
             git_commit(repo, [BUNDLES_LIST_FILE], "UPDATED {}".format(BUNDLES_LIST_FILE))
         except GitNotCleanException as e:
+            logger.error(e)
+        except Exception as e:
             logger.error(e)
         finally:
             res = logs.toBackendLogEntryList()

@@ -112,15 +112,16 @@ def AuthType(authId, requiredFor=None):
         'requiredFor': requiredFor # e.g. "Required to Synchronize with GIT"
     }
 
-def AuthRef(authId, user, storageSlotId):
+def AuthRef(authId, user, storageSlotId, key):
     return {
         'authId': authId_validate(authId),
         'user': user,
         'storageSlotId': storageSlotId_validate(storageSlotId),
+        'key': key
     }
 
 def authId_validate(authId):
-    if is_identifier(authId):
+    if re.match(r"[a-zA-Z][0-9a-zA-Z_]{0,50}", authId):
         return authId
     raise TypeError("invalid authId")
 
@@ -133,7 +134,7 @@ def storageSlotId_validate(storageSlotId):
 
 def AuthRef_validate(data):
     if isinstance(data, dict):
-        return AuthRef(data['authId'], data['user'], data['storageSlotId'])
+        return AuthRef(data['authId'], data['user'], data['storageSlotId'], data['key'])
     raise TypeError("invalid AuthRef")
 
 def AuthRefList_validate(data):
@@ -156,6 +157,3 @@ def actionId_validate(actionId):
     if actionId in ["publishChanges", "bundleSync"]:
         return actionId
     raise TypeError("invalid actionId")
-
-def is_identifier(id):
-    return re.match(r"[a-zA-Z][0-9a-zA-Z_]{0,50}", id)
