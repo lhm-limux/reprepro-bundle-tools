@@ -52,16 +52,16 @@ async def handle_required_auth(request):
         req = common_interfaces.AuthRequired_validate(json.loads(request.rel_url.query['authRequired']))
         availableRefs = set()
         for authRef in req['refs']:
-            if authRef['storageSlotId'] in common_app_server.storedPwds:
+            if common_app_server.is_valid_authRef(authRef):
                 availableRefs.add(authRef['authId'])
         if "publishChanges" == req['actionId']:
             '''if not "ldap" in availableRefs:
                 res.append(common_interfaces.AuthType("ldap", "Required to publish changes into the shared GIT-Repository"))'''
         elif "bundleSync" == req['actionId']:
             if not "ldap" in availableRefs:
-                res.append(common_interfaces.AuthType("ldap", "Required for the shared GIT-Repository recieve the latest status"))
-            #    res.append(common_interfaces.AuthType("ldap", "Required for the synchronization with the Ticket system"))
-            #if not "ldapAdmin" in availableRefs:
+                res.append(common_interfaces.AuthType("ldap", "Required for the synchronization with the Ticket system. Leaf empty to skip trac-synchronisation."))
+                # res.append(common_interfaces.AuthType("ldap", "Required for the shared GIT-Repository recieve the latest status"))
+            # if not "ldapAdmin" in availableRefs:
             #    res.append(common_interfaces.AuthType("ldapAdmin", "Required to create FAI-Classes for new bundles"))
         return web.json_response(res)
     except Exception as e:
@@ -183,14 +183,11 @@ async def handle_set_target(request):
 
 
 async def handle_update_bundles(request):
-    user, password = "", ""
+    user, password, ssId = "", "", None
     try:
-        refs = common_interfaces.AuthRefList_validate(json.loads(request.rel_url.query['refs']))
-        (user, password) = common_app_server.get_credentials(refs, 'ldap')
-        logger.info("got user, password: {}, {}".format(user, password))
+        (user, password, ssId) = common_app_server.get_credentials(request, 'ldap')
     except Exception as e:
         return web.Response(text="IllegalArgumentsProvided:{}".format(e), status=400)
-
     logger.info("handling 'Update Bundles'")
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
@@ -199,8 +196,12 @@ async def handle_update_bundles(request):
             ensure_clean_git_repo(repo)
             tracApi = None
             try:
-                config = getTracConfig()
-                tracApi = trac_api.TracApi(config['TracUrl'], user, password)
+                if user and len(user) > 0 and password and len(password) > 0:
+                    config = getTracConfig()
+                    tracApi = trac_api.TracApi(config['TracUrl'], user, password)
+                else:
+                    logger.warn("Skipping synchronisation with trac as there are no/empty credentials specified.")
+                    common_app_server.invalidate_credentials(ssId)
             except KeyError as e:
                 logger.warn("Missing Key {} in config file '{}' --> no synchronization with trac will be done!".format(e, config['__file__']))
             updateBundles(tracApi)
@@ -208,6 +209,7 @@ async def handle_update_bundles(request):
         except GitNotCleanException as e:
             logger.error(e)
         except Exception as e:
+            common_app_server.invalidate_credentials(ssId)
             logger.error(e)
         finally:
             res = logs.toBackendLogEntryList()

@@ -52,7 +52,7 @@ RE_REGISTER_DELAY_SECONDS = 2
 
 events = set()
 registeredClients = set()
-storedPwds = dict() # storageId -> encryptedPwd
+__storedPwds = dict() # storageId -> encryptedPwd
 
 
 def setupLogging(loglevel):
@@ -146,7 +146,7 @@ async def websocket_handler(request):
 
 
 async def handle_store_credentials(request):
-    global storedPwds
+    global __storedPwds
     res = list()
     try:
         refs = common_interfaces.AuthRefList_validate(json.loads(request.rel_url.query['refs']))
@@ -154,7 +154,7 @@ async def handle_store_credentials(request):
         for x, authRef in enumerate(refs):
             slotId = str(uuid.uuid4())
             authRef['storageSlotId'] = slotId
-            storedPwds[slotId] = pwds[x]
+            __storedPwds[slotId] = pwds[x]
             res.append(authRef)
             logger.info("stored encrypted password for authId '{}'".format(authRef.get('authId')))
         return web.json_response(res)
@@ -229,8 +229,19 @@ async def run_webserver(args, registerAdditionalRoutes=None, serveDistPath=None)
     return (started, runner, url)
 
 
-def get_credentials(authRefs, authId):
-    global storedPwds
+def is_valid_authRef(authRef):
+    global __storedPwds
+    return authRef['storageSlotId'] in __storedPwds
+
+
+def invalidate_credentials(storageSlotId):
+    global __storedPwds
+    __storedPwds.pop(storageSlotId, None)
+
+
+def get_credentials(request, authId):
+    global __storedPwds
+    authRefs = common_interfaces.AuthRefList_validate(json.loads(request.rel_url.query['refs']))
     ref = None
     for x, r in enumerate(authRefs):
         if r['authId'] == authId:
@@ -239,9 +250,9 @@ def get_credentials(authRefs, authId):
     if not ref:
         raise IllegalArgumentException("No AuthRef for authId='{}' found.".format(authId))
     slotId = ref['storageSlotId']
-    encryptedPwd = storedPwds[slotId]
+    encryptedPwd = __storedPwds[slotId]
     pwd = decrypt(encryptedPwd, ref['key'])
-    return (ref['user'], pwd)
+    return (ref['user'], pwd, slotId)
 
 
 def decrypt(encrypted, key):
