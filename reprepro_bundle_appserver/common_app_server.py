@@ -36,6 +36,9 @@ import queue
 import subprocess
 import uuid
 import json
+import binascii
+import Crypto
+from Crypto.Cipher import AES
 from aiohttp import web
 from aiohttp.web import run_app
 import asyncio
@@ -250,13 +253,27 @@ def get_credentials(request, authId):
     if not ref:
         raise IllegalArgumentException("No AuthRef for authId='{}' found.".format(authId))
     slotId = ref['storageSlotId']
-    encryptedPwd = __storedPwds[slotId]
-    pwd = decrypt(encryptedPwd, ref['key'])
-    return (ref['user'], pwd, slotId)
+    aesCipherParamsStr = __storedPwds[slotId]
+    username = ref['user']
+    try:
+        pwd = decrypt(aesCipherParamsStr, ref['key'])
+    except Exception as e:
+        logger.error("Could not decrypt Credentials for user {}: {}".format(username, e))
+        logger.exception(e)
+        return(username, None, slotId)
+    #logger.info("Got credentials user, pwd: '{}', '{}'".format(username, pwd))
+    return (username, pwd, slotId)
 
 
-def decrypt(encrypted, key):
-    return encrypted
+def decrypt(aesCipherParamsStr, key):
+    aesCipherParams = json.loads(aesCipherParamsStr)
+    #logger.info(f"Params: '{aesCipherParams}'', Key: '{key}'")
+    cipher = binascii.a2b_hex(aesCipherParams["cipher"])
+    iv =     binascii.a2b_hex(aesCipherParams["iv"])
+    key =    binascii.a2b_hex(key)
+    aes = Crypto.Cipher.AES.new(key, Crypto.Cipher.AES.MODE_CFB, iv, segment_size=128)
+    res = aes.decrypt(cipher)
+    return res.decode("utf-8")
 
 
 class WebappLoggingHandler(logging.handlers.QueueHandler):

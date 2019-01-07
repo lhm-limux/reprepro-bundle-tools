@@ -59,7 +59,7 @@ async def handle_required_auth(request):
                 res.append(common_interfaces.AuthType("ldap", "Required to publish changes into the shared GIT-Repository"))'''
         elif "bundleSync" == req['actionId']:
             if not "ldap" in availableRefs:
-                res.append(common_interfaces.AuthType("ldap", "Required for the synchronization with the Ticket system. Leaf empty to skip trac-synchronisation."))
+                res.append(common_interfaces.AuthType("ldap", "Required for the synchronization with the Ticket system. Leave empty to skip trac-synchronisation."))
                 # res.append(common_interfaces.AuthType("ldap", "Required for the shared GIT-Repository recieve the latest status"))
             # if not "ldapAdmin" in availableRefs:
             #    res.append(common_interfaces.AuthType("ldapAdmin", "Required to create FAI-Classes for new bundles"))

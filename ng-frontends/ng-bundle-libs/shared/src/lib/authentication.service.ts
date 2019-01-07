@@ -1,3 +1,4 @@
+import * as CryptoJS from "crypto-js";
 import { HttpParams, HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ConfigService } from "./config.service";
@@ -82,9 +83,14 @@ export class AuthenticationService {
         storageSlotId: null,
         key: null
       });
-      const key = this.genKey();
-      this.tmpKeys.set(auth.authId, key);
-      pwds.push(this.encrypt(auth.password, key));
+      const params = this.encryptWithRandomKey(auth.password);
+      this.tmpKeys.set(auth.authId, params["key"]);
+      pwds.push(
+        JSON.stringify({
+          cipher: params["cipher"],
+          iv: params["iv"]
+        })
+      );
     });
     const params = new HttpParams()
       .set("refs", JSON.stringify(refs))
@@ -102,14 +108,25 @@ export class AuthenticationService {
     return defaultUsers;
   }
 
-  private genKey(): string {
-    let key = crypto.getRandomValues(new Uint8Array(32));
+  private randomHexString(length: number): string {
+    const key = crypto.getRandomValues(new Uint8Array(length));
     return Array.prototype.map
-      .call(key, b => ("0" + b.toString(16)).slice(-2))
+      .call(key, (b: number) => ("0" + b.toString(16)).slice(-2))
       .join("");
   }
 
-  private encrypt(text: string, key: string): string {
-    return "encrypted:" + text;
+  private encryptWithRandomKey(text: string): Object {
+    const key = CryptoJS.enc.Hex.parse(this.randomHexString(32));
+    const iv = CryptoJS.enc.Hex.parse(this.randomHexString(16));
+    const encrypted = CryptoJS.AES.encrypt(text, key, {
+      iv: iv,
+      mode: CryptoJS.mode.CFB,
+      padding: CryptoJS.pad.ZeroPadding
+    });
+    return {
+      cipher: encrypted.ciphertext.toString(),
+      iv: encrypted.iv.toString(),
+      key: encrypted.key.toString()
+    };
   }
 }
