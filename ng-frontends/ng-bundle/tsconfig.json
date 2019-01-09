@@ -20,6 +20,9 @@
     "paths": {
       "shared": [
         "dist/shared"
+      ],
+      "shared/*": [
+        "dist/shared/*"
       ]
     }
   }
