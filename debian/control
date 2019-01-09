@@ -59,6 +59,7 @@ Depends:
  python3-apt-repos,
  python3-urllib3,
  python3-git,
+ python3-crypto,
  python3-jinja2
 Description: ${pkg:Description}
  ${pkg:Longdescription}
