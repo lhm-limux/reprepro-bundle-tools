@@ -364,8 +364,9 @@ def cmd_bundles(args):
             editable = "EDITABLE" if bundle.isEditable() else "READONLY"
             info = bundle.getInfo()
             target = "[{}]".format(info.get("Target", "no-target"))
+            creator = "({})".format(info.get("Creator", "unknown-creator"))
             subject = info.get("Releasenotes", "--no-subject--").split("\n")[0]
-            print(" ".join((bundle.bundleName, editable, target, subject)))
+            print(" ".join((bundle.bundleName, editable, target, subject, creator)))
 
 
 def scanBundles():
