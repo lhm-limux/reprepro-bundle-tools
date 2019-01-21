@@ -84,6 +84,7 @@ def main():
     parser.add_argument("-h", "--help", action="store_true", help="""
                         Show a (subcommand specific) help message""")
     parser.add_argument("-d", "--debug", action="store_true", default=False, help="Show debug messages.")
+    parser.add_argument("--no-info", action="store_true", default=False, help="Just show warnings and errors.")
     subparsers = parser.add_subparsers(help='choose one of these subcommands')
     parser.set_defaults(debug=False)
 
@@ -137,6 +138,12 @@ def main():
         g.add_argument("--upgrade-from", default=None, help="""
                         Comma separated list of Suite-Selectors that define suites whose (upgradable) packages are automatically upgraded if they
                         already exist in the reference-suites.""")
+        g.add_argument("--no-upgrade-keep-section", action="store_true", default=False, help="""
+                        If not set, when doing a package upgrade via --upgrade-from only those packages will
+                        be upgraded that are keeping their section (which means after upgrade the package will resist
+                        in the same section as before). In case the section of a package has changed in the supplier
+                        suite or if the new section doesn't match the current section in the reference suite,
+                        the package will not be automatically upgraded and a warning will be reported.""")
         g.add_argument("--batch", action="store_true", default=False, help="""Run in batch mode which means without user interaction.""")
 
     for p in [parse_init, parse_edit, parse_meta, parse_black, parse_seal, parse_clone, parse_apply, parse_repos]:
@@ -179,7 +186,7 @@ def main():
     parser.set_defaults()
 
     args = parser.parse_args()
-    setupLogging(logging.DEBUG if args.debug else logging.INFO)
+    setupLogging(logging.DEBUG if args.debug else logging.WARN if args.no_info else logging.INFO)
 
     if "sub_function" in args.__dict__:
         if args.help:
@@ -448,7 +455,7 @@ def update_sources_control_list(bundle, args, cancel_remark=None):
     sourcesDict = bundle.parseSourcesControlList()
     with apt_repos.suppress_unwanted_apt_pkg_messages() as forked:
         if forked:
-            bundle.updateSourcesControlList(supplierSuites, refSuites, sourcesDict, highlightedSuites, addFrom, upgradeFrom, args.no_apt_update, cancel_remark)
+            bundle.updateSourcesControlList(supplierSuites, refSuites, sourcesDict, highlightedSuites, addFrom, upgradeFrom, not args.no_upgrade_keep_section, args.no_apt_update, cancel_remark)
     return bundle.scl
 
 

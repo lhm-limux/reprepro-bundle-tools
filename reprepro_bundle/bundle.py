@@ -306,7 +306,7 @@ class Bundle():
             self._writeBlacklist(blacklisted)
 
 
-    def updateSourcesControlList(self, supplierSuites, refSuites, prevSourcesDict, highlightedSuites, addFrom, upgradeFrom, no_update, cancel_remark=None):
+    def updateSourcesControlList(self, supplierSuites, refSuites, prevSourcesDict, highlightedSuites, addFrom, upgradeFrom, upgradeKeepSection, no_update, cancel_remark=None):
         '''
            This method scans the provided `supplierSuites`, `refSuites` and the bundles ownSuite to
            create an user editable version of the sources_control.list providing a full overview
@@ -326,7 +326,8 @@ class Bundle():
 
            `addFrom` (a) and `upgradeFrom` (b) could be set to the suite identifiers whose packages
            should be automatically marked as active if they a) not alrady exits or b) are upgrades.
-           This is to make mass add's or mass upgrades possible.
+           This is to make mass add's or mass upgrades possible. `upgradeKeepSection` could be set
+           to avoid upgrades that would change the section of a package.
 
            All the above mentioned lists of suite identifiers expext apt_repos.RepoSuite Objects.
            If `no_update` is true, apt-repos is adviced to don't update it's apt cache for the
@@ -373,7 +374,7 @@ class Bundle():
                 package.updateStatus(current)
                 if package.status == PackageStatus.IS_CURRENT and package.suiteName == self.getOwnSuiteName():
                     package.status = PackageStatus.SHOULD_BE_KEPT
-            self._markActive(packages, mergePackages, addFrom, upgradeFrom)
+            self._markActive(packages, mergePackages, addFrom, upgradeFrom, upgradeKeepSection)
 
         self._writeSourcesControlList(sourcesDict, highlighted, cancel_remark)
 
@@ -474,7 +475,7 @@ class Bundle():
         return latest
 
 
-    def _markActive(self, packages, mergePackages, addFrom=None, upgradeFrom=None):
+    def _markActive(self, packages, mergePackages, addFrom=None, upgradeFrom=None, upgradeKeepSection=None):
         '''
             This method has some kind of precedence mechanism to ensure that only one
             package from a list of (equally named) `packages` is marked active.
@@ -487,19 +488,25 @@ class Bundle():
             (merged) into the new list.
 
             `addFrom`- and `upgradeFrom`-suites describe suites whose new / upgradable
-            packages should always be marked as active (with highest precidence)
+            packages should always be marked as active (with highest precidence), except
+            upgradeKeepSection is True and an upgrade would change the section.
         '''
         markedForActivation = (None, 0) # tuple of (package, precedence)
+        currentSection = None
         for package in sorted(packages):
             (_, precedence) = markedForActivation
             if   precedence < 1 and (package.status == PackageStatus.IS_CURRENT or package.status == PackageStatus.SHOULD_BE_KEPT):
                 markedForActivation = (package, 1)
+                currentSection = package.section
             elif precedence < 2 and package in mergePackages:
                 markedForActivation = (package, 2)
             elif precedence < 3 and addFrom and package.status == PackageStatus.IS_MISSING and package.suiteName in [s.getSuiteName() for s in addFrom]:
                 markedForActivation = (package, 3)
             elif precedence < 4 and upgradeFrom and package.status == PackageStatus.IS_UPGRADE and package.suiteName in [s.getSuiteName() for s in upgradeFrom]:
-                markedForActivation = (package, 4)
+                if upgradeKeepSection and currentSection and currentSection != package.section:
+                    logger.warn("Skipping upgradable {} {} which would change section from '{}' to '{}'".format(package.sourceName, package.version, currentSection, package.section))
+                else:
+                    markedForActivation = (package, 4)
         (markedForActivation, _) = markedForActivation
         if markedForActivation:
             markedForActivation.active = True
