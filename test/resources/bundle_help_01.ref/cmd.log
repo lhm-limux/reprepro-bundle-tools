@@ -1,4 +1,4 @@
-usage: bundle [-h] [-d]
+usage: bundle [-h] [-d] [--no-info]
               {init,edit,blacklist,black,meta,show,list,ls,seal,apply,clone,bundles,lsb,update-repos-config,repos}
               ...
 
@@ -43,3 +43,4 @@ positional arguments:
 optional arguments:
   -h, --help            Show a (subcommand specific) help message
   -d, --debug           Show debug messages.
+  --no-info             Just show warnings and errors.

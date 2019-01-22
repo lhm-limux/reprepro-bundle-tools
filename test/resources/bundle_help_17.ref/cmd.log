@@ -1,4 +1,4 @@
-usage: bundle [-h] [-d]
+usage: bundle [-h] [-d] [--no-info]
               {init,edit,blacklist,black,meta,show,list,ls,seal,apply,clone,bundles,lsb,update-repos-config,repos}
               ...
 bundle: error: invalid choice: 'invalid-cmd' (choose from 'init', 'edit', 'blacklist', 'black', 'meta', 'show', 'list', 'ls', 'seal', 'apply', 'clone', 'bundles', 'lsb', 'update-repos-config', 'repos')
