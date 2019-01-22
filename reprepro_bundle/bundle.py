@@ -306,7 +306,7 @@ class Bundle():
             self._writeBlacklist(blacklisted)
 
 
-    def updateSourcesControlList(self, supplierSuites, refSuites, prevSourcesDict, highlightedSuites, addFrom, upgradeFrom, upgradeKeepSection, no_update, cancel_remark=None):
+    def updateSourcesControlList(self, supplierSuites, refSuites, prevSourcesDict, highlightedSuites, addFrom, upgradeFrom, upgradeKeepComponent, no_update, cancel_remark=None):
         '''
            This method scans the provided `supplierSuites`, `refSuites` and the bundles ownSuite to
            create an user editable version of the sources_control.list providing a full overview
@@ -326,14 +326,14 @@ class Bundle():
 
            `addFrom` (a) and `upgradeFrom` (b) could be set to the suite identifiers whose packages
            should be automatically marked as active if they a) not alrady exits or b) are upgrades.
-           This is to make mass add's or mass upgrades possible. `upgradeKeepSection` could be set
-           to avoid upgrades that would change the section of a package.
+           This is to make mass add's or mass upgrades possible. `upgradeKeepComponent` could be set
+           to avoid upgrades that would change the component of a package.
 
            All the above mentioned lists of suite identifiers expext apt_repos.RepoSuite Objects.
            If `no_update` is true, apt-repos is adviced to don't update it's apt cache for the
            particular repositories.
         '''
-        reqFields = PackageField.getByFieldsString('CvsS')
+        reqFields = PackageField.getByFieldsString('CvsSy')
         suites = set(supplierSuites)
         suites = suites.union(refSuites)
         logger.info("Creating sources_control.list for {} suites".format(len(suites)))
@@ -374,7 +374,7 @@ class Bundle():
                 package.updateStatus(current)
                 if package.status == PackageStatus.IS_CURRENT and package.suiteName == self.getOwnSuiteName():
                     package.status = PackageStatus.SHOULD_BE_KEPT
-            self._markActive(packages, mergePackages, addFrom, upgradeFrom, upgradeKeepSection)
+            self._markActive(packages, mergePackages, addFrom, upgradeFrom, upgradeKeepComponent)
 
         self._writeSourcesControlList(sourcesDict, highlighted, cancel_remark)
 
@@ -475,7 +475,7 @@ class Bundle():
         return latest
 
 
-    def _markActive(self, packages, mergePackages, addFrom=None, upgradeFrom=None, upgradeKeepSection=None):
+    def _markActive(self, packages, mergePackages, addFrom=None, upgradeFrom=None, upgradeKeepComponent=None):
         '''
             This method has some kind of precedence mechanism to ensure that only one
             package from a list of (equally named) `packages` is marked active.
@@ -489,22 +489,22 @@ class Bundle():
 
             `addFrom`- and `upgradeFrom`-suites describe suites whose new / upgradable
             packages should always be marked as active (with highest precidence), except
-            upgradeKeepSection is True and an upgrade would change the section.
+            upgradeKeepComponent is True and an upgrade would change the component.
         '''
         markedForActivation = (None, 0) # tuple of (package, precedence)
-        currentSection = None
+        currentComponent = None
         for package in sorted(packages):
             (_, precedence) = markedForActivation
             if   precedence < 1 and (package.status == PackageStatus.IS_CURRENT or package.status == PackageStatus.SHOULD_BE_KEPT):
                 markedForActivation = (package, 1)
-                currentSection = package.section
+                currentComponent = package.component
             elif precedence < 2 and package in mergePackages:
                 markedForActivation = (package, 2)
             elif precedence < 3 and addFrom and package.status == PackageStatus.IS_MISSING and package.suiteName in [s.getSuiteName() for s in addFrom]:
                 markedForActivation = (package, 3)
             elif precedence < 4 and upgradeFrom and package.status == PackageStatus.IS_UPGRADE and package.suiteName in [s.getSuiteName() for s in upgradeFrom]:
-                if upgradeKeepSection and currentSection and currentSection != package.section:
-                    logger.warn("Skipping upgradable {} {} which would change section from '{}' to '{}'".format(package.sourceName, package.version, currentSection, package.section))
+                if upgradeKeepComponent and currentComponent and currentComponent != package.component:
+                    logger.warn("Skipping upgradable {} {} which would change the physical component from '{}' to '{}'".format(package.sourceName, package.version, currentComponent, package.section))
                 else:
                     markedForActivation = (package, 4)
         (markedForActivation, _) = markedForActivation

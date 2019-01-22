@@ -138,11 +138,11 @@ def main():
         g.add_argument("--upgrade-from", default=None, help="""
                         Comma separated list of Suite-Selectors that define suites whose (upgradable) packages are automatically upgraded if they
                         already exist in the reference-suites.""")
-        g.add_argument("--no-upgrade-keep-section", action="store_true", default=False, help="""
+        g.add_argument("--no-upgrade-keep-component", action="store_true", default=False, help="""
                         If not set, when doing a package upgrade via --upgrade-from only those packages will
-                        be upgraded that are keeping their section (which means after upgrade the package will resist
-                        in the same section as before). In case the section of a package has changed in the supplier
-                        suite or if the new section doesn't match the current section in the reference suite,
+                        be upgraded that are keeping their physical component (which means after upgrade the package will resist
+                        in the same component as before). In case the component of a package has changed in the supplier
+                        suite or if the new component doesn't match the current component in the reference suite,
                         the package will not be automatically upgraded and a warning will be reported.""")
         g.add_argument("--batch", action="store_true", default=False, help="""Run in batch mode which means without user interaction.""")
 
@@ -453,10 +453,10 @@ def update_sources_control_list(bundle, args, cancel_remark=None):
     highlightedSuites.extend(upgradeFrom)
     highlightedSuites.extend(addFrom)
     sourcesDict = bundle.parseSourcesControlList()
-    upgrade_keep_section = not args.no_upgrade_keep_section if "no_upgrade_keep_section" in args.__dict__ else True
+    upgrade_keep_component = not args.no_upgrade_keep_component if "no_upgrade_keep_component" in args.__dict__ else True
     with apt_repos.suppress_unwanted_apt_pkg_messages() as forked:
         if forked:
-            bundle.updateSourcesControlList(supplierSuites, refSuites, sourcesDict, highlightedSuites, addFrom, upgradeFrom, upgrade_keep_section, args.no_apt_update, cancel_remark)
+            bundle.updateSourcesControlList(supplierSuites, refSuites, sourcesDict, highlightedSuites, addFrom, upgradeFrom, upgrade_keep_component, args.no_apt_update, cancel_remark)
     return bundle.scl
 
 
