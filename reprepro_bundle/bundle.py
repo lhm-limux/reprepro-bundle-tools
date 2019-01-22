@@ -504,7 +504,7 @@ class Bundle():
                 markedForActivation = (package, 3)
             elif precedence < 4 and upgradeFrom and package.status == PackageStatus.IS_UPGRADE and package.suiteName in [s.getSuiteName() for s in upgradeFrom]:
                 if upgradeKeepComponent and currentComponent and currentComponent != package.component:
-                    logger.warn("Skipping upgradable {} {} which would change the physical component from '{}' to '{}'".format(package.sourceName, package.version, currentComponent, package.section))
+                    logger.warn("Skipping upgradable {} {} which would change the physical component from '{}' to '{}'".format(package.sourceName, package.version, currentComponent, package.component))
                 else:
                     markedForActivation = (package, 4)
         (markedForActivation, _) = markedForActivation
