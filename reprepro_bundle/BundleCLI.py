@@ -453,9 +453,10 @@ def update_sources_control_list(bundle, args, cancel_remark=None):
     highlightedSuites.extend(upgradeFrom)
     highlightedSuites.extend(addFrom)
     sourcesDict = bundle.parseSourcesControlList()
+    upgrade_keep_section = not args.no_upgrade_keep_section if "no_upgrade_keep_section" in args.__dict__ else True
     with apt_repos.suppress_unwanted_apt_pkg_messages() as forked:
         if forked:
-            bundle.updateSourcesControlList(supplierSuites, refSuites, sourcesDict, highlightedSuites, addFrom, upgradeFrom, not args.no_upgrade_keep_section, args.no_apt_update, cancel_remark)
+            bundle.updateSourcesControlList(supplierSuites, refSuites, sourcesDict, highlightedSuites, addFrom, upgradeFrom, upgrade_keep_section, args.no_apt_update, cancel_remark)
     return bundle.scl
 
 
