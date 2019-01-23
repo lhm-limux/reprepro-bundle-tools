@@ -18,7 +18,9 @@ Description: merge target for mybionic/dev
 Architectures: i386 amd64
 Components: main restricted universe multiverse partner
 Contents: .gz .bz2
-Update: -  update-bundle:mybionic/0001 update-bundle:mybionic/0002
+Update: - 
+ update-bundle:mybionic/0001
+ update-bundle:mybionic/0002
 
 Origin: MyBionic
 Label: mybionic/test

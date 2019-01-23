@@ -8,7 +8,8 @@ Description: merge target for mybionic
 Architectures: i386 amd64
 Components: main restricted universe multiverse partner
 Contents: .gz .bz2
-Update: -  update-bundle:mybionic/0001
+Update: - 
+ update-bundle:mybionic/0001
 
 Origin: MyBionic
 Label: mybionic/dev
@@ -18,7 +19,8 @@ Description: merge target for mybionic/dev
 Architectures: i386 amd64
 Components: main restricted universe multiverse partner
 Contents: .gz .bz2
-Update: -  update-bundle:mybionic/0001
+Update: - 
+ update-bundle:mybionic/0001
 
 Origin: MyBionic
 Label: mybionic/test
@@ -28,7 +30,8 @@ Description: merge target for mybionic/test
 Architectures: i386 amd64
 Components: main restricted universe multiverse partner
 Contents: .gz .bz2
-Update: -  update-bundle:mybionic/0001
+Update: - 
+ update-bundle:mybionic/0001
 
 Origin: MyBionic
 Label: mybionic/unattended
