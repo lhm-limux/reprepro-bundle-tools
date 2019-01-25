@@ -45,7 +45,8 @@ if os.path.isdir(os.path.join(HERE, "reprepro_bundle_compose")):
     sys.path.insert(0, HERE)
 
 progname = "bundle-compose"
-tracConfFiles = [ os.path.join(PROJECT_DIR, ".trac.conf"), os.path.join(os.path.expanduser("~"), ".config", progname, "trac.conf") ]
+tracConfFiles = [ os.path.join(PROJECT_DIR, ".bundle-compose.trac.conf"), os.path.join(os.path.expanduser("~"), ".config", progname, "trac.conf") ]
+hooksConfFiles = [ os.path.join(PROJECT_DIR, ".bundle-compose.hooks.conf"), os.path.join(os.path.expanduser("~"), ".config", progname, "hooks.conf") ]
 
 APT_REPOS_CMD = os.path.join(PROJECT_DIR, "apt-repos/bin/apt-repos")
 if not os.path.exists(APT_REPOS_CMD):
@@ -161,15 +162,24 @@ def getTargetRepoSuites(stage=None):
 
 
 def getTracConfig():
+    return __getConfig(tracConfFiles, warnType="trac")
+
+
+def getHooksConfig():
+    return __getConfig(hooksConfFiles)
+
+
+def __getConfig(confFiles, warnType=None):
     res = dict()
     res['__file__'] = None
     found = None
-    for tracConf in tracConfFiles:
-        if os.path.isfile(tracConf):
-            found = tracConf
+    for confFile in confFiles:
+        if os.path.isfile(confFile):
+            found = confFile
             break
     if not found:
-        logger.warning("No trac configuration file found at {}".format(", ".join(tracConfFiles)))
+        if warnType:
+            logger.warning("No {} configuration file found at {}".format(warnType, ", ".join(confFiles)))
         return res
     with apt_pkg.TagFile(found) as tagFile:
         res['__file__'] = found
