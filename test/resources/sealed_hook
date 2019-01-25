@@ -1,0 +1,3 @@
+#!/bin/bash
+echo $0 called for $@
+apt-repos/bin/apt-repos -b .apt-repos ls -s bundle:$1 -r .

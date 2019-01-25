@@ -3,3 +3,17 @@ INFO[apt_repos]: Using basedir '.apt-repos'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 Calling batch-editor bundle_compose_22_bseal
 INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0002'
+INFO[bundle]: Calling bundle_sealed hook 'resources/sealed_hook mybionic/0002 bundle:mybionic/0002'
+resources/sealed_hook called for mybionic/0002 bundle:mybionic/0002
+INFO[apt_repos]: Using basedir '.apt-repos'
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
+updating (use --no-update to skip) and querying packages lists for 1 suites.1
+Package          | Version           | Suite                | Arch  | Section        | Source     
+================ | ================= | ==================== | ===== | ============== | ===========
+0ad              | 0.0.22-4          | bundle:mybionic/0002 | amd64 | universe/games | 0ad        
+0ad              | 0.0.22-4          | bundle:mybionic/0002 | i386  | universe/games | 0ad        
+389-ds           | 1.3.7.10-1ubuntu1 | bundle:mybionic/0002 | all   | universe/net   | 389-ds-base
+389-ds-base      | 1.3.7.10-1ubuntu1 | bundle:mybionic/0002 | amd64 | universe/net   | 389-ds-base
+389-ds-base      | 1.3.7.10-1ubuntu1 | bundle:mybionic/0002 | i386  | universe/net   | 389-ds-base
+389-ds-base-libs | 1.3.7.10-1ubuntu1 | bundle:mybionic/0002 | amd64 | universe/libs  | 389-ds-base
+389-ds-base-libs | 1.3.7.10-1ubuntu1 | bundle:mybionic/0002 | i386  | universe/libs  | 389-ds-base

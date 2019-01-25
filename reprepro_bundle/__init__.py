@@ -27,6 +27,7 @@
 """
 import os
 import sys
+import apt_pkg
 
 PROJECT_DIR = os.getcwd()
 local_apt_repos = os.path.join(PROJECT_DIR, "apt-repos")
@@ -38,6 +39,32 @@ from apt_repos import RepoSuite, PackageField, QueryResult
 HERE = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/..")
 if os.path.isdir(os.path.join(HERE, "reprepro_bundle")):
     sys.path.insert(0, HERE)
+
+PROGNAME = "bundle"
+hooksConfFiles = [ os.path.join(PROJECT_DIR, ".bundle.hooks.conf"), os.path.join(os.path.expanduser("~"), ".config", PROGNAME, "hooks.conf") ]
+
+
+def getHooksConfig():
+    return __getConfig(hooksConfFiles)
+
+
+def __getConfig(confFiles):
+    res = dict()
+    res['__file__'] = None
+    found = None
+    for confFile in confFiles:
+        if os.path.isfile(confFile):
+            found = confFile
+            break
+    if not found:
+        return res
+    with apt_pkg.TagFile(found) as tagFile:
+        res['__file__'] = found
+        tagFile.jump(0)
+        for section in tagFile:
+            for key in section.keys():
+                res[key] = section[key]
+    return res
 
 
 class BundleError (Exception):

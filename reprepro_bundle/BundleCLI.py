@@ -40,6 +40,7 @@ from contextlib import contextmanager
 
 CANCEL_REMARK = "# Note: clean this file completely to CANCEL this current '{action}' action\n"
 
+import reprepro_bundle
 from reprepro_bundle import BundleError
 from .update_rule import UpdateRule
 from .bundle import Bundle
@@ -48,8 +49,7 @@ APT_REPOS_CMD = "apt-repos/bin/apt-repos"
 if not os.path.exists(APT_REPOS_CMD):
     APT_REPOS_CMD = "apt-repos"
 
-progname = "bundle"
-logger = logging.getLogger(progname)
+logger = logging.getLogger(reprepro_bundle.PROGNAME)
 
 
 def setupLogging(loglevel):
@@ -80,7 +80,7 @@ def main():
         if ("-h" in sys.argv or "--help" in sys.argv) and subcmd in sys.argv:
             sys.argv.append(".")
 
-    parser = argparse.ArgumentParser(description=__doc__, prog=progname, add_help=False)
+    parser = argparse.ArgumentParser(description=__doc__, prog=reprepro_bundle.PROGNAME, add_help=False)
     parser.add_argument("-h", "--help", action="store_true", help="""
                         Show a (subcommand specific) help message""")
     parser.add_argument("-d", "--debug", action="store_true", default=False, help="Show debug messages.")
@@ -303,6 +303,14 @@ def cmd_seal(args):
         git_add.append(bundle.updateInfofile(rollout=True))
         git_add.append(create_reprepro_config(bundle, readOnly=True))
         git_add.append(updateReposConfig())
+    sealedHook = reprepro_bundle.getHooksConfig().get('bundle_sealed', None)
+    if sealedHook:
+        cmd = [arg.format(bundleName=bundle.bundleName, bundleSuiteName=bundle.getOwnSuiteName()) for arg in sealedHook.split()]
+        logger.info("Calling bundle_sealed hook '{}'".format(" ".join(cmd)))
+        try:
+            subprocess.check_call(cmd)
+        except Exception as e:
+            logger.warning("Hook execution failed: {}".format(e))
 
 
 def cmd_apply(args):
