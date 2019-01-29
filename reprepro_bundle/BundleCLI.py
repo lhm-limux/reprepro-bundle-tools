@@ -305,7 +305,10 @@ def cmd_seal(args):
         git_add.append(updateReposConfig())
     sealedHook = reprepro_bundle.getHooksConfig().get('bundle_sealed', None)
     if sealedHook:
-        cmd = [arg.format(bundleName=bundle.bundleName, bundleSuiteName=bundle.getOwnSuiteName()) for arg in sealedHook.split()]
+        info = bundle.getInfo()
+        target = "{}".format(info.get("Target", "no-target"))
+        subject = info.get("Releasenotes", "--no-subject--").split("\n")[0]
+        cmd = [arg.format(bundleName=bundle.bundleName, bundleSuiteName=bundle.getOwnSuiteName(), subject=subject, target=target) for arg in sealedHook.split()]
         logger.info("Calling bundle_sealed hook '{}'".format(" ".join(cmd)))
         try:
             subprocess.check_call(cmd)

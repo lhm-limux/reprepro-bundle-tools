@@ -6,8 +6,8 @@ INFO[reprepro_bundle.bundle]: Changed Rollout in infofile to 'true'
 INFO[bundle]: Adding Update-Rules for suite bundle:mybionic/0001 with 2 entries
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0001'
-INFO[bundle]: Calling bundle_sealed hook 'resources/sealed_hook mybionic/0001 bundle:mybionic/0001'
-resources/sealed_hook called for mybionic/0001 bundle:mybionic/0001
+INFO[bundle]: Calling bundle_sealed hook 'resources/sealed_hook mybionic/0001 bundle:mybionic/0001 plus This is my best test bundle'
+resources/sealed_hook called for mybionic/0001 bundle:mybionic/0001 plus This is my best test bundle
 INFO[apt_repos]: Using basedir '.apt-repos'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 updating (use --no-update to skip) and querying packages lists for 1 suites.1
