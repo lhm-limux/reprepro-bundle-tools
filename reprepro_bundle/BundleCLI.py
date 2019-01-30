@@ -66,10 +66,11 @@ def setupLogging(loglevel):
 
 
 def main():
-    DEFAULT_SUPPLIERS = "{distribution}-supplier:,user-{user}:{distribution}"
+    DEFAULT_USER_REPO = "user-{user}:{distribution}"
+    DEFAULT_SUPPLIERS = "{distribution}-supplier:," + DEFAULT_USER_REPO
     DEFAULT_REFERENCES = "{distribution}-reference:,bundle:{bundle}"
     DEFAULT_OWN_SUITE = "bundle:{bundle}"
-    DEFAULT_HIGHLIGHTED = DEFAULT_OWN_SUITE
+    DEFAULT_HIGHLIGHTED = DEFAULT_OWN_SUITE + "," + DEFAULT_USER_REPO
 
     GIT_REPO_URL = getGitRepoUrl('origin', None)
     GIT_BRANCH = 'test'

@@ -16,7 +16,7 @@ INFO[bundle]: Setting reference-suites to 'mybionic-reference:,bundle:mybionic/0
 INFO[apt_repos.Repository]: Scanning Repository 'Main Ubuntu Repository' (http://archive.ubuntu.com/ubuntu/)
 INFO[bundle]: Setting supplier-suites to 'mybionic-supplier:,user-…USER…:mybionic'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
-INFO[bundle]: Setting highlighted-suites to 'bundle:mybionic/0001'
+INFO[bundle]: Setting highlighted-suites to 'bundle:mybionic/0001,user-…USER…:mybionic'
 INFO[bundle]: Setting add-from to 'None'
 INFO[bundle]: Setting upgrade-from to 'None'
 INFO[reprepro_bundle.bundle]: Creating sources_control.list for 5 suites

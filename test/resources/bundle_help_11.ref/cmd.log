@@ -43,7 +43,7 @@ advanced suites control parameters:
                         Comma separated list of Suite-Selectors that define
                         suites whose entries should be put on top of the
                         sources_control.list. The default value is
-                        'bundle:{bundle}'.
+                        'bundle:{bundle},user-{user}:{distribution}'.
 
 additional arguments for git-commit management:
   --commit              Commit changed files to the (local) project git-

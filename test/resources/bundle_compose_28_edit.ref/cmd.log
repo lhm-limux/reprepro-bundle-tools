@@ -11,7 +11,7 @@ INFO[apt_repos.Repository]: Scanning Repository 'Main Ubuntu Repository' (http:/
 INFO[bundle]: Setting supplier-suites to 'mybionic-supplier:,user-…USER…:mybionic'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 WARNING[apt_repos.RepositoryScanner]: Could not resolve suite mybionic of repository file://…TESTDIR…/repo/bundle/mybionic/0003/
-INFO[bundle]: Setting highlighted-suites to 'bundle:mybionic/0003'
+INFO[bundle]: Setting highlighted-suites to 'bundle:mybionic/0003,user-…USER…:mybionic'
 INFO[bundle]: Setting add-from to 'None'
 INFO[bundle]: Setting upgrade-from to 'None'
 INFO[reprepro_bundle.bundle]: Creating sources_control.list for 4 suites

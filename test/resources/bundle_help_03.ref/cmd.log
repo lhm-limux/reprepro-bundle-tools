@@ -45,7 +45,7 @@ advanced suites control parameters:
                         Comma separated list of Suite-Selectors that define
                         suites whose entries should be put on top of the
                         sources_control.list. The default value is
-                        'bundle:{bundle}'.
+                        'bundle:{bundle},user-{user}:{distribution}'.
 
 sub command 'edit' specific options:
   --add-from ADD_FROM   Comma separated list of Suite-Selectors that define
