@@ -401,6 +401,15 @@ class Bundle():
         self._writeBlacklist(already_blacklisted, proposed, cancel_remark)
 
 
+    def queryBinaryPackages(self, no_update=False, packageFields='pv'):
+        '''
+            Returns the query result of an apt-repos query on the bundle's ownSuite containing all
+            packages and the columns specified in the string packageFields (default is 'pv').
+        '''
+        self._ownSuite.scan(not no_update)
+        return self._ownSuite.queryPackages('.', True, None, None, PackageField.getByFieldsString(packageFields))
+
+
     def updateInfofile(self, bundleName=None, basedOn=None, rollout=None):
         '''
             Rewrites the value of the properties 'Bundlename', 'BasedOn' and 'Rollout' of the bundles infofile

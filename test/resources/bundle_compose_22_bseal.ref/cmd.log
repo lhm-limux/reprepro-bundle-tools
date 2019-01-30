@@ -1,6 +1,10 @@
 INFO[bundle]: You are now using bundle 'mybionic/0002'
 INFO[apt_repos]: Using basedir '.apt-repos'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
+Reading package lists... 0%Reading package lists... 100%Reading package lists... Done
+Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 50%Building dependency tree... 50%Building dependency tree... Done
+Reading package lists... 0%Reading package lists... 100%Reading package lists... Done
+Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 50%Building dependency tree... 50%Building dependency tree... Done
 Calling batch-editor bundle_compose_22_bseal
 INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0002'
 INFO[bundle]: Calling bundle_sealed hook 'resources/sealed_hook mybionic/0002 bundle:mybionic/0002 plus This is my improved best test bundle'

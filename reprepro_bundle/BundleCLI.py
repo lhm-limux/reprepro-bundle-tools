@@ -277,7 +277,7 @@ def cmd_show(args):
     '''
         Subcommand show: Give an overview about the bundle mata-data and it's content.
     '''
-    bundle = setupContext(args, False)
+    bundle = setupContext(args, require_editable=False)
     print_metadata(bundle)
     list_content(bundle)
 
@@ -286,7 +286,7 @@ def cmd_list(args):
     '''
         Subcommand list: List the content - the packages - of a bundle.
     '''
-    bundle = setupContext(args, False)
+    bundle = setupContext(args, require_editable=False)
     list_content(bundle)
 
 
@@ -294,7 +294,9 @@ def cmd_seal(args):
     '''
         Subcommand seal: Mark the bundle as ReadOnly and change a suite's tag from 'staging' to 'deploy'.
     '''
-    bundle = setupContext(args)
+    bundle = setupContext(args, require_own_suite=True)
+    if len(bundle.queryBinaryPackages()) == 0:
+        raise BundleError("Sorry, the bundle {} is empty and you can't seal an empty bundle!".format(bundle))
     with choose_commit_context(bundle, args, "SEALED bundle '{bundleName}'") as (bundle, git_add):
         infofile = edit_meta(bundle, CANCEL_REMARK.format(action="seal"))
         if not infofile:
@@ -320,7 +322,7 @@ def cmd_apply(args):
     '''
         Subcommand apply: Use reprepro to update the bundle - This action typically runs on the reprepro server and not locally (besides for testing purposes)
     '''
-    bundle = setupContext(args, False)
+    bundle = setupContext(args, require_editable=False)
     if not bundle.isEditable():
         logger.warning("Skipping command 'apply' for {} as it is already sealed.".format(bundle))
         return
@@ -351,7 +353,7 @@ def cmd_clone(args):
     '''
         Subcommand clone: Clones the bundle bundleName into a new bundle (with an automatically created number) for the same distribution.
     '''
-    bundle = setupContext(args, False)
+    bundle = setupContext(args, require_editable=False)
     print(bundle.getOwnSuiteName())
     with choose_commit_context(None, args, "CLONED bundle '{srcBundleName} --> '{bundleName}'".format(srcBundleName=bundle.bundleName, bundleName="{bundleName}"), bundle.distribution) as (newBundle, git_add):
         git_add.append(create_reprepro_config(newBundle))
@@ -435,7 +437,7 @@ def updateReposConfig():
     return confFile
 
 
-def setupContext(args, require_editable=True):
+def setupContext(args, require_editable=True, require_own_suite=False):
     bundle = Bundle(args.bundleName[0])
     if require_editable and not bundle.isEditable():
         raise BundleError("Not allowed to modify bundle '{}' as it is readonly!".format(bundle.bundleName))
@@ -446,6 +448,8 @@ def setupContext(args, require_editable=True):
     try:
         bundle.setOwnSuite(args.own_suite)
     except BundleError as e:
+        if require_own_suite:
+            raise e
         logger.warning("Could not set Own-Suite: {}".format(e))
     return bundle
 
