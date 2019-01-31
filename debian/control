@@ -11,7 +11,7 @@ Build-Depends:
  git,
  gpg,
  gpg-agent,
- apt-repos,
+ apt-repos (>= 1.47.0lhm3),
  reprepro,
  rsync,
  python3,
