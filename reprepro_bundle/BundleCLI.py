@@ -35,6 +35,7 @@ import subprocess
 import shutil
 import apt_pkg
 import apt_repos
+import time
 from contextlib import contextmanager
 
 
@@ -113,6 +114,11 @@ def main():
     parse_clone.set_defaults(sub_function=cmd_clone, sub_parser=parse_clone)
     parse_bundles.set_defaults(sub_function=cmd_bundles, sub_parser=parse_bundles)
     parse_repos.set_defaults(sub_function=cmd_update_repos_config, sub_parser=parse_repos)
+
+    for p in [parse_list]:
+        p.add_argument("--wait", "-w", action="store_true", default=False, help="""
+                            print the list and actively wait (retrying the command again in the background)
+                            until the list output changes. Then print the new list and exit""")
 
     for p in [parse_init, parse_edit, parse_black, parse_meta, parse_seal, parse_clone, parse_apply, parse_show, parse_list]:
         p.add_argument("--own-suite", default=DEFAULT_OWN_SUITE, help="""
@@ -288,7 +294,7 @@ def cmd_list(args):
         Subcommand list: List the content - the packages - of a bundle.
     '''
     bundle = setupContext(args, require_editable=False)
-    list_content(bundle)
+    list_content(bundle, args.wait)
 
 
 def cmd_seal(args):
@@ -518,9 +524,24 @@ def print_metadata(bundle):
         print("".join(tmp.readlines()), flush=True)
 
 
-def list_content(bundle):
+def list_content(bundle, waitForChange=False):
     if bundle.getOwnSuiteName():
-        subprocess.check_call([APT_REPOS_CMD, "-b .apt-repos", "ls", "-s", bundle.getOwnSuiteName(), "-r", "." ])
+        wait = True
+        cur = None
+        while wait:
+            with open("/dev/null", "w") as devnull:
+                res = subprocess.check_output([APT_REPOS_CMD, "-b .apt-repos", "ls", "-s", bundle.getOwnSuiteName(), "-r", "." ], stderr=devnull)
+            if cur != res:
+                if cur != None:
+                    wait = False
+                print()
+                print(res.decode("utf-8"))
+                cur = res
+                continue
+            wait = waitForChange
+            if wait:
+                print(" waiting for change…", end='', flush=True)
+                time.sleep(2)
 
 
 def getGitRepoUrl(alias, default):

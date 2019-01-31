@@ -1,4 +1,4 @@
-usage: bundle list [-h] [--own-suite OWN_SUITE] bundleName
+usage: bundle list [-h] [--wait] [--own-suite OWN_SUITE] bundleName
 
 Subcommand list: List the content - the packages - of a bundle.
 
@@ -16,6 +16,9 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  --wait, -w            print the list and actively wait (retrying the command
+                        again in the background) until the list output
+                        changes. Then print the new list and exit
   --own-suite OWN_SUITE
                         Suite-Selectors that defines the own suite (the suite
                         of this bundle). The default value is
