@@ -2,7 +2,7 @@ INFO[bundle]: You are now using bundle 'mybionic/0001'
 INFO[apt_repos]: Using basedir '.apt-repos'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 WARNING[apt_repos.RepositoryScanner]: Could not resolve suite mybionic of repository file://…TESTDIR…/repo/bundle/mybionic/0001/
-WARNING[bundle]: Could not set Own-Suite: Own-Suite selector 'bundle:mybionic/0001' doesn't match an apt-repos suite for bundle 'mybionic/0001'.
+WARNING[bundle]: Could not connect bundle 'mybionic/0001' to it's apt-repos suite 'bundle:mybionic/0001'.
 INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0001'
 INFO[bundle]: Executing 'reprepro -b repo/bundle/mybionic/0001 --noskipold update'
 Calculating packages to get...

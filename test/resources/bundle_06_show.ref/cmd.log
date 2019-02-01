@@ -18,7 +18,6 @@ This is my best test bundle
 __DYNAMIC_PACKAGE_LIST__
 
 
-
 Package             | Version           | Suite                | Arch  | Section           | Source     
 =================== | ================= | ==================== | ===== | ================= | ===========
 0ad                 | 0.0.22-4          | bundle:mybionic/0001 | amd64 | universe/games    | 0ad        
