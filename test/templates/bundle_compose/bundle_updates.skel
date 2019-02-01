@@ -3,7 +3,7 @@ Name: {{ ruleName }}
 Method: {{ repoUrl }}
 Suite: {{ suite }}
 Components: {{ components }}
-Architectures: {{ architectures }}
+Architectures: {{ architectures }} source
 DownloadListsAs: .gz
 GetInRelease: no
 VerifyRelease: blindtrust

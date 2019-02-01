@@ -28,6 +28,6 @@
     "Scan" : false,
     "Architectures" : [ "i386", "amd64" ],
     "Components" : [ "main", "restricted", "universe", "multiverse", "partner" ],
-    "DebSrc" : false,
+    "DebSrc" : true,
     "Trusted" : true
 }]

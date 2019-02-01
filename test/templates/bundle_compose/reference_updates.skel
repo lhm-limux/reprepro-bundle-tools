@@ -3,7 +3,7 @@ Name: {{ ruleName }}
 Method: {{ repoUrl }}
 Suite: {{ suite }}
 Components: {{ components }}
-Architectures: {{ architectures }}
+Architectures: {{ architectures }} source
 FilterList: install FilterList.purge-from-{{ targetDistribution }}
 DownloadListsAs: .gz
 GetInRelease: no
