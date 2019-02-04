@@ -4,7 +4,6 @@ Method: {{ repoUrl }}
 Suite: {{ suite }}
 Components: {{ components }}
 Architectures: {{ architectures }} source
-FilterList: install FilterList.purge-from-all-suites-for-{{ suite }}
 DownloadListsAs: .gz
 GetInRelease: no
 VerifyRelease: blindtrust

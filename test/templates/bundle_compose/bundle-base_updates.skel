@@ -4,8 +4,7 @@ Method: {{ repoUrl }}
 Suite: {{ suite }}
 Components: {{ components }}
 Architectures: {{ architectures }} source
-FilterSrcList: install FilterSrcList.purge-from-bundle-base-for-{{ targetDistribution }}
-FilterList:    install    FilterList.purge-from-bundle-base-for-{{ targetDistribution }} FilterList.purge-from-all-suites-for-{{ targetDistribution }}
+FilterList: install FilterList.purge-from-{{ targetDistribution }}
 DownloadListsAs: .gz
 GetInRelease: no
 VerifyRelease: blindtrust

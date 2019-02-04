@@ -1,7 +1,0 @@
-libglib2.0-0 purge
-libglib2.0-bin purge
-libglib2.0-data purge
-libglib2.0-dev purge
-libglib2.0-dev-bin purge
-libglib2.0-doc purge
-libglib2.0-tests purge
