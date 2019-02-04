@@ -5,7 +5,7 @@ Label: mybionic
 Suite: mybionic
 Codename: mybionic
 Description: merge target for mybionic
-Architectures: i386 amd64
+Architectures: i386 amd64 source
 Components: main restricted universe multiverse partner
 Contents: .gz .bz2
 Update: - 
@@ -15,7 +15,7 @@ Label: mybionic/dev
 Suite: mybionic/dev
 Codename: mybionic/dev
 Description: merge target for mybionic/dev
-Architectures: i386 amd64
+Architectures: i386 amd64 source
 Components: main restricted universe multiverse partner
 Contents: .gz .bz2
 Update: - 
@@ -27,7 +27,7 @@ Label: mybionic/test
 Suite: mybionic/test
 Codename: mybionic/test
 Description: merge target for mybionic/test
-Architectures: i386 amd64
+Architectures: i386 amd64 source
 Components: main restricted universe multiverse partner
 Contents: .gz .bz2
 Update: - 
@@ -37,7 +37,7 @@ Label: mybionic/unattended
 Suite: mybionic/unattended
 Codename: mybionic/unattended
 Description: merge target for mybionic/unattended
-Architectures: i386 amd64
+Architectures: i386 amd64 source
 Components: main restricted universe multiverse partner
 Contents: .gz .bz2
 Update: - 

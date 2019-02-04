@@ -1,2 +1,2 @@
-WE_CURRENTLY_HAVE   BINARIES OF 0ad 0.0.22-4 IN target:mybionic/dev universe/games
-WE_CURRENTLY_HAVE   BINARIES OF 389-ds-base 1.3.7.10-1ubuntu1 IN target:mybionic/dev universe/net
+WE_CURRENTLY_HAVE   SRC+BIN  OF 0ad 0.0.22-4 IN target:mybionic/dev universe/games
+WE_CURRENTLY_HAVE   SRC+BIN  OF 389-ds-base 1.3.7.10-1ubuntu1 IN target:mybionic/dev universe/net

@@ -3,7 +3,7 @@ Label: mybionic/dev-beta1
 Suite: mybionic/dev-beta1
 Codename: mybionic/dev-beta1
 Description: Freeze of mybionic/dev
-Architectures: i386 amd64
+Architectures: i386 amd64 source
 Components: main restricted universe multiverse partner
 Contents: .gz .bz2
 
