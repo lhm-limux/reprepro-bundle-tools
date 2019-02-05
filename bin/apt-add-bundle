@@ -1,0 +1,88 @@
+#!/usr/bin/python3
+
+import subprocess
+import logging
+import sys
+import apt_repos
+import argparse
+
+PROGNAME = "apt-add-bundle"
+logger = logging.getLogger(PROGNAME)
+
+SOURCES_LIST_FILE = "/etc/apt/sources.list.d/apt-add-bundle.list"
+SOURCES_LIST_FILE = "apt-add-bundle.list"
+
+def get_added_bundles():
+    res = set()
+    try:
+        with open(SOURCES_LIST_FILE) as listFile:
+            for line in listFile.readlines():
+                if line.startswith("# bundle:"):
+                    parts = line.split()
+                    bundle = parts[1]
+                    res.add(bundle)
+    except FileNotFoundError as e:
+        logger.warning("List file {} doesn't exist!".format(SOURCES_LIST_FILE))
+    return res
+
+
+def create_list_file(bundles):
+    got = set()
+    with open(SOURCES_LIST_FILE, "w") as listFile:
+        print("# This file is managed by the command line tool '{}'. DON'T EDIT IT MANUALLY!".format(PROGNAME), file=listFile)
+        l_bundles = list(sorted(bundles))
+        suites = apt_repos.getSuites(l_bundles)
+        for suite in sorted(suites):
+            got.add(str(suite))
+            print("\n# {}".format(suite), file=listFile)
+            print(suite.getSourcesList(), file=listFile)
+    miss = bundles - got
+    if len(miss) > 0:
+        logger.warning("The following bundles could not be added: " + ", ".join(sorted(miss)))
+
+
+def setup_logging(loglevel):
+    '''
+       Initializing logging and set log-level
+    '''
+    kwargs = {
+        'format': '%(levelname)s[%(name)s]: %(message)s',
+        'level': loglevel,
+        'stream': sys.stderr
+    }
+    logging.basicConfig(**kwargs)
+    logging.getLogger("urllib3").setLevel(logging.ERROR)
+    logging.getLogger("apt_repos").setLevel(logging.WARN)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__, prog=PROGNAME, add_help=True)
+    parser.add_argument("-r", "--remove", action="store_true", help="""
+                        Remove the named bundle(s) from the list (instead of adding them)""")
+    parser.add_argument("-l", "--list", action="store_true", help="""
+                        (Finally) List all bundles that are currently added""")
+    parser.add_argument("bundleName", nargs="*", help="""
+                        Names of bundles to add / remove either in the form 'bundle:<distribution>/<NUMBER>' or just '<distribution>/<NUMBER>'""")
+    args = parser.parse_args()
+    
+    setup_logging(logging.INFO)
+    apt_repos.setAptReposBaseDir(".apt-repos")
+    bundles = get_added_bundles()
+    update = False
+    for name in args.bundleName:
+        update = True
+        bundleName = name if name.startswith("bundle:") else "bundle:{}".format(name)
+        if not args.remove:
+            bundles.add(bundleName)
+        else:
+            bundles.remove(bundleName)
+    if update:
+        create_list_file(bundles)
+    if args.list:
+        print("\n".join(sorted(bundles)))
+        sys.exit(0)
+
+
+
+if __name__ == "__main__":
+    main()

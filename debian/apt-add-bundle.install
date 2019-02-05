@@ -1,0 +1,2 @@
+bin/apt-add-bundle	/usr/bin/
+conf/bundle.repos	/etc/apt-repos/

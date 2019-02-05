@@ -1,5 +1,5 @@
 Source: reprepro-bundle-tools
-Section: main
+Section: utils
 Priority: optional
 Build-Depends:
  pandoc,
@@ -63,3 +63,13 @@ Depends:
  python3-jinja2
 Description: ${pkg:Description}
  ${pkg:Longdescription}
+
+Package: apt-add-bundle
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+ python3-apt-repos,
+Description: Tool for ad hoc registering of bundles on a system
+ Similar to the tool 'apt-add-ppa', this tool adds bundle-repositories to
+ the apt configuration of the local system.
