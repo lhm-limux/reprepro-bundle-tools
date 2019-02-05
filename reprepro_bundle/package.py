@@ -46,6 +46,9 @@ class Package:
     def __str__(self):
         return "Package('{}', '{}', '{}', '{}', {}, {})".format(self.sourceName, self.version, self.suiteName, self.section, self.existanceType, self.status)
 
+    def getPackageStatus(self):
+        return self.status
+
     def updateStatus(self, current):
         if not current:
             self.status = PackageStatus.IS_MISSING
