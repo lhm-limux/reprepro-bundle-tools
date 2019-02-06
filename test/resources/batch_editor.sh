@@ -50,6 +50,22 @@ function bundle_12_black_cancel {
   cat "$1" >repo/editor.out
 }
 
+function bundle_12o_edit {
+  # temporarily add 'zurl'...
+  sed -i "s/# ADD_NEW           SRC+BIN  OF zurl / ADD_NEW           SRC+BIN  OF zurl /" "$1"
+}
+
+function bundle_12r_black {
+  # ... blacklist 'zurl' binary (needed because we already have other blacklisted binaries)
+  sed -i "s/^# zurl / zurl /" "$1"
+}
+
+function bundle_12r_edit {
+  # ... and remove 'zurl' again
+  grep -v "zurl" "$1" >repo/tmp.out
+  mv repo/tmp.out "$1"
+}
+
 function bundle_13_seal {
   cat "$1" >repo/editor.in
   sed -i "s/<Details>/We just need this bundle for the test automation./" "$1"

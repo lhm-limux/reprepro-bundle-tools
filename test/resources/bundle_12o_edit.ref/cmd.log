@@ -1,0 +1,24 @@
+INFO[bundle]: You are now using bundle 'mybionic/0001'
+INFO[apt_repos]: Using basedir '.apt-repos'
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
+INFO[apt_repos.Repository]: Scanning Repository 'MyBionic-Ziel Repository' (file://{PWD}/repo/target/)
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
+INFO[bundle]: Setting reference-suites to 'mybionic-reference:,bundle:mybionic/0001'
+INFO[apt_repos.Repository]: Scanning Repository 'Main Ubuntu Repository' (http://archive.ubuntu.com/ubuntu/)
+INFO[bundle]: Setting supplier-suites to 'mybionic-supplier:,user-…USER…:mybionic'
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
+INFO[bundle]: Setting highlighted-suites to 'bundle:mybionic/0001,user-…USER…:mybionic'
+INFO[bundle]: Setting add-from to 'None'
+INFO[bundle]: Setting upgrade-from to 'None'
+INFO[reprepro_bundle.bundle]: Creating sources_control.list for 5 suites
+INFO[reprepro_bundle.bundle]: Updating and Querying suite bundle:mybionic/0001
+INFO[reprepro_bundle.bundle]: Updating and Querying suite target:mybionic/dev
+INFO[reprepro_bundle.bundle]: Updating and Querying suite ubuntu:bionic
+INFO[reprepro_bundle.bundle]: Updating and Querying suite ubuntu:bionic-security
+INFO[reprepro_bundle.bundle]: Updating and Querying suite ubuntu:bionic-updates
+Calling batch-editor bundle_12o_edit
+INFO[bundle]: Adding Update-Rules for suite bundle:mybionic/0001 with 2 entries
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
+INFO[bundle]: Adding Update-Rules for suite ubuntu:bionic with 1 entries
+INFO[apt_repos.Repository]: Scanning Repository 'Main Ubuntu Repository' (http://archive.ubuntu.com/ubuntu/)
+INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0001'

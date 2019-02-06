@@ -1,0 +1,8 @@
+INFO[bundle]: You are now using bundle 'mybionic/0001'
+INFO[apt_repos]: Using basedir '.apt-repos'
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
+Reading package lists... 0%Reading package lists... 100%Reading package lists... Done
+Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 50%Building dependency tree... 50%Building dependency tree... Done
+Reading package lists... 0%Reading package lists... 100%Reading package lists... Done
+Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 50%Building dependency tree... 50%Building dependency tree... Done
+ERROR[bundle]: Sorry, the sources_control.list is not (yet?) fully applied to the reprepro-repository! Differences found for zurl

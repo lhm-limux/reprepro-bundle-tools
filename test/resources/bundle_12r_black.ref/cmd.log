@@ -1,0 +1,8 @@
+INFO[bundle]: You are now using bundle 'mybionic/0001'
+INFO[apt_repos]: Using basedir '.apt-repos'
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
+INFO[reprepro_bundle.bundle]: Creating blacklist containing binary packages from the bundles own suite bundle:mybionic/0001.
+Calling batch-editor bundle_12r_black
+INFO[bundle]: Adding Update-Rules for suite bundle:mybionic/0001 with 3 entries
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
+INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0001'

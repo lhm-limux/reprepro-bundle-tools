@@ -90,6 +90,13 @@ bundle_compose_workflow_part1: prepare bundle_workflow_part1
 bundle_workflow_part2: prepare bundle_workflow_part1
 	@$(eval sync := $(S_BUNDLE))
 	@#columns: @$(T) testcase-name expRet sync cmd…
+	@$(T) bundle_12o_edit        0 $(S_CMD_ONLY) $(BUNDLE) edit mybionic/0001
+	@$(T) bundle_12p_seal_unapplied 1 $(S_CMD_ONLY) $(BUNDLE) seal mybionic/0001
+	@$(T) bundle_12q_apply       0 $(S_CMD_ONLY) $(BUNDLE) apply mybionic/0001
+	@$(T) bundle_12r_black       0 $(S_CMD_ONLY) $(BUNDLE) black mybionic/0001
+	@$(T) bundle_12r_edit        0 $(S_CMD_ONLY) $(BUNDLE) edit mybionic/0001
+	@$(T) bundle_12s_seal_unapplied 1 $(S_CMD_ONLY) $(BUNDLE) seal mybionic/0001
+	@$(T) bundle_12t_apply       0 $(S_CMD_ONLY) $(BUNDLE) apply mybionic/0001
 	@$(T) bundle_13_seal         0 $(sync) $(BUNDLE) seal mybionic/0001
 	@$(T) bundle_14_edit         1 $(sync) $(BUNDLE) edit mybionic/0001
 	@$(T) bundle_15_clone        0 $(sync) $(BUNDLE) clone mybionic/0001 --no-clean-commit
