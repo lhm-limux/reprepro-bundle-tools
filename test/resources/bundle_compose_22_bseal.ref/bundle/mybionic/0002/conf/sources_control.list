@@ -1,0 +1,3 @@
+KEEP                SRC+BIN  OF 0ad 0.0.22-4 IN bundle:mybionic/0002 universe/games
+
+KEEP                SRC+BIN  OF 389-ds-base 1.3.7.10-1ubuntu1 IN bundle:mybionic/0002 universe/net

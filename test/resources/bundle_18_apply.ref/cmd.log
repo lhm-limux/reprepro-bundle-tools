@@ -2,16 +2,18 @@ INFO[bundle]: You are now using bundle 'mybionic/0002'
 INFO[apt_repos]: Using basedir '.apt-repos'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 WARNING[apt_repos.RepositoryScanner]: Could not resolve suite mybionic of repository file://…TESTDIR…/repo/bundle/mybionic/0002/
-WARNING[bundle]: Could not connect bundle 'mybionic/0002' to it's apt-repos suite 'bundle:mybionic/0002'.
+WARNING[bundle]: Could not connect bundle 'mybionic/0002' to it's own apt-repos suite 'bundle:mybionic/0002'.
 INFO[bundle]: Adding Update-Rules for suite bundle:mybionic/0001 with 2 entries
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0002'
+INFO[bundle]: Trying to set the bundle's apt-repos suite after exporting the reprepro.
+INFO[bundle]: Executing 'reprepro -b repo/bundle/mybionic/0002 export'
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 INFO[bundle]: Executing 'reprepro -b repo/bundle/mybionic/0002 --noskipold update'
 Calculating packages to get...
 Getting packages...
 Installing (and possibly deleting) packages...
 Exporting indices...
-INFO[bundle]: Executing 'reprepro -b repo/bundle/mybionic/0002 export'
 INFO[apt_repos.Repository]: Scanning Repository 'MyBionic-Ziel Repository' (file://{PWD}/repo/target/)
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 INFO[bundle]: Setting reference-suites to 'mybionic-reference:,bundle:mybionic/0002'
@@ -27,4 +29,6 @@ INFO[reprepro_bundle.bundle]: Updating and Querying suite target:mybionic/dev
 INFO[reprepro_bundle.bundle]: Updating and Querying suite ubuntu:bionic
 INFO[reprepro_bundle.bundle]: Updating and Querying suite ubuntu:bionic-security
 INFO[reprepro_bundle.bundle]: Updating and Querying suite ubuntu:bionic-updates
+INFO[bundle]: Adding Update-Rules for suite bundle:mybionic/0002 with 2 entries
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0002'

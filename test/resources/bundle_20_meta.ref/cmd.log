@@ -1,5 +1,7 @@
 INFO[bundle]: You are now using bundle 'mybionic/0002'
 INFO[apt_repos]: Using basedir '.apt-repos'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
+INFO[bundle]: Adding Update-Rules for suite bundle:mybionic/0002 with 2 entries
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0002'
 Calling batch-editor bundle_20_meta

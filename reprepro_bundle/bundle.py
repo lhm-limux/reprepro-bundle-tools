@@ -92,7 +92,7 @@ class Bundle():
             if len(suites) > 0:
                 self._ownSuite = sorted(suites)[0]
         if not self._ownSuite:
-            raise BundleError("Could not connect bundle '{}' to it's apt-repos suite '{}'.".format(self.bundleName, selector))
+            raise BundleError("Could not connect bundle '{}' to it's own apt-repos suite '{}'.".format(self.bundleName, selector))
 
 
     def getOwnSuiteName(self):

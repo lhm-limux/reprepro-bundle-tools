@@ -14,4 +14,4 @@ Contents: .gz .bz2
 UDebIndices: Packages Release . .gz
 Tracking: minimal
 ReadOnly: No
-Update: - 
+Update: - from-bundle-mybionic-0002

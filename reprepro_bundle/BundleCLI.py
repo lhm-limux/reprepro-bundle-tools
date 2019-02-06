@@ -361,11 +361,13 @@ def cmd_apply(args):
         return
     create_reprepro_config(bundle)
     repreproCmd = os.environ.get("REPREPRO_CMD", "reprepro")
+    if not bundle.getOwnSuiteName():
+        logger.info("Trying to set the bundle's apt-repos suite after exporting the reprepro.")
+        cmd = [repreproCmd, "-b", "repo/bundle/{}".format(bundle.bundleName), "export"]
+        logger.info("Executing '{}'".format(" ".join(cmd)))
+        subprocess.check_call(cmd)
+        bundle.setOwnSuite(args.own_suite)
     cmd = [repreproCmd, "-b", "repo/bundle/{}".format(bundle.bundleName), "--noskipold", "update"]
-    logger.info("Executing '{}'".format(" ".join(cmd)))
-    subprocess.check_call(cmd)
-    # also export because in case lists are empty update won't create a Release file
-    cmd = [repreproCmd, "-b", "repo/bundle/{}".format(bundle.bundleName), "export"]
     logger.info("Executing '{}'".format(" ".join(cmd)))
     subprocess.check_call(cmd)
     with choose_commit_context(bundle, args, "APPLIED changes on bundle '{bundleName}'") as (bundle, git_add):

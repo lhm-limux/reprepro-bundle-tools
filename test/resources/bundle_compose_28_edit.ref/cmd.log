@@ -2,7 +2,7 @@ INFO[bundle]: You are now using bundle 'mybionic/0003'
 INFO[apt_repos]: Using basedir '.apt-repos'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 WARNING[apt_repos.RepositoryScanner]: Could not resolve suite mybionic of repository file://…TESTDIR…/repo/bundle/mybionic/0003/
-WARNING[bundle]: Could not connect bundle 'mybionic/0003' to it's apt-repos suite 'bundle:mybionic/0003'.
+WARNING[bundle]: Could not connect bundle 'mybionic/0003' to it's own apt-repos suite 'bundle:mybionic/0003'.
 INFO[apt_repos.Repository]: Scanning Repository 'MyBionic-Ziel Repository' (file://{PWD}/repo/target/)
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 WARNING[apt_repos.RepositoryScanner]: Could not resolve suite mybionic of repository file://…TESTDIR…/repo/bundle/mybionic/0003/
