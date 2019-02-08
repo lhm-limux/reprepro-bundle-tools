@@ -5,12 +5,18 @@ import logging
 import sys
 import apt_repos
 import argparse
+import json
+import urllib3
+import tempfile
+import os.path
+import shutil
+from urllib.parse import urljoin
 
 PROGNAME = "apt-add-bundle"
 logger = logging.getLogger(PROGNAME)
 
+BUNDLE_REPOS = "/etc/apt-repos/bundle.repos"
 SOURCES_LIST_FILE = "/etc/apt/sources.list.d/apt-add-bundle.list"
-SOURCES_LIST_FILE = "apt-add-bundle.list"
 
 def get_added_bundles():
     res = set()
@@ -55,6 +61,39 @@ def setup_logging(loglevel):
     logging.getLogger("apt_repos").setLevel(logging.WARN)
 
 
+def get_dynamic_bundle_list(mainUrl, outDir):
+    dynamic_bundles_url = urljoin(mainUrl, "bundle.repos")
+    http = urllib3.PoolManager()
+    try:
+        req = http.request('GET', dynamic_bundles_url)
+        bundles = json.loads(req.data)
+    except json.decoder.JSONDecodeError as e:
+        print("Failed to parse bundle.repos from URL '{}': {}".format(dynamic_bundles_url, e))
+        sys.exit(1)
+
+    for dist in bundles:
+        rollout_bundles = []
+        for bundle in dist.get('Suites', []):
+            if isinstance(bundle, dict) and "rollout" in bundle.get('Tags', []):
+                rollout_bundles.append(bundle)
+                dist['Suites'] = rollout_bundles
+
+    with open(os.path.join(outDir, "bundle_dyn.repos"), "w") as out:
+        print(json.dumps(bundles, indent=4, sort_keys=True), file=out)
+        print("created bundle.repos with {} bundles tagged as 'rollout'".format(len(rollout_bundles)))
+
+
+def get_bundle_repos_main_urls():
+    res = set()
+    with open(BUNDLE_REPOS) as repos:
+        conf = json.load(repos)
+        for dist in conf:
+            url = dist.get("Url")
+            if url:
+                res.add(url)
+    return res
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, prog=PROGNAME, add_help=True)
     parser.add_argument("-r", "--remove", action="store_true", help="""
@@ -66,6 +105,14 @@ def main():
     args = parser.parse_args()
     
     setup_logging(logging.INFO)
+    for baseUrl in sorted(get_bundle_repos_main_urls()):
+        tmpDir = tempfile.mkdtemp()
+        print(tmpDir)
+        shutil.copyfile(BUNDLE_REPOS, os.path.join(tmpDir, "bundle.repos"))
+        get_dynamic_bundle_list(baseUrl, tmpDir)
+        apt_repos.setAptReposBaseDir(tmpDir)
+        print("\n".join([str(s) for s in sorted(apt_repos.getSuites(":"))]))
+    sys.exit(0)
     apt_repos.setAptReposBaseDir(".apt-repos")
     bundles = get_added_bundles()
     update = False
