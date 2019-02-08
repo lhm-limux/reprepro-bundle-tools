@@ -1,5 +1,6 @@
 *.pyc
 .*.swp
+/.angulardoc.json
 /build
 /.pybuild
 debian/.debhelper/
