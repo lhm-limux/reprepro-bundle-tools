@@ -1,52 +1,45 @@
 <div
-  [ngClass]="'card ' + (active ? 'text-light bg-secondary' : 'text-dark border-info')"
+  class="card text-dark"
+  [ngClass]="active ? 'border-dark' : 'border-secondary'"
   (mouseover)="active = true"
   (mouseleave)="active = false"
 >
   <div class="card-header" (click)="emitClicked()">
-    <b>{{ info.managedBundle.id }}</b>
-    <div
-      [ngClass]="
-        'badge-pill float-right mx-2 ' + (active ? 'badge-light' : 'badge-dark')
-      "
-    >
+    <b [ngClass]="active ? 'btn-link' : ''">{{ info.managedBundle.id }}</b>
+    <div class="badge-pill badge-dark float-right mx-2">
       <b>Target: {{ info.managedBundle.target | uppercase }}</b>
     </div>
   </div>
   <div class="card-body">
-    <div class="row">
-      <div class="col" (click)="emitClicked()">
-        <h5 class="card-title">{{ info.subject }}</h5>
-        <div>Creator: {{ info.creator }}</div>
-        <div *ngIf="info.managedBundle.ticket && info.managedBundle.ticketUrl">
-          Ticket:
-          <a
-            href="{{ info.managedBundle.ticketUrl }}"
-            target="_blank"
-            style="color: inherit; outline: 0;"
-            ><b>#{{ info.managedBundle.ticket }}</b></a
-          >
-        </div>
-        <div *ngIf="info.managedBundle.ticket && !info.managedBundle.ticketUrl">
-          Ticket: <b>#{{ info.managedBundle.ticket }}</b>
-        </div>
-      </div>
-      <div
-        class="col"
-        *ngIf="dropStatus || candidateForStages.length > 0"
+    <h5 class="card-title">{{ info.subject }}</h5>
+    <div>Creator: {{ info.creator }}</div>
+    <div *ngIf="info.managedBundle.ticket && info.managedBundle.ticketUrl">
+      Ticket:
+      <a
+        href="{{ info.managedBundle.ticketUrl }}"
+        target="_blank"
+        style="color: inherit; outline: 0;"
+        ><b>#{{ info.managedBundle.ticket }}</b></a
       >
+    </div>
+    <div *ngIf="info.managedBundle.ticket && !info.managedBundle.ticketUrl">
+      Ticket: <b>#{{ info.managedBundle.ticket }}</b>
+    </div>
+    <div class="row mt-2">
+      <div class="col" *ngIf="dropStatus || candidateForStages.length > 0">
         <button
           *ngIf="dropStatus"
-          class="btn btn-block float-right mb-2"
+          class="btn btn-block float-right"
           [ngClass]="active ? 'btn-danger' : 'btn-light text-light'"
           (click)="markForStage(dropStatus)"
         >
           <b>Drop</b>
         </button>
-
+      </div>
+      <div class="col" *ngIf="dropStatus || candidateForStages.length > 0">
         <div *ngFor="let status of candidateForStages">
           <button
-            class="btn btn-block btn-light mt-2"
+            class="btn btn-block btn-light"
             [ngClass]="active ? 'text-dark' : 'text-light'"
             (click)="markForStage(status)"
           >
