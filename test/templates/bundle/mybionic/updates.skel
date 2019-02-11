@@ -7,7 +7,9 @@ UDebComponents:
 Architectures: {{ architectures }} source
 VerifyRelease: {{ publicKeys }}
 GetInRelease: no
-FilterSrcList: purge {{ filterListFile }}{% if blacklistFile is string() %}
-FilterList: install {{ blacklistFile }}{% endif %}
+FilterSrcList: purge {{ filterListFile }}
+{%- if blacklistFile %}
+FilterList: install {{ blacklistFile }}
+{%- endif %}
 DownloadListsAs: .gz
 

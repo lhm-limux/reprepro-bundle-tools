@@ -207,7 +207,7 @@ class Bundle():
                     updateRules=" ".join([r.getRuleName() for r in updateRules])))
         # creating conf/updates file
         updatesSkel = self._templateEnv.get_template("updates.skel")
-        blacklistFile = self._blacklist if os.path.exists(self.getBlacklistFile()) else ""
+        blacklistFile = self._blacklist if os.path.exists(self.getBlacklistFile()) else None
         with open(self.getUpdatesFile(), "w") as fh:
             print("\n".join([r.getUpdateRule(updatesSkel, self.getOwnSuiteName(), blacklistFile) for r in updateRules]), file=fh)
         # remove old FilterSrcLists:
