@@ -25,6 +25,7 @@
 
 import logging
 import os
+import sys
 from reprepro_bundle_appserver import common_app_server, common_interfaces
 from aiohttp import web
 from reprepro_bundle.BundleCLI import scanBundles
@@ -76,10 +77,14 @@ def registerRoutes(args, app):
 
 
 if __name__ == "__main__":
-    common_app_server.mainLoop(**{
-        'progname': progname,
-        'description': __doc__,
-        'registerRoutes': registerRoutes,
-        'serveDistPath': APP_DIST,
-        'port': 4253
-    })
+    try:
+        common_app_server.mainLoop(**{
+            'progname': progname,
+            'description': __doc__,
+            'registerRoutes': registerRoutes,
+            'serveDistPath': APP_DIST,
+            'port': 4253
+        })
+    except KeyboardInterrupt as e:
+        logger.info("Stopping due to keyboard interrupt.")
+        sys.exit(1)

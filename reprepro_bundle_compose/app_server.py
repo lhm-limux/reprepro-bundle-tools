@@ -27,6 +27,7 @@ import logging
 import json
 import os
 import io
+import sys
 from aiohttp import web
 import git
 import reprepro_bundle_compose
@@ -290,10 +291,14 @@ def registerRoutes(args, app):
 
 
 if __name__ == "__main__":
-    common_app_server.mainLoop(**{
-        'progname': progname,
-        'description': __doc__,
-        'registerRoutes': registerRoutes,
-        'serveDistPath': APP_DIST,
-        'port': 4255
-    })
+    try:
+        common_app_server.mainLoop(**{
+            'progname': progname,
+            'description': __doc__,
+            'registerRoutes': registerRoutes,
+            'serveDistPath': APP_DIST,
+            'port': 4255
+        })
+    except KeyboardInterrupt as e:
+        logger.info("Stopping due to keyboard interrupt.")
+        sys.exit(1)
