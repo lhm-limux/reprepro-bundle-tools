@@ -53,11 +53,11 @@ class BundleStatus(Enum):
         The bundle is currently in test by the internal test team.
     '''}
 
-    REVIEW_DEV = { 'ord': 4, 'tracStatus': 'Übernahmereview', 'stage': 'dev', 'override':True, 'comment': '''
-        A successfully tested bundle needs a final review by a developer before it could be seen by customers.
+    REVIEW_DEV = { 'ord': 4, 'tracStatus': 'Bestätigung', 'stage': 'dev', 'override':True, 'comment': '''
+        A successfully tested bundle needs a final acknowledgement by the developer before it could be seen by customers.
     '''}
 
-    TESTED_AND_RELEASED = { 'ord': 5, 'tracStatus': 'Übernahmefreigabe', 'stage': 'dev', 'comment': '''
+    TESTED_AND_RELEASED = { 'ord': 5, 'tracStatus': 'Freigabe', 'stage': 'dev', 'comment': '''
         The bundle was successfully tested and is approved for being seen by customers. It is not yet visible for customers!
     '''}
 
