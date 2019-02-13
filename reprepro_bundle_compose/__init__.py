@@ -45,8 +45,9 @@ if os.path.isdir(os.path.join(HERE, "reprepro_bundle_compose")):
     sys.path.insert(0, HERE)
 
 progname = "bundle-compose"
-tracConfFiles = [ os.path.join(PROJECT_DIR, ".bundle-compose.trac.conf"), os.path.join(os.path.expanduser("~"), ".config", progname, "trac.conf") ]
-hooksConfFiles = [ os.path.join(PROJECT_DIR, ".bundle-compose.hooks.conf"), os.path.join(os.path.expanduser("~"), ".config", progname, "hooks.conf") ]
+tracConfFiles =    [ os.path.join(PROJECT_DIR, ".bundle-compose.trac.conf"),     os.path.join(os.path.expanduser("~"), ".config", progname, "trac.conf") ]
+gitRepoConfFiles = [ os.path.join(PROJECT_DIR, ".bundle-compose.git-repo.conf"), os.path.join(os.path.expanduser("~"), ".config", progname, "git-repo.conf") ]
+hooksConfFiles =   [ os.path.join(PROJECT_DIR, ".bundle-compose.hooks.conf"),    os.path.join(os.path.expanduser("~"), ".config", progname, "hooks.conf") ]
 
 APT_REPOS_CMD = os.path.join(PROJECT_DIR, "apt-repos/bin/apt-repos")
 if not os.path.exists(APT_REPOS_CMD):
@@ -159,6 +160,10 @@ def getTargetRepoSuites(stage=None):
         if not stage or "bundle-stage.{}".format(stage) in suite.getTags():
             res[suite.getSuiteName()] = suite
     return res
+
+
+def getGitRepoConfig():
+    return __getConfig(gitRepoConfFiles, warnType="git-repo")
 
 
 def getTracConfig():
