@@ -199,7 +199,7 @@ def createTracTicketForBundle(trac, bundle):
     return trac.createTicket(subject, description, {
         'type': 'Betriebsübernahme',
         'deliveryrepo': bundle.getID(),
-        'lieferstufe': bundle.getTarget(),
+        'bereitstellung': bundle.getTarget(),
         'milestone': milestone
     })
 
