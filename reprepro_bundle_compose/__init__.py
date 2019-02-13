@@ -196,8 +196,7 @@ def createTracTicketForBundle(trac, bundle):
     (subject, description) = splitReleasenotes(info)
     package_list = subprocess.check_output([APT_REPOS_CMD, "-b .apt-repos", "ls", "-s", str(bundle.getID()), "-r", "." ])
     description = description.replace("__DYNAMIC_PACKAGE_LIST__", package_list.decode("utf-8").rstrip())
-    title = "[{}] {}".format(bundle.getTarget(), subject)
-    return trac.createTicket(title, description, {
+    return trac.createTicket(subject, description, {
         'type': 'Betriebsübernahme',
         'deliveryrepo': bundle.getID(),
         'lieferstufe': bundle.getTarget(),
