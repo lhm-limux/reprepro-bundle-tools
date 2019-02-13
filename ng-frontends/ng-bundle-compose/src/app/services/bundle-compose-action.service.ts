@@ -103,9 +103,12 @@ export class BundleComposeActionService {
       );
   }
 
-  publishChanges(): void {
+  publishChanges(refs: AuthRef[]): void {
+    const params = new HttpParams().set("refs", JSON.stringify(refs));
     this.http
-      .get<BackendLogEntry[]>(this.config.getApiUrl("publishChanges"))
+      .get<BackendLogEntry[]>(this.config.getApiUrl("publishChanges"), {
+        params: params
+      })
       .subscribe(
         (data: BackendLogEntry[]) => {
           this.changed.next(data);

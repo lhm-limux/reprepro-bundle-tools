@@ -209,7 +209,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     this.authenticationService.callWithRequiredAuthentications(
       "publishChanges",
       (refs: AuthRef[]) => {
-        this.actionService.publishChanges();
+        this.actionService.publishChanges(refs);
       }
     );
   }
