@@ -53,7 +53,7 @@ class BundleStatus(Enum):
         The bundle is currently in test by the internal test team.
     '''}
 
-    REVIEW_DEV = { 'ord': 4, 'tracStatus': 'Bestätigung', 'stage': 'dev', 'override':True, 'comment': '''
+    ACK_DEV = { 'ord': 4, 'tracStatus': 'Bestätigung', 'stage': 'dev', 'override':True, 'comment': '''
         A successfully tested bundle needs a final acknowledgement by the developer before it could be seen by customers.
     '''}
 
