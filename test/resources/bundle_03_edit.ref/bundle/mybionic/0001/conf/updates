@@ -5,7 +5,7 @@ Components: main restricted universe multiverse
 #UDebComponents: main restricted universe multiverse
 UDebComponents:
 Architectures: i386 amd64 source
-VerifyRelease: 3B4FE6ACC0B21F32!|40976EAF437D05B5!|46181433FBB75451!|D94AA3F0EFE21092!
+VerifyRelease: 251BEFF479164387!|3B4FE6ACC0B21F32!|40976EAF437D05B5!|46181433FBB75451!|D94AA3F0EFE21092!
 GetInRelease: no
 FilterSrcList: purge FilterSrcList-from-ubuntu-bionic
 DownloadListsAs: .gz
