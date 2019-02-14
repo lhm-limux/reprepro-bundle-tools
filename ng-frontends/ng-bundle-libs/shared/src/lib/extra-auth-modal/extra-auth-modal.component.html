@@ -43,6 +43,8 @@
                 class="form-control form-control-lg"
                 placeholder="Password"
                 (change)="a.password = inpPwd.value"
+                (keyup)="a.password = inpPwd.value"
+                (keydown)="$event.keyCode == 13 ? confirm() : ''"
                 [value]="a.password"
               />
             </div>
