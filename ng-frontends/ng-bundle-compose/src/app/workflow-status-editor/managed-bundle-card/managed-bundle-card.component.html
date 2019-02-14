@@ -12,7 +12,6 @@
   </div>
   <div class="card-body">
     <h5 class="card-title">{{ info.subject }}</h5>
-    <div>Creator: {{ info.creator }}</div>
     <div *ngIf="info.managedBundle.ticket && info.managedBundle.ticketUrl">
       Ticket:
       <a
@@ -25,6 +24,7 @@
     <div *ngIf="info.managedBundle.ticket && !info.managedBundle.ticketUrl">
       Ticket: <b>#{{ info.managedBundle.ticket }}</b>
     </div>
+    <div>Creator: {{ info.creator }}</div>
     <div class="row mt-2">
       <div class="col" *ngIf="dropStatus || candidateForStages.length > 0">
         <button
