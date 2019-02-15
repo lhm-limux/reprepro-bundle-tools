@@ -250,7 +250,7 @@ async def handle_get_managed_bundles(request):
     res = list()
     bundles = parseBundles(getBundleRepoSuites())
     for (unused_id, bundle) in sorted(bundles.items()):
-        res.append(common_interfaces.ManagedBundle(bundle, **{'tracBaseUrl': getTracConfig().get('TracUrl')}))
+        res.append(common_interfaces.ManagedBundle(bundle, tracBaseUrl = getTracConfig().get('TracUrl')))
     return web.json_response(res)
 
 
@@ -259,7 +259,7 @@ async def handle_get_managed_bundle_infos(request):
     res = list()
     bundles = parseBundles(getBundleRepoSuites())
     for (unused_id, bundle) in sorted(bundles.items()):
-        res.append(common_interfaces.ManagedBundleInfo(bundle, **{'tracBaseUrl': getTracConfig().get('TracUrl')}))
+        res.append(common_interfaces.ManagedBundleInfo(bundle, tracBaseUrl = getTracConfig().get('TracUrl')))
     return web.json_response(res)
 
 
@@ -335,13 +335,13 @@ def registerRoutes(args, app):
 
 if __name__ == "__main__":
     try:
-        common_app_server.mainLoop(**{
-            'progname': progname,
-            'description': __doc__,
-            'registerRoutes': registerRoutes,
-            'serveDistPath': APP_DIST,
-            'port': 4255
-        })
+        common_app_server.mainLoop(
+            progname = progname,
+            description =  __doc__,
+            registerRoutes = registerRoutes,
+            serveDistPath = APP_DIST,
+            port = 4255
+        )
     except KeyboardInterrupt as e:
         logger.info("Stopping due to keyboard interrupt.")
         sys.exit(1)

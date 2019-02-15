@@ -42,9 +42,7 @@ def BundleMetadata(bundle):
         'releasenotes': rnParts[2] if (len(rnParts) == 3) else "",
     }
 
-def ManagedBundle(bundle, **kwargs):
-    tracBaseUrl = kwargs.get('tracBaseUrl')
-
+def ManagedBundle(bundle, tracBaseUrl=None):
     ticket = ""
     ticketUrl = ""
     if tracBaseUrl and bundle.getTrac():
@@ -62,10 +60,10 @@ def ManagedBundle(bundle, **kwargs):
         'ticketUrl': ticketUrl
     }
 
-def ManagedBundleInfo(bundle, **kwargs):
+def ManagedBundleInfo(bundle, tracBaseUrl=None):
     info = bundle.getInfo() or dict()
     return {
-        'managedBundle': ManagedBundle(bundle, **kwargs),
+        'managedBundle': ManagedBundle(bundle, tracBaseUrl),
         'basedOn': info.get("BasedOn"),
         'subject': info.get("Releasenotes", "--no-subject--").split("\n", 1)[0],
         'creator': info.get("Creator", "unknown"),

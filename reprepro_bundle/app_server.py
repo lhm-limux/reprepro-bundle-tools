@@ -78,13 +78,13 @@ def registerRoutes(args, app):
 
 if __name__ == "__main__":
     try:
-        common_app_server.mainLoop(**{
-            'progname': progname,
-            'description': __doc__,
-            'registerRoutes': registerRoutes,
-            'serveDistPath': APP_DIST,
-            'port': 4253
-        })
+        common_app_server.mainLoop(
+            progname = progname,
+            description = __doc__,
+            registerRoutes = registerRoutes,
+            serveDistPath = APP_DIST,
+            port = 4253
+        )
     except KeyboardInterrupt as e:
         logger.info("Stopping due to keyboard interrupt.")
         sys.exit(1)

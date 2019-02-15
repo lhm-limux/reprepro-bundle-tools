@@ -73,14 +73,7 @@ def setupLogging(loglevel):
     logging.getLogger("apt_repos").setLevel(logging.ERROR if loglevel != logging.DEBUG else logging.INFO)
 
 
-def mainLoop(**kwargs):
-    progname=kwargs.get('progname', PROGNAME)
-    description=kwargs.get('description', __doc__)
-    registerRoutes=kwargs.get('registerRoutes', None)
-    serveDistPath=kwargs.get('serveDistPath', None)
-    host=kwargs.get('host', DEFAULT_HOST)
-    port=kwargs.get('port', DEFAULT_PORT)
-
+def mainLoop(progname=PROGNAME, description=__doc__, registerRoutes=None, serveDistPath=None, host=DEFAULT_HOST, port=DEFAULT_PORT):
     parser = argparse.ArgumentParser(description=description, prog=progname)
     parser.add_argument("-d", "--debug", action="store_true", default=False, help="Show debug messages.")
     parser.add_argument("--no-open-url", action="store_true", help="""
