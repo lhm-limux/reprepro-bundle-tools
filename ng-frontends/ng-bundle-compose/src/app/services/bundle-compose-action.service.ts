@@ -54,10 +54,10 @@ export class BundleComposeActionService {
       );
   }
 
-  markForStatus(status: WorkflowMetadata, bundles: ManagedBundle[]): void {
+  markForStatus(status: WorkflowMetadata, bundles: string[]): void {
     const params = new HttpParams()
       .set("status", status.name)
-      .set("bundles", JSON.stringify(bundles.map(b => b.id)));
+      .set("bundles", JSON.stringify(bundles));
     this.http
       .get<BackendLogEntry[]>(this.config.getApiUrl("markForStatus"), {
         params: params

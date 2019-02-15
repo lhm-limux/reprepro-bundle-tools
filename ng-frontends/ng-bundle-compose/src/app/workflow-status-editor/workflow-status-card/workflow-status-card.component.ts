@@ -43,7 +43,7 @@ export class WorkflowStatusCardComponent {
   showContent: boolean;
 
   @Input()
-  managedBundleInfos: ManagedBundleInfo[];
+  managedBundleInfos: [ManagedBundle, ManagedBundleInfo][];
 
   @Input()
   candidateForStages: WorkflowMetadata[];
@@ -54,7 +54,7 @@ export class WorkflowStatusCardComponent {
   @Output()
   markedForStage = new EventEmitter<{
     stage: WorkflowMetadata;
-    bundles: ManagedBundle[];
+    bundles: string[];
   }>();
 
   @Output()
@@ -75,7 +75,7 @@ export class WorkflowStatusCardComponent {
   markForStage(newStatus) {
     this.markedForStage.next({
       stage: newStatus,
-      bundles: this.managedBundleInfos.map(i => i.managedBundle)
+      bundles: this.managedBundleInfos.map(i => i[0].id)
     });
   }
 }

@@ -250,10 +250,10 @@ async def handle_update_bundles(request):
 
 
 async def handle_get_managed_bundles(request):
-    # faster (doesn't need to resolve info file)
+    # faster (doesn't need to query apt-repos and resolve info file)
     logger.debug("handle_get_managed_bundles called")
     res = list()
-    bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe))
+    bundles = await parseBundlesAsync(tpe)
     tracUrl = getTracConfig().get('TracUrl')
     for (unused_id, bundle) in sorted(bundles.items()):
         res.append(common_interfaces.ManagedBundle(bundle, tracBaseUrl = tracUrl))

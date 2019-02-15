@@ -32,19 +32,8 @@ import { BundleComposeActionService } from "../services/bundle-compose-action.se
 export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   bundlename: string;
-  info: ManagedBundleInfo = {
-    basedOn: "",
-    creator: "",
-    managedBundle: {
-      distribution: "",
-      id: "",
-      status: null,
-      target: "",
-      ticket: "",
-      ticketUrl: ""
-    },
-    subject: "-- No Subject --"
-  };
+  bundle: ManagedBundle;
+  info: ManagedBundleInfo = ManagedBundleService.defaultManagedBundleInfo();
   private workflow: WorkflowMetadata[] = [];
   private targets: TargetDescription[] = [];
   hoveredStatus: WorkflowMetadata = null;
@@ -74,10 +63,6 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
         this.update();
       })
     );
-    this.metadataService.update();
-  }
-
-  ngOnInit() {
     this.subscriptions.push(
       this.actionService.cast.subscribe(data => {
         this.bundleService.update();
@@ -86,7 +71,11 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.bundleService.cast.subscribe(() => this.update())
     );
+    this.metadataService.update();
     this.bundleService.update();
+  }
+
+  ngOnInit() {
   }
 
   ngOnDestroy(): void {
@@ -102,19 +91,20 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
   }
 
   markForStatus(s): void {
-    this.actionService.markForStatus(s, [this.info.managedBundle]);
+    this.actionService.markForStatus(s, [this.bundle.id]);
   }
 
   setTarget(): void {
     const sel = this.targetSelect.nativeElement;
     const newTarget = sel.options[sel.selectedIndex].value;
-    this.actionService.setTarget(newTarget, [this.info.managedBundle]);
+    this.actionService.setTarget(newTarget, [this.bundle]);
   }
 
   update(): void {
-    const info = this.bundleService.getManagedBundleInfo(this.bundlename);
-    if (info != null) {
-      this.info = info;
+    const managed = this.bundleService.getManagedBundleInfo(this.bundlename);
+    if (managed) {
+      this.bundle = managed[0];
+      this.info = managed[1];
     }
   }
 }

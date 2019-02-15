@@ -1,12 +1,12 @@
 <div class="card border-info">
   <div class="card-header">
     <h2>
-      {{ info.managedBundle.id }}
+      {{ bundle.id }}
       <span
         class="badge-pill float-right mx-2 badge-dark"
         style="font-size: large;"
       >
-        <b>Target: {{ info.managedBundle.target | uppercase }}</b>
+        <b>Target: {{ bundle.target | uppercase }}</b>
       </span>
     </h2>
   </div>
@@ -27,28 +27,28 @@
                 *ngFor="let o of getTargets()"
                 [value]="o.value"
                 [selected]="
-                  info.managedBundle.target === o.value ? 'selected' : ''
+                  bundle.target === o.value ? 'selected' : ''
                 "
                 >{{ o.description }}</option
               >
             </select>
           </div>
           <div
-            *ngIf="info.managedBundle.ticket && info.managedBundle.ticketUrl"
+            *ngIf="bundle.ticket && bundle.ticketUrl"
           >
             Ticket:
             <a
-              href="{{ info.managedBundle.ticketUrl }}"
+              href="{{ bundle.ticketUrl }}"
               target="_blank"
               style="color: inherit; outline: 0;"
-              ><b>#{{ info.managedBundle.ticket }}</b></a
+              ><b>#{{ bundle.ticket }}</b></a
             >
           </div>
-          <div>Status: {{ info.managedBundle.status.name | uppercase }}</div>
+          <div>Status: {{ bundle.status.name | uppercase }}</div>
           <div
-            *ngIf="info.managedBundle.ticket && !info.managedBundle.ticketUrl"
+            *ngIf="bundle.ticket && !bundle.ticketUrl"
           >
-            Ticket: <b>#{{ info.managedBundle.ticket }}</b>
+            Ticket: <b>#{{ bundle.ticket }}</b>
           </div>
         </div>
         <div class="col" style="text-align: right;">
@@ -63,7 +63,7 @@
             >
               <img
                 [src]="
-                  s.name === info.managedBundle.status.name
+                  s.name === bundle.status.name
                     ? './assets/workflow_sel.png'
                     : './assets/workflow.png'
                 "

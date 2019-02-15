@@ -50,10 +50,12 @@ def ManagedBundle(bundle, tracBaseUrl=None):
             tracBaseUrl += "/"
         ticket = bundle.getTrac()
         ticketUrl = urljoin(tracBaseUrl, "ticket/{}".format(ticket))
+    distFromName = bundle.getID().split(":", 1)
+    distFromName = distFromName[1].split("/", 1)[0] if len(distFromName) == 2 else "unknown"
 
     return {
         'id': bundle.getID(),
-        'distribution': bundle.getAptSuite() or "unknown",
+        'distribution': bundle.getAptSuite() or distFromName,
         'status': WorkflowMetadata(bundle.getStatus()),
         'target': bundle.getTarget(),
         'ticket': ticket,
@@ -63,7 +65,7 @@ def ManagedBundle(bundle, tracBaseUrl=None):
 def ManagedBundleInfo(bundle, tracBaseUrl=None):
     info = bundle.getInfo() or dict()
     return {
-        'managedBundle': ManagedBundle(bundle, tracBaseUrl),
+        'id': bundle.getID(),
         'basedOn': info.get("BasedOn"),
         'subject': info.get("Releasenotes", "--no-subject--").split("\n", 1)[0],
         'creator': info.get("Creator", "unknown"),

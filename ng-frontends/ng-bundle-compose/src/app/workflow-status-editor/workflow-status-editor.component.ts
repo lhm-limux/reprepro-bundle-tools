@@ -124,8 +124,8 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   getManagedBundleInfosForStatus(status: WorkflowMetadata) {
     return this.managedBundleService
       .getManagedBundleInfosForStatus(status)
-      .filter(b => this.selectedDistributions.has(b.managedBundle.distribution))
-      .filter(b => this.selectedTargets.has(b.managedBundle.target));
+      .filter(b => this.selectedDistributions.has(b[0].distribution))
+      .filter(b => this.selectedTargets.has(b[0].target));
   }
 
   getCardFormat(status: WorkflowMetadata) {
@@ -180,16 +180,13 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     return !(status.name === "DROPPED" || status.name === "STAGING");
   }
 
-  markForStage(event: { stage: WorkflowMetadata; bundles: ManagedBundle[] }) {
+  markForStage(event: { stage: WorkflowMetadata; bundles: string[] }) {
     this.markForStatus(event.stage, event.bundles);
   }
 
-  markForStatus(status: WorkflowMetadata, bundles: ManagedBundle[]) {
+  markForStatus(status: WorkflowMetadata, bundles: string[]) {
     console.log(
-      "markForStatus: " +
-        JSON.stringify(bundles.map(b => b.id)) +
-        " --> " +
-        status.name
+      "markForStatus: " + JSON.stringify(bundles) + " --> " + status.name
     );
     this.actionService.markForStatus(status, bundles);
   }

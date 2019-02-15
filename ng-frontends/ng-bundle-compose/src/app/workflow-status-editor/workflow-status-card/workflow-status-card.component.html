@@ -53,7 +53,8 @@
         <div class="card-columns">
           <app-managed-bundle-card
             *ngFor="let bi of managedBundleInfos"
-            [info]="bi"
+            [bundle]="bi[0]"
+            [info]="bi[1]"
             [candidateForStages]="candidateForStages"
             [dropStatus]="dropStatus"
             (markedForStage)="doMarkedForStage($event)"

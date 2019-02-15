@@ -5,24 +5,24 @@
   (mouseleave)="active = false"
 >
   <div class="card-header" (click)="emitClicked()">
-    <b [ngClass]="active ? 'btn-link' : ''">{{ info.managedBundle.id }}</b>
+    <b [ngClass]="active ? 'btn-link' : ''">{{ bundle.id }}</b>
     <div class="badge-pill badge-dark float-right mx-2">
-      <b>Target: {{ info.managedBundle.target | uppercase }}</b>
+      <b>Target: {{ bundle.target | uppercase }}</b>
     </div>
   </div>
   <div class="card-body">
     <h5 class="card-title">{{ info.subject }}</h5>
-    <div *ngIf="info.managedBundle.ticket && info.managedBundle.ticketUrl">
+    <div *ngIf="bundle.ticket && bundle.ticketUrl">
       Ticket:
       <a
-        href="{{ info.managedBundle.ticketUrl }}"
+        href="{{ bundle.ticketUrl }}"
         target="_blank"
         style="color: inherit; outline: 0;"
-        ><b>#{{ info.managedBundle.ticket }}</b></a
+        ><b>#{{ bundle.ticket }}</b></a
       >
     </div>
-    <div *ngIf="info.managedBundle.ticket && !info.managedBundle.ticketUrl">
-      Ticket: <b>#{{ info.managedBundle.ticket }}</b>
+    <div *ngIf="bundle.ticket && !info.managedBundle.ticketUrl">
+      Ticket: <b>#{{ bundle.ticket }}</b>
     </div>
     <div>Creator: {{ info.creator }}</div>
     <div class="row mt-2">

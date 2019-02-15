@@ -28,6 +28,9 @@ export class ManagedBundleCardComponent implements OnInit {
   active: false;
 
   @Input()
+  bundle: ManagedBundle;
+
+  @Input()
   info: ManagedBundleInfo;
 
   @Input()
@@ -51,11 +54,11 @@ export class ManagedBundleCardComponent implements OnInit {
   markForStage(status) {
     this.markedForStage.next({
       stage: status,
-      bundles: [ this.info.managedBundle ]
+      bundles: [ this.bundle ]
     });
   }
 
   emitClicked() {
-    this.clicked.next(this.info.managedBundle);
+    this.clicked.next(this.bundle);
   }
 }
