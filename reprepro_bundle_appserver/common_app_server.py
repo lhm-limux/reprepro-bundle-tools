@@ -239,7 +239,7 @@ def get_credentials(request, authId):
     global __storedPwds
     authRefs = common_interfaces.AuthRefList_validate(json.loads(request.rel_url.query['refs']))
     ref = None
-    for x, r in enumerate(authRefs):
+    for _, r in enumerate(authRefs):
         if r['authId'] == authId:
             ref = r
             break

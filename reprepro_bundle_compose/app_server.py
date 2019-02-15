@@ -297,7 +297,7 @@ async def handle_router_link(request):
 
 def configureGitCredentialHelper(currentRepo, repoUrl, user, password, timeout=5):
     if currentRepo and currentRepo.remotes.origin.url != repoUrl:
-        raise Exception("The configured RepoUrl {} doesn't match the current origin {}".format(repoUrl, originUrl))
+        raise Exception("The configured RepoUrl {} doesn't match the current origin {}".format(repoUrl, currentRepo.remotes.origin.url))
     url = urlparse(repoUrl)
     subprocess.check_call(["git", "config", "credential.helper", "cache --timeout={}".format(timeout)])
     proc = subprocess.Popen(["git", "credential", "approve"], stdin=subprocess.PIPE)
