@@ -29,11 +29,13 @@ import os
 import io
 import sys
 from aiohttp import web
+import asyncio
+import concurrent.futures
 import git
 import subprocess
 from urllib.parse import urlparse
 import reprepro_bundle_compose
-from reprepro_bundle_compose import PROJECT_DIR, BUNDLES_LIST_FILE, BundleStatus, getTargetRepoSuites, getBundleRepoSuites, parseBundles, updateBundles, trac_api, getTracConfig, getGitRepoConfig, markBundlesForStatus, markBundlesForTarget, git_commit, ensure_clean_git_repo, GitNotCleanException
+from reprepro_bundle_compose import PROJECT_DIR, BUNDLES_LIST_FILE, BundleStatus, getTargetRepoSuites, getBundleRepoSuitesAsync, parseBundlesAsync, updateBundles, trac_api, getTracConfig, getGitRepoConfig, markBundlesForStatus, markBundlesForTarget, git_commit, ensure_clean_git_repo, GitNotCleanException
 from reprepro_bundle_appserver import common_app_server, common_interfaces
 
 
@@ -47,6 +49,8 @@ if not os.path.exists(APP_DIST):
 MAX_GIT_LIST_CHANGES = 200
 publishedCommitsCache = set()
 publishedCommitsLastHead = None
+
+tpe = None # ThreadPoolExecutor set in main
 
 
 async def handle_required_auth(request):
@@ -172,7 +176,7 @@ async def handle_mark_for_status(request):
         try:
             repo = git.Repo(PROJECT_DIR)
             ensure_clean_git_repo(repo)
-            bundles = parseBundles(getBundleRepoSuites())
+            bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe))
             markBundlesForStatus(bundles, set(ids), status, True)
             msg = "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids)))
             if len(ids) == 1:
@@ -194,7 +198,7 @@ async def handle_set_target(request):
         try:
             repo = git.Repo(PROJECT_DIR)
             ensure_clean_git_repo(repo)
-            bundles = parseBundles(getBundleRepoSuites())
+            bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe))
             markBundlesForTarget(bundles, set(ids), target)
             msg = "MARKED for target '{}'\n\n - {}".format(target, "\n - ".join(sorted(ids)))
             if len(ids) == 1:
@@ -247,19 +251,26 @@ async def handle_update_bundles(request):
 
 async def handle_get_managed_bundles(request):
     # faster (doesn't need to resolve info file)
+    logger.debug("handle_get_managed_bundles called")
     res = list()
-    bundles = parseBundles(getBundleRepoSuites())
+    bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe))
+    tracUrl = getTracConfig().get('TracUrl')
     for (unused_id, bundle) in sorted(bundles.items()):
-        res.append(common_interfaces.ManagedBundle(bundle, tracBaseUrl = getTracConfig().get('TracUrl')))
+        res.append(common_interfaces.ManagedBundle(bundle, tracBaseUrl = tracUrl))
+    logger.debug("handle_get_managed_bundles finished")
     return web.json_response(res)
 
 
 async def handle_get_managed_bundle_infos(request):
     # slower (as it needs to resolve info files)
-    res = list()
-    bundles = parseBundles(getBundleRepoSuites())
-    for (unused_id, bundle) in sorted(bundles.items()):
-        res.append(common_interfaces.ManagedBundleInfo(bundle, tracBaseUrl = getTracConfig().get('TracUrl')))
+    logger.debug("handle_get_managed_bundle_infos called")
+    bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe))
+    tracUrl = getTracConfig().get('TracUrl')
+    futures = [ asyncio.wrap_future(tpe.submit(common_interfaces.ManagedBundleInfo, bundle, tracBaseUrl = tracUrl))
+                for bundle in bundles.values() ]
+    (done, _) = await asyncio.wait(futures, return_when=asyncio.ALL_COMPLETED)
+    res = [await f for f in done]
+    logger.debug("handle_get_managed_bundle_infos finished")
     return web.json_response(res)
 
 
@@ -335,13 +346,15 @@ def registerRoutes(args, app):
 
 if __name__ == "__main__":
     try:
-        common_app_server.mainLoop(
-            progname = progname,
-            description =  __doc__,
-            registerRoutes = registerRoutes,
-            serveDistPath = APP_DIST,
-            port = 4255
-        )
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            tpe = executor
+            common_app_server.mainLoop(
+                progname = progname,
+                description =  __doc__,
+                registerRoutes = registerRoutes,
+                serveDistPath = APP_DIST,
+                port = 4255
+            )
     except KeyboardInterrupt as e:
         logger.info("Stopping due to keyboard interrupt.")
         sys.exit(1)

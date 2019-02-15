@@ -26,6 +26,7 @@ import logging
 import subprocess
 import apt_pkg
 import git
+import asyncio
 from reprepro_bundle_compose.bundle_status import BundleStatus
 from reprepro_bundle_compose.managed_bundle import ManagedBundle
 from reprepro_bundle_compose.distribution import Distribution
@@ -128,6 +129,13 @@ def parseBundles(repoSuites=None):
     return res
 
 
+async def parseBundlesAsync(executor, repoSuites=None):
+    '''
+        This method calls parseBundles(repoSuites) asynchronously in the provided ThreadPoolExecutor executor.
+    '''
+    return await asyncio.wrap_future(executor.submit(parseBundles, repoSuites))
+
+
 def storeBundles(bundlesDict):
     '''
         Expects a dict of ID to ManagedBundle-Objects and stores it's content in alpabetical
@@ -147,6 +155,13 @@ def getBundleRepoSuites():
     for suite in sorted(apt_repos.getSuites(["bundle:"])):
         res[suite.getSuiteName()] = suite
     return res
+
+
+async def getBundleRepoSuitesAsync(executor):
+    '''
+        This method calls getBundleRepoSuites() asynchronously in the provided ThreadPoolExecutor executor.
+    '''
+    return await asyncio.wrap_future(executor.submit(getBundleRepoSuites))
 
 
 def getTargetRepoSuites(stage=None):
