@@ -3,6 +3,7 @@
 /.angulardoc.json
 /build
 /.pybuild
+/.vscode
 debian/.debhelper/
 debian/python3-reprepro-bundle-tools.debhelper.log
 debian/python3-reprepro-bundle-tools.postinst.debhelper
