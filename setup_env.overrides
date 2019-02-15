@@ -1,0 +1,3 @@
+#HOST_IP=$(ip address show up dynamic | grep inet | head -1 | sed -E 's/\s+inet ([0-9\.]*)\/.*/\1/')
+#HOST_NAME=if1899.fritz.box
+#HOST_NAME=if1899.tvc.muenchen.de
