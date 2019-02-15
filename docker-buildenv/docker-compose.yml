@@ -1,0 +1,15 @@
+version: '2.0'
+
+services:
+
+  buildenv:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: node-build
+    volumes:
+      - ..:/build/
+    user: ${CURRENT_USER}
+    restart: "no"
+
+

@@ -1,0 +1,25 @@
+version: '2.0'
+
+services:
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker-backend/Dockerfile
+    image: backend
+    environment:
+      - HOST_NAME=${HOST_NAME}
+    volumes:
+      - .:/app/
+    user: ${CURRENT_USER}
+    ports:
+      - ${HOST_IP}:3000:3000
+    restart: "always"
+
+  redis:
+    image: redis
+    volumes:
+      - ./docker-redis:/data/
+    user: ${CURRENT_USER}
+    restart: "always"
+

@@ -4,6 +4,8 @@
 /build
 /.pybuild
 /.vscode
+/docker-buildenv/built
+/docker-backend/built
 debian/.debhelper/
 debian/python3-reprepro-bundle-tools.debhelper.log
 debian/python3-reprepro-bundle-tools.postinst.debhelper
