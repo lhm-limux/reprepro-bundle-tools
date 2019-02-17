@@ -39,8 +39,8 @@
       <div class="col" *ngIf="dropStatus || candidateForStages.length > 0">
         <div *ngFor="let status of candidateForStages">
           <button
-            class="btn btn-block btn-light"
-            [ngClass]="active ? 'text-dark' : 'text-light'"
+            class="btn btn-block text-light"
+            [ngClass]="active ? 'btn-primary' : 'btn-light'"
             (click)="markForStage(status)"
           >
             <b>Mark for Stage {{ status.stage | uppercase }}</b>

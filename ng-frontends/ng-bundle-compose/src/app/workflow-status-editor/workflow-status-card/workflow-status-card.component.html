@@ -64,7 +64,7 @@
 
         <div *ngIf="candidateForStages.length > 0">
           <div *ngFor="let newStatus of candidateForStages">
-            <button class="btn btn-secondary" (click)="markForStage(newStatus)">
+            <button class="btn btn-primary" (click)="markForStage(newStatus)">
               <b
                 >Mark All These Candidates for Stage
                 {{ newStatus.stage | uppercase }}</b
