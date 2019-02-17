@@ -16,16 +16,17 @@
 * https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
 ***********************************************************************/
 
-import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy } from "@angular/core";
 import { ManagedBundleInfo, ManagedBundle, WorkflowMetadata } from "shared";
 
 @Component({
   selector: "app-managed-bundle-card",
   templateUrl: "./managed-bundle-card.component.html",
-  styleUrls: ["./managed-bundle-card.component.css"]
+  styleUrls: ["./managed-bundle-card.component.css"],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ManagedBundleCardComponent implements OnInit {
-  active: false;
+  active = false;
 
   @Input()
   bundle: ManagedBundle;

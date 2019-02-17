@@ -198,7 +198,7 @@ async def handle_set_target(request):
         try:
             repo = git.Repo(PROJECT_DIR)
             ensure_clean_git_repo(repo)
-            bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe))
+            bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe, ids))
             markBundlesForTarget(bundles, set(ids), target)
             msg = "MARKED for target '{}'\n\n - {}".format(target, "\n - ".join(sorted(ids)))
             if len(ids) == 1:

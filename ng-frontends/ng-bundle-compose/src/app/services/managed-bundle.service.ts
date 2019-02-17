@@ -26,6 +26,18 @@ import {
 } from "shared";
 import { HttpClient, HttpParams } from "@angular/common/http";
 
+const DEFAULT_ManagedBundleInfo = {
+  id: "",
+  basedOn: "",
+  creator: "",
+  subject: "…loading…"
+};
+
+interface BundleAndInfo {
+  bundle: ManagedBundle;
+  info: ManagedBundleInfo;
+}
+
 @Injectable({
   providedIn: "root"
 })
@@ -34,19 +46,7 @@ export class ManagedBundleService {
   private changed = new Subject();
   cast = this.changed.asObservable();
 
-  private managedBundles = new Map<
-    string,
-    [ManagedBundle, ManagedBundleInfo]
-  >();
-
-  static defaultManagedBundleInfo(): ManagedBundleInfo {
-    return {
-      id: "",
-      basedOn: "",
-      creator: "",
-      subject: "…loading…"
-    };
-  }
+  private managedBundles = new Map<string, BundleAndInfo>();
 
   update(): void {
     this.http
@@ -57,13 +57,13 @@ export class ManagedBundleService {
           const added = new Set<string>();
           for (const b of data) {
             allIds.add(b.id);
-            let managed = this.managedBundles.get(b.id);
-            if (!managed) {
-              managed = [b, null];
-              this.managedBundles.set(b.id, managed);
+            let bi = this.managedBundles.get(b.id);
+            if (!bi) {
+              bi = { bundle: b, info: DEFAULT_ManagedBundleInfo };
+              this.managedBundles.set(b.id, bi);
               added.add(b.id);
             } else {
-              managed[0] = b;
+              bi.bundle = b;
             }
           }
           for (const id of this.managedBundles.keys()) {
@@ -93,7 +93,7 @@ export class ManagedBundleService {
           for (const b of data) {
             const managed = this.managedBundles.get(b.id);
             if (managed) {
-              managed[1] = b;
+              managed.info = b;
             }
           }
           this.changed.next();
@@ -108,35 +108,26 @@ export class ManagedBundleService {
     return this.managedBundles.size > 0;
   }
 
-  getManagedBundle(
-    bundlename: string
-  ): { bundle: ManagedBundle; info: ManagedBundleInfo } {
-    const b = this.managedBundles.get(bundlename);
-    if (!b[1]) {
+  getManagedBundle(bundlename: string): BundleAndInfo {
+    const bi = this.managedBundles.get(bundlename);
+    if (bi && bi.info === DEFAULT_ManagedBundleInfo) {
       this.updateManagedBundleInfos([bundlename]);
     }
-    return { bundle: b[0], info: b[1] };
+    return bi;
   }
 
-  getManagedBundlesForStatus(
-    status: WorkflowMetadata
-  ): { bundle: ManagedBundle; info: ManagedBundleInfo }[] {
+  getManagedBundlesForStatus(status: WorkflowMetadata): BundleAndInfo[] {
     const bundles = Array.from(this.managedBundles.values());
-    return bundles
-      .filter(bundle => bundle[0].status.name === status.name)
-      .map(b => ({
-        bundle: b[0],
-        info: b[1] || ManagedBundleService.defaultManagedBundleInfo()
-      }));
+    return bundles.filter(bi => bi.bundle.status.name === status.name);
   }
 
   getAvailableDistributions(): string[] {
     const bundles = Array.from(this.managedBundles.values());
-    return Array.from(new Set(bundles.map(bundle => bundle[0].distribution)));
+    return Array.from(new Set(bundles.map(bi => bi.bundle.distribution)));
   }
 
   getAvailableTargets(): string[] {
     const bundles = Array.from(this.managedBundles.values());
-    return Array.from(new Set(bundles.map(bundle => bundle[0].target)));
+    return Array.from(new Set(bundles.map(bi => bi.bundle.target)));
   }
 }
