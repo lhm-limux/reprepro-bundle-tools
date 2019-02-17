@@ -24,7 +24,7 @@ import {
   ConfigService,
   WorkflowMetadata
 } from "shared";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 
 @Injectable({
   providedIn: "root"
@@ -53,19 +53,28 @@ export class ManagedBundleService {
       .get<ManagedBundle[]>(this.config.getApiUrl("managedBundles"))
       .subscribe(
         (data: ManagedBundle[]) => {
-          const newIds = new Set<string>();
+          const allIds = new Set<string>();
+          const added = new Set<string>();
           for (const b of data) {
-            const managed = this.managedBundles.get(b.id) || [b, null];
-            managed[0] = b;
-            this.managedBundles.set(b.id, managed);
-            newIds.add(b.id);
+            allIds.add(b.id);
+            let managed = this.managedBundles.get(b.id);
+            if (!managed) {
+              managed = [b, null];
+              this.managedBundles.set(b.id, managed);
+              added.add(b.id);
+            } else {
+              managed[0] = b;
+            }
           }
           for (const id of this.managedBundles.keys()) {
-            if (!newIds.has(id)) {
+            if (!allIds.has(id)) {
               this.managedBundles.delete(id);
             }
           }
           this.changed.next();
+          if (added.size > 0) {
+            this.updateManagedBundleInfos(Array.from(added));
+          }
         },
         errResp => {
           console.error("Error loading managed bundles list", errResp);
@@ -73,9 +82,12 @@ export class ManagedBundleService {
       );
   }
 
-  updateManagedBundleInfos(ids: string[]) {
+  updateManagedBundleInfos(bundles: string[]) {
+    const params = new HttpParams().set("bundles", JSON.stringify(bundles));
     this.http
-      .get<ManagedBundleInfo[]>(this.config.getApiUrl("managedBundleInfos"))
+      .get<ManagedBundleInfo[]>(this.config.getApiUrl("managedBundleInfos"), {
+        params: params
+      })
       .subscribe(
         (data: ManagedBundleInfo[]) => {
           for (const b of data) {
@@ -87,7 +99,7 @@ export class ManagedBundleService {
           this.changed.next();
         },
         errResp => {
-          console.error("Error loading managed bundle infos list", errResp);
+          console.error("Error loading managed bundle infos", errResp);
         }
       );
   }
@@ -100,6 +112,9 @@ export class ManagedBundleService {
     bundlename: string
   ): { bundle: ManagedBundle; info: ManagedBundleInfo } {
     const b = this.managedBundles.get(bundlename);
+    if (!b[1]) {
+      this.updateManagedBundleInfos([bundlename]);
+    }
     return { bundle: b[0], info: b[1] };
   }
 

@@ -146,22 +146,22 @@ def storeBundles(bundlesDict):
         logger.debug("Updated file '{}'".format(BUNDLES_LIST_FILE))
 
 
-def getBundleRepoSuites():
+def getBundleRepoSuites(ids=["bundle:"]):
     '''
        This method uses apt-repos to get a list of all currently available (rolled out)
        bundles as a dict of ID to apt_repos.RepoSuite Objects
     '''
     res = dict()
-    for suite in sorted(apt_repos.getSuites(["bundle:"])):
+    for suite in sorted(apt_repos.getSuites(ids)):
         res[suite.getSuiteName()] = suite
     return res
 
 
-async def getBundleRepoSuitesAsync(executor):
+async def getBundleRepoSuitesAsync(executor, ids=["bundle:"]):
     '''
         This method calls getBundleRepoSuites() asynchronously in the provided ThreadPoolExecutor executor.
     '''
-    return await asyncio.wrap_future(executor.submit(getBundleRepoSuites))
+    return await asyncio.wrap_future(executor.submit(getBundleRepoSuites, ids))
 
 
 def getTargetRepoSuites(stage=None):
