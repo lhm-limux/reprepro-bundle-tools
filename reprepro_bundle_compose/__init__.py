@@ -69,7 +69,7 @@ def updateBundles(tracApi=None):
             managed_bundles[id] = bundle
         elif bundle and not suite:
             if bundle.getStatus() != BundleStatus.DROPPED:
-                logger.warn("Das verwendete {} kann derzeit physikalisch nicht gefunden werden. Bitte überprüfen!".format(bundle))
+                logger.warn("Das verwendete {} kann derzeit physikalisch nicht von apt-repos gefunden werden. Bitte überprüfen!".format(bundle))
         else:
             bundle.setRepoSuite(suite)
             if bundle.getInfo().get("Target") != bundle.getTarget():
@@ -233,7 +233,7 @@ def splitReleasenotes(info):
     return (subject, text)
 
 
-def markBundlesForStatus(bundles, ids, status, force=False):
+def markBundlesForStatus(bundles, ids, status, force=False, checkOwnSuite=True):
     changed = False
     for (bid, bundle) in sorted(bundles.items()):
         if not bid in ids:
@@ -246,7 +246,7 @@ def markBundlesForStatus(bundles, ids, status, force=False):
             logger.error("{} is not ready for being put into state '{}'!".format(bid, status))
             ids.remove(bid)
             continue
-        if not bundle.getAptSuite():
+        if checkOwnSuite and not bundle.getAptSuite():
             logger.error("{} could not be found by apt-repos (possibly wrong config in .apt-repos)!".format(bid))
             ids.remove(bid)
             continue
@@ -258,6 +258,14 @@ def markBundlesForStatus(bundles, ids, status, force=False):
         logger.error("the following bundles are not defined: '{}'".format("', '".join(ids)))
     if changed:
         storeBundles(bundles)
+
+
+async def markBundlesForStatusAsync(executor, bundles, ids, status, force=False, checkOwnSuite=True):
+    '''
+        This method calls markBundlesForStatus(bundles, ids, status, force, checkOwnSuite) asyncronously in the
+        provided ThreadPoolExecutor executor.
+    '''
+    await asyncio.wrap_future(executor.submit(markBundlesForStatus, bundles, ids, status, force, checkOwnSuite))
 
 
 def markBundlesForTarget(bundles, ids, target):

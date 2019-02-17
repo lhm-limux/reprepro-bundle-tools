@@ -42,7 +42,7 @@ export class ManagedBundleCardComponent implements OnInit {
   @Output()
   markedForStage = new EventEmitter<{
     stage: WorkflowMetadata;
-    bundles: ManagedBundle[];
+    bundles: string[];
   }>();
 
   @Output()
@@ -54,7 +54,7 @@ export class ManagedBundleCardComponent implements OnInit {
   markForStage(status) {
     this.markedForStage.next({
       stage: status,
-      bundles: [ this.bundle ]
+      bundles: [ this.bundle.id ]
     });
   }
 

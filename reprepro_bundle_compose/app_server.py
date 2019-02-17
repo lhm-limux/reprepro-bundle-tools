@@ -35,7 +35,7 @@ import git
 import subprocess
 from urllib.parse import urlparse
 import reprepro_bundle_compose
-from reprepro_bundle_compose import PROJECT_DIR, BUNDLES_LIST_FILE, BundleStatus, getTargetRepoSuites, getBundleRepoSuitesAsync, parseBundlesAsync, updateBundles, trac_api, getTracConfig, getGitRepoConfig, markBundlesForStatus, markBundlesForTarget, git_commit, ensure_clean_git_repo, GitNotCleanException
+from reprepro_bundle_compose import PROJECT_DIR, BUNDLES_LIST_FILE, BundleStatus, getTargetRepoSuites, getBundleRepoSuitesAsync, parseBundlesAsync, updateBundles, trac_api, getTracConfig, getGitRepoConfig, markBundlesForStatusAsync, markBundlesForTarget, git_commit, ensure_clean_git_repo, GitNotCleanException
 from reprepro_bundle_appserver import common_app_server, common_interfaces
 
 
@@ -176,8 +176,8 @@ async def handle_mark_for_status(request):
         try:
             repo = git.Repo(PROJECT_DIR)
             ensure_clean_git_repo(repo)
-            bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe))
-            markBundlesForStatus(bundles, set(ids), status, True)
+            bundles = await parseBundlesAsync(tpe)
+            await markBundlesForStatusAsync(tpe, bundles, set(ids), status, force=True, checkOwnSuite=False)
             msg = "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids)))
             if len(ids) == 1:
               msg = "MARKED {} for status '{}'".format("".join(ids), status)
