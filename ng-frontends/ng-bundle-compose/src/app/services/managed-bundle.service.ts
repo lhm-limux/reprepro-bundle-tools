@@ -55,10 +55,7 @@ export class ManagedBundleService {
         (data: ManagedBundle[]) => {
           const newIds = new Set<string>();
           for (const b of data) {
-            const managed = this.managedBundles.get(b.id) || [
-              b,
-              ManagedBundleService.defaultManagedBundleInfo()
-            ];
+            const managed = this.managedBundles.get(b.id) || [b, null];
             managed[0] = b;
             this.managedBundles.set(b.id, managed);
             newIds.add(b.id);
@@ -74,6 +71,9 @@ export class ManagedBundleService {
           console.error("Error loading managed bundles list", errResp);
         }
       );
+  }
+
+  updateManagedBundleInfos(ids: string[]) {
     this.http
       .get<ManagedBundleInfo[]>(this.config.getApiUrl("managedBundleInfos"))
       .subscribe(
@@ -96,15 +96,23 @@ export class ManagedBundleService {
     return this.managedBundles.size > 0;
   }
 
-  getManagedBundleInfo(bundlename: string): [ManagedBundle, ManagedBundleInfo] {
-    return this.managedBundles.get(bundlename);
+  getManagedBundle(
+    bundlename: string
+  ): { bundle: ManagedBundle; info: ManagedBundleInfo } {
+    const b = this.managedBundles.get(bundlename);
+    return { bundle: b[0], info: b[1] };
   }
 
-  getManagedBundleInfosForStatus(
+  getManagedBundlesForStatus(
     status: WorkflowMetadata
-  ): [ManagedBundle, ManagedBundleInfo][] {
+  ): { bundle: ManagedBundle; info: ManagedBundleInfo }[] {
     const bundles = Array.from(this.managedBundles.values());
-    return bundles.filter(bundle => bundle[0].status.name === status.name);
+    return bundles
+      .filter(bundle => bundle[0].status.name === status.name)
+      .map(b => ({
+        bundle: b[0],
+        info: b[1] || ManagedBundleService.defaultManagedBundleInfo()
+      }));
   }
 
   getAvailableDistributions(): string[] {

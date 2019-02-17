@@ -33,7 +33,7 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   bundlename: string;
   bundle: ManagedBundle;
-  info: ManagedBundleInfo = ManagedBundleService.defaultManagedBundleInfo();
+  info: ManagedBundleInfo;
   private workflow: WorkflowMetadata[] = [];
   private targets: TargetDescription[] = [];
   hoveredStatus: WorkflowMetadata = null;
@@ -101,10 +101,10 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
   }
 
   update(): void {
-    const managed = this.bundleService.getManagedBundleInfo(this.bundlename);
-    if (managed) {
-      this.bundle = managed[0];
-      this.info = managed[1];
+    const b = this.bundleService.getManagedBundle(this.bundlename);
+    if (b) {
+      this.bundle = b.bundle;
+      this.info = b.info;
     }
   }
 }

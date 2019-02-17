@@ -14,7 +14,7 @@
       style="font-size: x-large"
       [(status)]="showContent"
       ><span class="badge-pill badge-light counter mr-3">{{
-        managedBundleInfos.length
+        managedBundles.length
       }}</span></lib-fontawsome-toggle-button
     >
     <b>{{ status.ord }}) {{ status.name }}</b>
@@ -52,9 +52,9 @@
 
         <div class="card-columns">
           <app-managed-bundle-card
-            *ngFor="let bi of managedBundleInfos"
-            [bundle]="bi[0]"
-            [info]="bi[1]"
+            *ngFor="let b of managedBundles"
+            [bundle]="b.bundle"
+            [info]="b.info"
             [candidateForStages]="candidateForStages"
             [dropStatus]="dropStatus"
             (markedForStage)="doMarkedForStage($event)"

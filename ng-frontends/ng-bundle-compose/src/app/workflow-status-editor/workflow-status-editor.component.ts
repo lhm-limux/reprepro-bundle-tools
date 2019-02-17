@@ -121,11 +121,11 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
       );
   }
 
-  getManagedBundleInfosForStatus(status: WorkflowMetadata) {
+  getManagedBundlesForStatus(status: WorkflowMetadata) {
     return this.managedBundleService
-      .getManagedBundleInfosForStatus(status)
-      .filter(b => this.selectedDistributions.has(b[0].distribution))
-      .filter(b => this.selectedTargets.has(b[0].target));
+      .getManagedBundlesForStatus(status)
+      .filter(b => this.selectedDistributions.has(b.bundle.distribution))
+      .filter(b => this.selectedTargets.has(b.bundle.target));
   }
 
   getCardFormat(status: WorkflowMetadata) {
