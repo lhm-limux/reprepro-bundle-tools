@@ -21,7 +21,7 @@
         ><b>#{{ bundle.ticket }}</b></a
       >
     </div>
-    <div *ngIf="bundle.ticket && !info.managedBundle.ticketUrl">
+    <div *ngIf="bundle.ticket && !bundle.ticketUrl">
       Ticket: <b>#{{ bundle.ticket }}</b>
     </div>
     <div>Creator: {{ info.creator }}</div>
