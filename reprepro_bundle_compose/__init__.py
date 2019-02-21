@@ -253,8 +253,8 @@ def markBundlesForStatus(bundles, ids, status, force=False, checkOwnSuite=True):
             ids.remove(bid)
             continue
         ids.remove(bid)
-        logger.info("setting {} to status '{}'".format(bid, status))
         bundle.setStatus(status)
+        logger.info("marked {} for status '{}'".format(bid, status))
         changed = True
     if len(ids) > 0:
         logger.error("the following bundles are not defined: '{}'".format("', '".join(ids)))
@@ -280,8 +280,8 @@ def markBundlesForTarget(bundles, ids, target):
             ids.remove(bid)
             continue
         ids.remove(bid)
-        logger.info("setting {} to target '{}'".format(bid, target))
         bundle.setTarget(target)
+        logger.info("marked {} to target '{}'".format(bid, target))
         changed = True
     if len(ids) > 0:
         logger.error("the following bundles are not defined: '{}'".format("', '".join(ids)))

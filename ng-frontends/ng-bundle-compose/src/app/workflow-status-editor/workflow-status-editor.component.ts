@@ -25,6 +25,7 @@ import {
   UnpublishedChangesComponent,
   BundleDialogService,
   AuthenticationService,
+  MessagesService,
   VersionedChangesService,
   AuthRef
 } from "shared";
@@ -55,11 +56,10 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   selectedDistributions = new Set<string>();
   selectedTargets = new Set<string>();
 
-  lastLogs: BackendLogEntry[] = [];
-
   constructor(
     private workflowMetadataService: WorkflowMetadataService,
     private authenticationService: AuthenticationService,
+    private messages: MessagesService,
     public changesService: VersionedChangesService,
     public managedBundleService: ManagedBundleService,
     public actionService: BundleComposeActionService,
@@ -83,7 +83,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     );
     this.subscriptions.push(
       this.actionService.cast.subscribe(data => {
-        this.lastLogs = data;
+        this.messages.setMessages(data);
         this.managedBundleService.update();
         this.changesService.update();
       })

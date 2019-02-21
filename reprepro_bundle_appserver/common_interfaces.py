@@ -167,6 +167,6 @@ def AuthRequired_validate(data):
     raise TypeError("invalid AuthRequired")
 
 def actionId_validate(actionId):
-    if actionId in ["publishChanges", "bundleSync"]:
+    if actionId in ["login", "publishChanges", "bundleSync"]:
         return actionId
     raise TypeError("invalid actionId")

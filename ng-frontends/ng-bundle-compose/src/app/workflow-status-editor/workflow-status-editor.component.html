@@ -1,36 +1,3 @@
-<div *ngIf="lastLogs.length > 0">
-  <div class="container-fluid">
-    <div
-      *ngFor="let log of lastLogs; let i = index"
-      [ngClass]="
-        'row alert alert-dismissible fade show my-0 ' +
-        (log.level === 'WARNING'
-          ? 'alert-warning'
-          : log.level === 'ERROR'
-          ? 'alert-danger'
-          : 'alert-success')
-      "
-      role="alert"
-    >
-      <div class="col col-sm-1">
-        <span title="{{ log.level }} from {{ log.logger }}"><strong>{{ log.level }}</strong></span>
-      </div>
-      <div class="col">
-        <div *ngFor="let line of log.message.split('\n')">{{ line }}</div>
-      </div>
-      <button
-        *ngIf="i === 0"
-        type="button"
-        class="close"
-        data-dismiss="alert"
-        aria-label="Close"
-        (click)="lastLogs = []"
-      >
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-  </div>
-</div>
 <div class="container-fluid">
   <div
     class="row mt-2

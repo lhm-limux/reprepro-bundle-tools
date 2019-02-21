@@ -19,12 +19,17 @@
 import { WorkflowStatusEditorComponent } from "./workflow-status-editor/workflow-status-editor.component";
 import { Routes } from "@angular/router";
 import { ManagedBundleEditorComponent } from "./managed-bundle-editor/managed-bundle-editor.component";
+import { LoginPageComponent } from "./login-page/login-page.component";
 
 export const APP_ROUTES: Routes = [
   {
     path: "",
-    redirectTo: "workflow-status-editor",
+    redirectTo: "login-page",
     pathMatch: "full"
+  },
+  {
+    path: "login-page",
+    component: LoginPageComponent
   },
   {
     path: "workflow-status-editor",

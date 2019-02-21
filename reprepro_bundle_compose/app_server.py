@@ -31,6 +31,7 @@ import sys
 from aiohttp import web
 import asyncio
 import concurrent.futures
+import tempfile
 import git
 import git.exc
 from git.exc import GitCommandError
@@ -63,25 +64,71 @@ async def handle_required_auth(request):
         for authRef in req['refs']:
             if common_app_server.is_valid_authRef(authRef):
                 availableRefs.add(authRef['authId'])
-        if "bundleSync" == req['actionId']:
-            config = getTracConfig()
-            tracUrl  = config.get("TracUrl")
-            credType = config.get("CredentialType", "").upper()
-            credHint = config.get("CredentialHint", "Please enter your {CredentialType} authentication data to sync with Trac!").format(
-                                  CredentialType=credType, TracUrl=tracUrl)
-            if tracUrl and len(credType) > 0 and not credType in availableRefs:
-                res.append(common_interfaces.AuthType(credType, credHint))
+        if "login" == req['actionId']:
+            res.extend(getRequiredAuthForConfig(
+                availableRefs,
+                getGitRepoConfig(),
+                "RepoUrl",
+                "Please enter your {CredentialType} authentication data in order to clone the GIT Reposiory!"
+            ))
+        elif "bundleSync" == req['actionId']:
+            res.extend(getRequiredAuthForConfig(
+                availableRefs,
+                getTracConfig(),
+                "TracUrl",
+                "Please enter your {CredentialType} authentication data to sync with Trac!"
+            ))
         elif "publishChanges" == req['actionId']:
-            config = getGitRepoConfig()
-            repoUrl  = config.get("RepoUrl")
-            credType = config.get("CredentialType", "").upper()
-            credHint = config.get("CredentialHint", "Please enter your {CredentialType} authentication data to publish changes to GIT!").format(
-                                  CredentialType=credType, RepoUrl=repoUrl)
-            if repoUrl and len(credType) > 0 and not credType in availableRefs:
-                res.append(common_interfaces.AuthType(credType, credHint))
+            res.extend(getRequiredAuthForConfig(
+                availableRefs,
+                getGitRepoConfig(),
+                "RepoUrl",
+                "Please enter your {CredentialType} authentication data to publish changes to GIT!"
+            ))
         return web.json_response(res)
     except Exception as e:
         return web.Response(text="IllegalArgumentsProvided:{}".format(e), status=400)
+
+
+def getRequiredAuthForConfig(availableRefs, config, urlKey, defaultHint):
+    url  = config.get(urlKey)
+    credType = config.get("CredentialType", "").upper()
+    credHint = config.get("CredentialHint", defaultHint).format(
+                CredentialType=credType, RepoUrl=url, TracUrl=url)
+    if url and len(credType) > 0 and not credType in availableRefs:
+        return [common_interfaces.AuthType(credType, credHint)]
+    return []
+
+
+async def handle_login(request):
+    logger.info("handling 'login'")
+    config = getGitRepoConfig()
+    repoUrl  = config.get("RepoUrl")
+    branch = config.get("Branch") or "master"
+    credType = config.get("CredentialType", "").upper()
+    useAuthentication = repoUrl and len(credType) > 0
+    user, password, ssId = "", "", None
+    try:
+        if useAuthentication:
+            (user, password, ssId) = common_app_server.get_credentials(request, credType)
+    except Exception as e:
+        return web.Response(text="IllegalArgumentsProvided:{}".format(e), status=400)
+    res = ["default"]
+    with common_app_server.logging_redirect_for_webapp() as logs:
+        try:
+            tmpDir = tempfile.mkdtemp()
+            logger.info("Cloning '{}' to '{}'".format(repoUrl, tmpDir))
+            repo = git.Repo.init(tmpDir)
+            repo.create_remote("origin", url=repoUrl)
+            if useAuthentication:
+                configureGitCredentialHelper(repo, repoUrl, user, password)
+            repo.git.pull("origin", branch)
+            logger.info("Successfully cloned repository")
+        except (Exception, GitCommandError) as e:
+            logger.error("Login failed:\n{}".format(e))
+            common_app_server.invalidate_credentials(ssId)
+        res = logs.toBackendLogEntryList()
+    return web.json_response(res)
 
 
 async def handle_latest_published_change(request):
@@ -285,6 +332,7 @@ async def handle_get_configured_stages(request):
             res.append(stage)
     return web.json_response(res)
 
+
 async def handle_get_configured_targets(request):
     # TODO: read this config from some config files
     res = [
@@ -336,11 +384,13 @@ def registerRoutes(args, app):
         web.get('/api/undoLastChange', handle_undo_last_change),
         web.get('/api/publishChanges', handle_publish_changes),
         web.get('/api/requiredAuth', handle_required_auth),
+        web.get('/api/login', handle_login),
     ])
     if not args.no_static_files:
         app.router.add_routes([
             # angular router-links
             web.get('/', handle_router_link),
+            web.get('/login-page', handle_router_link),
             web.get('/workflow-status-editor', handle_router_link),
             web.get('/workflow-status-editor/{tail:.*}', handle_router_link),
             web.get('/managed-bundle/{tail:.*}', handle_router_link),
