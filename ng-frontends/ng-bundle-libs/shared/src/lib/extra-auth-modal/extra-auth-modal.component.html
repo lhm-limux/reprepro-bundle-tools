@@ -44,7 +44,7 @@
                 placeholder="Password"
                 (change)="a.password = inpPwd.value"
                 (keyup)="a.password = inpPwd.value"
-                (keydown)="$event.keyCode == 13 ? confirm() : ''"
+                (keydown)="confirmOnEnter($event)"
                 [value]="a.password"
               />
             </div>

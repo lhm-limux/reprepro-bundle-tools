@@ -34,6 +34,12 @@ export class ExtraAuthModalComponent
     super(dialogService);
   }
 
+  confirmOnEnter(event) {
+    if (event.code == "Enter" || event.keyCode == 13) {
+      this.confirm();
+    }
+  }
+
   confirm() {
     this.result = this.authData;
     this.close();
