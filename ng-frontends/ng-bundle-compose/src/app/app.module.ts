@@ -28,6 +28,7 @@ import { WorkflowStatusEditorComponent } from "./workflow-status-editor/workflow
 import { ManagedBundleCardComponent } from "./workflow-status-editor/managed-bundle-card/managed-bundle-card.component";
 import { WorkflowStatusCardComponent } from "./workflow-status-editor/workflow-status-card/workflow-status-card.component";
 import { ManagedBundleEditorComponent } from './managed-bundle-editor/managed-bundle-editor.component';
+import { LoginPageComponent } from './login-page/login-page.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { ManagedBundleEditorComponent } from './managed-bundle-editor/managed-bu
     WorkflowStatusEditorComponent,
     ManagedBundleCardComponent,
     WorkflowStatusCardComponent,
-    ManagedBundleEditorComponent
+    ManagedBundleEditorComponent,
+    LoginPageComponent
   ],
   imports: [
     BrowserModule,
