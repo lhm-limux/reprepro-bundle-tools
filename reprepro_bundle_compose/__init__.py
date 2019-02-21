@@ -26,6 +26,8 @@ import logging
 import subprocess
 import apt_pkg
 import git
+import git.exc
+from git.exc import GitCommandError
 import asyncio
 from reprepro_bundle_compose.bundle_status import BundleStatus
 from reprepro_bundle_compose.managed_bundle import ManagedBundle
@@ -297,7 +299,7 @@ def git_commit(repo, git_add_list, msg):
             repo.index.commit(msg)
         else:
             logger.info("No Changes --> No new Commit")
-    except git.exc.GitCommandError as e:
+    except GitCommandError as e:
         logger.error("Committing '{}' failed:\n{}".format(msg, e))
 
 

@@ -32,6 +32,8 @@ from aiohttp import web
 import asyncio
 import concurrent.futures
 import git
+import git.exc
+from git.exc import GitCommandError
 import subprocess
 from urllib.parse import urlparse
 import reprepro_bundle_compose
@@ -131,7 +133,7 @@ async def handle_undo_last_change(request):
             ensure_clean_git_repo(repo)
             repo.git.reset('--hard', "HEAD^1")
             logger.info("Undoing last Change was successfull")
-        except git.exc.GitCommandError as e:
+        except GitCommandError as e:
             logger.error("Undoing last Change failed:\n{}".format(e))
         except GitNotCleanException as e:
             logger.error(e)
@@ -160,7 +162,7 @@ async def handle_publish_changes(request):
                 configureGitCredentialHelper(repo, repoUrl, user, password)
             repo.git.push()
             logger.info("Successfully published Changes")
-        except (Exception, git.exc.GitCommandError) as e:
+        except (Exception, GitCommandError) as e:
             logger.error("Publishing Changes failed:\n{}".format(e))
             common_app_server.invalidate_credentials(ssId)
         res = logs.toBackendLogEntryList()
