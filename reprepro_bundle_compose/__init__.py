@@ -57,9 +57,10 @@ if not os.path.exists(APT_REPOS_CMD):
     APT_REPOS_CMD = "apt-repos"
 
 
-def updateBundles(tracApi=None):
-    repo_suites = getBundleRepoSuites()
-    managed_bundles = parseBundles()
+def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
+    # TODO: apt_repos.setAptReposBaseDir() - Achtung wir sind hier nicht threadsafe, verwenden aber potentiell Threads!
+    repo_suites = getBundleRepoSuites(workingDir=workingDir)
+    managed_bundles = parseBundles(workingDir=workingDir)
     ids = set(repo_suites.keys()).union(managed_bundles.keys())
 
     for id in sorted(ids):
@@ -103,15 +104,15 @@ def updateBundles(tracApi=None):
                 tracApi.updateTicket(bundle.getTrac(), "Bundle Status-Update durch Broker", None, pushTracStatus, pushTracResolution if pushTracResolution else "")
                 logger.info("Updated {}, Trac-Ticket #{} to '{}'".format(bundle, bundle.getTrac(), (pushTracStatus + " as " + pushTracResolution) if pushTracResolution else pushTracStatus))
 
-    storeBundles(managed_bundles)
+    storeBundles(managed_bundles, workingDir=workingDir)
 
 
-def parseBundles(repoSuites=None):
+def parseBundles(repoSuites=None, workingDir=PROJECT_DIR):
     '''
         Parses the file BUNDLES_LIST_FILE and returns a dict of ID to ManagedBundle-Objects mappings
     '''
     res = dict()
-    bundles = os.path.join(PROJECT_DIR, BUNDLES_LIST_FILE)
+    bundles = os.path.join(workingDir, BUNDLES_LIST_FILE)
     if not os.path.isfile(bundles):
         logger.warning("File {} not found.".format(bundles))
         return res
@@ -131,48 +132,52 @@ def parseBundles(repoSuites=None):
     return res
 
 
-async def parseBundlesAsync(executor, repoSuites=None):
+async def parseBundlesAsync(executor, repoSuites=None, workingDir=PROJECT_DIR):
     '''
         This method calls parseBundles(repoSuites) asynchronously in the provided ThreadPoolExecutor executor.
     '''
-    return await asyncio.wrap_future(executor.submit(parseBundles, repoSuites))
+    return await asyncio.wrap_future(executor.submit(parseBundles, repoSuites, workingDir))
 
 
-def storeBundles(bundlesDict):
+def storeBundles(bundlesDict, workingDir=PROJECT_DIR):
     '''
         Expects a dict of ID to ManagedBundle-Objects and stores it's content in alpabetical
         order back to the file BUNDLES_LIST_FILE.
     '''
-    with open(os.path.join(PROJECT_DIR, BUNDLES_LIST_FILE), "w") as bundles:
+    with open(os.path.join(workingDir, BUNDLES_LIST_FILE), "w") as bundles:
         bundles.write("\n".join([bundle.serialize() for (_, bundle) in sorted(bundlesDict.items())]))
         logger.debug("Updated file '{}'".format(BUNDLES_LIST_FILE))
 
 
-def getBundleRepoSuites(ids=["bundle:"]):
+def getBundleRepoSuites(ids=["bundle:"], workingDir=PROJECT_DIR):
     '''
        This method uses apt-repos to get a list of all currently available (rolled out)
        bundles as a dict of ID to apt_repos.RepoSuite Objects
     '''
     res = dict()
+    # TODO: apt_repos.setAptReposBaseDir() - Achtung wir sind hier nicht threadsafe, verwenden aber potentiell Threads!
+    apt_repos.setAptReposBaseDir(os.path.join(workingDir, ".apt-repos"))
     for suite in sorted(apt_repos.getSuites(ids)):
         res[suite.getSuiteName()] = suite
     return res
 
 
-async def getBundleRepoSuitesAsync(executor, ids=["bundle:"]):
+async def getBundleRepoSuitesAsync(executor, ids=["bundle:"], workingDir=PROJECT_DIR):
     '''
         This method calls getBundleRepoSuites() asynchronously in the provided ThreadPoolExecutor executor.
     '''
-    return await asyncio.wrap_future(executor.submit(getBundleRepoSuites, ids))
+    return await asyncio.wrap_future(executor.submit(getBundleRepoSuites, ids, workingDir))
 
 
-def getTargetRepoSuites(stage=None):
+def getTargetRepoSuites(stage=None, workingDir=PROJECT_DIR):
     '''
        This method uses apt-repos to get a list of all currently available target
        repositories/suites. If `stage` is specified, only target suites for this
        stage are returned. The result is a dict of ID to apt_repos.RepoSuite Objects.
     '''
     res = dict()
+    # TODO: apt_repos.setAptReposBaseDir() - Achtung wir sind hier nicht threadsafe, verwenden aber potentiell Threads!
+    apt_repos.setAptReposBaseDir(os.path.join(workingDir, ".apt-repos"))
     for suite in sorted(apt_repos.getSuites(["bundle-compose-target:"])):
         if not stage or "bundle-stage.{}".format(stage) in suite.getTags():
             res[suite.getSuiteName()] = suite
@@ -235,7 +240,7 @@ def splitReleasenotes(info):
     return (subject, text)
 
 
-def markBundlesForStatus(bundles, ids, status, force=False, checkOwnSuite=True):
+def markBundlesForStatus(bundles, ids, status, force=False, checkOwnSuite=True, workingDir=PROJECT_DIR):
     changed = False
     for (bid, bundle) in sorted(bundles.items()):
         if not bid in ids:
@@ -259,18 +264,18 @@ def markBundlesForStatus(bundles, ids, status, force=False, checkOwnSuite=True):
     if len(ids) > 0:
         logger.error("the following bundles are not defined: '{}'".format("', '".join(ids)))
     if changed:
-        storeBundles(bundles)
+        storeBundles(bundles, workingDir=workingDir)
 
 
-async def markBundlesForStatusAsync(executor, bundles, ids, status, force=False, checkOwnSuite=True):
+async def markBundlesForStatusAsync(executor, bundles, ids, status, force=False, checkOwnSuite=True, workingDir=PROJECT_DIR):
     '''
         This method calls markBundlesForStatus(bundles, ids, status, force, checkOwnSuite) asyncronously in the
         provided ThreadPoolExecutor executor.
     '''
-    await asyncio.wrap_future(executor.submit(markBundlesForStatus, bundles, ids, status, force, checkOwnSuite))
+    await asyncio.wrap_future(executor.submit(markBundlesForStatus, bundles, ids, status, force, checkOwnSuite, workingDir))
 
 
-def markBundlesForTarget(bundles, ids, target):
+def markBundlesForTarget(bundles, ids, target, workingDir=PROJECT_DIR):
     changed = False
     for (bid, bundle) in sorted(bundles.items()):
         if not bid in ids:
@@ -286,7 +291,7 @@ def markBundlesForTarget(bundles, ids, target):
     if len(ids) > 0:
         logger.error("the following bundles are not defined: '{}'".format("', '".join(ids)))
     if changed:
-        storeBundles(bundles)
+        storeBundles(bundles, workingDir)
 
 
 def git_commit(repo, git_add_list, msg):

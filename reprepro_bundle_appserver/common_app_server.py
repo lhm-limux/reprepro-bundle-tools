@@ -36,13 +36,13 @@ import queue
 import subprocess
 import uuid
 import json
+import datetime
 import binascii
 import Crypto
 from Crypto.Cipher import AES
 from aiohttp import web
 from aiohttp.web import run_app
 import asyncio
-import apt_repos
 from reprepro_bundle_appserver import common_interfaces, IllegalArgumentException
 from reprepro_bundle_compose import PROJECT_DIR
 
@@ -54,6 +54,8 @@ DEFAULT_PORT = 4253
 RE_REGISTER_DELAY_SECONDS = 2
 
 events = set()
+__sessions = dict() # of session-id to dict (with session data)
+SESSION_TIMEOUT_S = 240
 registeredClients = set()
 __storedPwds = dict() # storageId -> encryptedPwd
 
@@ -87,7 +89,6 @@ def mainLoop(progname=PROGNAME, description=__doc__, registerRoutes=None, serveD
     args = parser.parse_args()
 
     setupLogging(logging.DEBUG if args.debug else logging.INFO)
-    apt_repos.setAptReposBaseDir(os.path.join(PROJECT_DIR, ".apt-repos"))
 
     loop = asyncio.get_event_loop()
     (backendStarted, runner, url) = loop.run_until_complete(run_webserver(args, registerRoutes, serveDistPath))
@@ -98,6 +99,45 @@ def mainLoop(progname=PROGNAME, description=__doc__, registerRoutes=None, serveD
         loop.run_until_complete(runner.cleanup())
 
 
+def create_session():
+    '''
+        This method creates and returns a new session object as a (generic) dict
+        for holding session data. The session object already contains the following
+        attributes:
+        - 'id': containing the uniq session Id
+        - 'touchedTime': initially holding a datetime object with the creation time
+    '''
+    global __sessions
+    session = dict()
+    sid = None
+    while not sid or sid in __sessions:
+        sid = str(uuid.uuid4())
+    session['id'] = sid
+    session['touchedTime'] = datetime.datetime.now()
+    __sessions[sid] = session
+    return session
+
+
+def get_session(sid, expireSession=None):
+    '''
+        This method cleans up expired sessions and returns the session for session id `sid`
+        or None, if there is no such valid session. It also updates the 'touchedTime' attribute
+        of the session to the datetime.datetime.now(). If the callback `expireSession` is provided,
+        it is called for each session that is about being removed with the session object as first
+        argument. It could contain app specific code for cleaning up a session.
+    '''
+    global __sessions
+    # cleanup expired Sessions
+    for sid in __sessions.keys():
+        session = __sessions.get(sid)
+        if session and (datetime.datetime.now() - session['touchedTime']).seconds > SESSION_TIMEOUT_S:
+            if expireSession:
+                expireSession(session)
+            del __sessions[sid]
+    session = __sessions.get(sid)
+    if session:
+        session['touchedTime'] = datetime.datetime.now()
+    return session
 
 
 async def handle_store_credentials(request):
