@@ -51,7 +51,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.messages.spinnerChanged.subscribe(data => {
         this.spinners = data;
-        console.log("received " + JSON.stringify(this.spinners));
       })
     );
   }

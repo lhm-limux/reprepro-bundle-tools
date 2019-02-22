@@ -18,7 +18,6 @@ export class MessagesService {
   constructor() {}
 
   addSpinner(message: string): number {
-    console.log("adding spinner " + message);
     const handle = this.count++;
     this.spinners.set(handle, message);
     // show spinner only for long running tasks >750ms
