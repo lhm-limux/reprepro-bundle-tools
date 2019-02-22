@@ -98,47 +98,6 @@ def mainLoop(progname=PROGNAME, description=__doc__, registerRoutes=None, serveD
         loop.run_until_complete(runner.cleanup())
 
 
-def logMessage(msg):
-    for event in events:
-        event.data = msg
-        event.set()
-
-
-async def handle_doit(request):
-    for i in range(1,10):
-        logMessage(f"this is log {i}")
-        await asyncio.sleep(1)
-    logMessage("quit")
-    return web.Response(text="ok")
-
-
-async def websocket_handler(request):
-    global events
-    ws = web.WebSocketResponse()
-    print(f"request {request}: {request.method}")
-    await ws.prepare(request)
-    async for msg in ws:
-        if msg.type == aiohttp.WSMsgType.TEXT:
-            if msg.data == 'close':
-                await ws.close()
-            else:
-                event = asyncio.Event()
-                events.add(event)
-                while True:
-                    await event.wait()
-                    if event.data == "quit":
-                        event.clear()
-                        break
-                    await ws.send_str(event.data)
-                    event.clear()
-                print("event done")
-                events.remove(event)
-                await ws.close()
-        elif msg.type == aiohttp.WSMsgType.ERROR:
-            print('ws connection closed with exception %s' %
-                  ws.exception())
-    print('websocket connection closed')
-    return ws
 
 
 async def handle_store_credentials(request):
@@ -201,7 +160,6 @@ async def run_webserver(args, registerAdditionalRoutes=None, serveDistPath=None)
 
     app.router.add_routes([
         # api routes
-        web.get('/api/log', websocket_handler),
         web.get('/api/unregister', handle_unregister),
         web.get('/api/register', handle_register),
         web.get('/api/storeCredentials', handle_store_credentials)
