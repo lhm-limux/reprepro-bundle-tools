@@ -33,6 +33,11 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+/src/assets/css/bootstrap.min.css
+/src/assets/css/font-awesome.min.css
+/src/assets/fonts/fontawesome-webfont.ttf
+/src/assets/fonts/fontawesome-webfont.woff
+/src/assets/fonts/fontawesome-webfont.woff2
 
 # System Files
 .DS_Store
