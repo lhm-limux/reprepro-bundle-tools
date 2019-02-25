@@ -35,4 +35,4 @@ RUN npm install -g @angular-devkit/build-angular@~0.8.0 \
 RUN mkdir /build
 VOLUME /build
 
-CMD [ "make", "-C", "/build/ng-frontends/ng-bundle", "install", "all" ]
+CMD [ "make", "-C", "/build", "build-in-buildenv" ]

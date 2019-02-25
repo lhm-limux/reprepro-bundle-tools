@@ -1,8 +1,8 @@
 SHELL:=/bin/bash
 
-all: create-symlinks dist/ng-bundle
+build: dist/ng-bundle
 
-install:
+install: create-symlinks
 	npm install
 
 dist/shared: $(shell find ../ng-bundle-libs/shared -type f)
