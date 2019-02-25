@@ -11,5 +11,8 @@ dist/shared: $(shell find ../ng-bundle-libs/shared -type f)
 dist/ng-bundle: dist/shared $(shell find src -type f)
 	ng build
 
+clean:
+	rm -Rf dist/shared dist/ng-bundle-compose node_modules
+
 create-symlinks:
-	find projects.symlink src | grep -P ".symlink$$" | while read i; do echo "$$i"; link="$$(cat $$i)"; ln -f -s "$$link" "$${i/.symlink/}"; done
+	find projects.symlink src | grep -P ".symlink$$" | while read i; do echo "$$i"; linkFrom="$$(cat $$i)"; linkTo="$${i/.symlink/}"; rm -f "$$linkTo"; ln -s "$$linkFrom" "$$linkTo"; done
