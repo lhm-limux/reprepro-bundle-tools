@@ -4,6 +4,7 @@
 /build
 /.pybuild
 /.vscode
+/.npm
 /docker-buildenv/built
 /docker-backend/built
 debian/.debhelper/
