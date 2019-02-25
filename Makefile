@@ -12,3 +12,8 @@ docker-buildenv/built: docker-buildenv/Dockerfile docker-buildenv/docker-compose
 build-in-buildenv:
 	HOME="$(PRJDIR)" make -C ng-frontends/ng-bundle install build
 	HOME="$(PRJDIR)" make -C ng-frontends/ng-bundle-compose install build
+
+clean:
+	make -C ng-frontends/ng-bundle clean
+	make -C ng-frontends/ng-bundle-compose clean
+	rm -Rf docker-buildenv/built
