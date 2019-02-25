@@ -1,3 +1,5 @@
+SHELL:=/bin/bash
+
 all: create-symlinks dist/ng-bundle-compose
 
 install:
@@ -13,4 +15,4 @@ clean:
 	rm -Rf dist/shared dist/ng-bundle-compose node_modules
 
 create-symlinks:
-	find ./ | grep -P ".symlink$" | while read i; do echo $i; link=$(cat $i); ln -f -s $link ${i/.symlink/}; done
+	find projects.symlink src | grep -P ".symlink$$" | while read i; do echo "$$i"; link="$$(cat $$i)"; ln -f -s "$$link" "$${i/.symlink/}"; done

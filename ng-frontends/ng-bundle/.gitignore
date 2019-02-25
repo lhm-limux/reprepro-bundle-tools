@@ -33,6 +33,7 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+/projects
 /src/assets/css/bootstrap.min.css
 /src/assets/css/font-awesome.min.css
 /src/assets/fonts/fontawesome-webfont.ttf

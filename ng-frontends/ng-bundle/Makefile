@@ -1,3 +1,5 @@
+SHELL:=/bin/bash
+
 all: create-symlinks dist/ng-bundle
 
 install:
@@ -10,4 +12,4 @@ dist/ng-bundle: dist/shared $(shell find src -type f)
 	ng build
 
 create-symlinks:
-	find ./ | grep -P ".symlink$" | while read i; do echo $i; link=$(cat $i); ln -f -s $link ${i/.symlink/}; done
+	find projects.symlink src | grep -P ".symlink$$" | while read i; do echo "$$i"; link="$$(cat $$i)"; ln -f -s "$$link" "$${i/.symlink/}"; done
