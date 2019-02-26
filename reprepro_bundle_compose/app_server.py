@@ -132,7 +132,7 @@ async def handle_login(request):
                 configureGitCredentialHelper(repo, repoUrl, user, password)
             repo.git.fetch("origin", branch)
             repo.git.checkout(branch)
-            logger.info("Successfully cloned {} to a (temporary) local working directory.".format(repoUrl))
+            logger.info("Successfully cloned {} to a (temporary) local working directory, branch '{}'.".format(repoUrl, branch))
             session = createSession(tmpDir)
         except (Exception, GitCommandError) as e:
             logger.error("Login failed:\n{}".format(e))
@@ -386,8 +386,7 @@ def configureGitCredentialHelper(repo, repoUrl, user, password, timeout=5):
         raise Exception("The configured RepoUrl {} doesn't match the current origin {}".format(repoUrl, repo.remotes.origin.url))
     url = urlparse(repoUrl)
     repo.git.config("credential.helper", "cache --timeout={}".format(timeout))
-    # TODO: git credential - muss im repo-dir ausgeführt werden
-    proc = subprocess.Popen(["git", "credential", "approve"], stdin=subprocess.PIPE)
+    proc = subprocess.Popen(["git", "credential", "approve"], stdin=subprocess.PIPE, cwd=repo.git_dir)
     git_cred = "protocol={}\nhost={}\nusername={}\npassword={}\n".format(url.scheme, url.netloc, user, password)
     proc.stdin.write(git_cred.encode('utf-8'))
     proc.stdin.close()
