@@ -135,6 +135,9 @@ class ManagedBundle:
             return self.__repoSuite.getArchitectures()
         return None
 
+    def getRepoSuite(self):
+        return self.__repoSuite
+
     def setRepoSuite(self, repoSuite):
         self.__repoSuite = repoSuite
 
