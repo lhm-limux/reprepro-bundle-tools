@@ -177,7 +177,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   }
 
   getShowContent(status: WorkflowMetadata) {
-    return !(status.name === "DROPPED" || status.name === "STAGING");
+    return !(["DROPPED", "STAGING", "NEW", "PRODUCTION"].includes(status.name));
   }
 
   markForStage(event: { stage: WorkflowMetadata; bundles: string[] }) {
