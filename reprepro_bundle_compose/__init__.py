@@ -86,7 +86,7 @@ def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
         if tracApi:
             if not bundle.getTrac():
                 if bundle.getStatus() > BundleStatus.STAGING:
-                    tid = createTracTicketForBundle(tracApi, bundle)
+                    tid = createTracTicketForBundle(tracApi, bundle, workingDir=workingDir)
                     bundle.setTrac(tid)
                 else:
                     continue
@@ -217,11 +217,11 @@ def __getConfig(confFiles, warnType=None):
     return res
 
 
-def createTracTicketForBundle(trac, bundle):
+def createTracTicketForBundle(trac, bundle, workingDir=PROJECT_DIR):
     info = bundle.getInfo()
     milestone = Distribution.getByName(info.get('Distribution', '')).getMilestone()
     (subject, description) = splitReleasenotes(info)
-    package_list = subprocess.check_output([APT_REPOS_CMD, "-b .apt-repos", "ls", "-s", str(bundle.getID()), "-r", "." ])
+    package_list = subprocess.check_output([APT_REPOS_CMD, "-b .apt-repos", "ls", "-s", str(bundle.getID()), "-r", "." ], cwd=workingDir)
     description = description.replace("__DYNAMIC_PACKAGE_LIST__", package_list.decode("utf-8").rstrip())
     return trac.createTicket(subject, description, {
         'type': 'Betriebsübernahme',
