@@ -61,15 +61,19 @@ class BundleStatus(Enum):
         The bundle was successfully tested and is approved for being seen by customers. It is not yet visible for customers!
     '''}
 
-    TEST_CUST = { 'ord': 6, 'stage': 'test', 'candidates': 'TESTED_AND_RELEASED', 'tracStatus': 'Referatstest', 'comment': '''
+    SMOKETEST = { 'ord': 6, 'stage': 'smoketest', 'candidates': 'TESTED_AND_RELEASED', 'tracStatus': 'Smoketest', 'comment': '''
+        Dedicated testing stage for smoke tests by run-team and particular customers before going into customer tests.
+    '''}
+
+    TEST_CUST = { 'ord': 7, 'stage': 'test', 'candidates': 'SMOKETEST', 'tracStatus': 'Referatstest', 'comment': '''
         The bundle is visible in the `test`-Teststufe and under test by customers.
     '''}
 
-    PRODUCTION = { 'ord': 7, 'stage': 'prod', 'candidates': 'TEST_CUST', 'tracStatus': 'closed', 'tracResolution': 'fixed', 'comment': '''
+    PRODUCTION = { 'ord': 8, 'stage': 'prod', 'candidates': 'TEST_CUST', 'tracStatus': 'closed', 'tracResolution': 'fixed', 'comment': '''
         The bundle succesfully finished the customer tests and is now available for production.
     '''}
 
-    DROPPED = { 'ord': 8, 'stage': 'drop', 'tracStatus': 'closed', 'tracResolution': 'invalid', 'override': False, 'comment': '''
+    DROPPED = { 'ord': 9, 'stage': 'drop', 'tracStatus': 'closed', 'tracResolution': 'invalid', 'override': False, 'comment': '''
         A test for the bundle failed and the bundle has to be dropped.
         A new bundle has to be created instead of fixing the old one.
     '''}
