@@ -22,7 +22,8 @@ Build-Depends:
  python3-jinja2,
  python3-apt-repos,
  nodejs,
- npm
+ npm,
+ imagemagick
 Standards-Version: 3.9.8
 X-Python3-Version: >= 3.3
 Maintainer: Christph Lutz <christoph.lutz@interface-ag.de>

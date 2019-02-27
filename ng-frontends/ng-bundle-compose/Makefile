@@ -1,6 +1,6 @@
 SHELL:=/bin/bash
 
-build: dist/ng-bundle-compose
+build: src/favicon.ico dist/ng-bundle-compose
 
 install: create-symlinks
 	npm install
@@ -10,6 +10,9 @@ dist/shared: $(shell find ../ng-bundle-libs/shared -type f)
 
 dist/ng-bundle-compose: dist/shared $(shell find src -type f)
 	ng build
+
+src/favicon.ico: src/assets/icon.png
+	/usr/bin/convert -resize x16 -gravity center -crop 16x16+0+0 src/assets/icon.png -flatten -colors 256 -background transparent src/favicon.ico
 
 clean:
 	rm -Rf dist/shared dist/ng-bundle-compose node_modules
