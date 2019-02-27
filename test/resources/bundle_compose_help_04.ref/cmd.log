@@ -1,11 +1,12 @@
 usage: bundle-compose mark-for-stage [-h] [-c] [-f]
-                                     {dev,drop,prod,test}
+                                     {dev,drop,prod,smoketest,test}
                                      [bundleName [bundleName ...]]
 
 Marks specified bundles to be put into a particular stage.
 
 positional arguments:
-  {dev,drop,prod,test}  The stage bundles should be marked for.
+  {dev,drop,prod,smoketest,test}
+                        The stage bundles should be marked for.
   bundleName            Identifier of a bundle (as listed in the first column
                         of 'bundle-compose list').
 

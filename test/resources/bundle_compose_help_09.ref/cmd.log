@@ -1,10 +1,10 @@
-usage: bundle-compose list [-h] [-s {dev,drop,prod,test}] [-c]
+usage: bundle-compose list [-h] [-s {dev,drop,prod,smoketest,test}] [-c]
 
 List all bundles grouped by their status / stage.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -s {dev,drop,prod,test}, --stage {dev,drop,prod,test}
+  -s {dev,drop,prod,smoketest,test}, --stage {dev,drop,prod,smoketest,test}
                         Select only bundles in the provided stage.
   -c, --candidates      Print the list of candidates for each (selected)
                         status.
