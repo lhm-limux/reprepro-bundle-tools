@@ -455,7 +455,7 @@ def registerRoutes(args, app):
         app.router.add_routes([
             # angular router-links
             web.get('/', handle_router_link),
-            web.get('/login-page', handle_router_link),
+            web.get('/login-page{tail:.*}', handle_router_link),
             web.get('/workflow-status-editor', handle_router_link),
             web.get('/workflow-status-editor/{tail:.*}', handle_router_link),
             web.get('/managed-bundle/{tail:.*}', handle_router_link),

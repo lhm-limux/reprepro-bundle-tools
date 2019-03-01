@@ -1,1 +1,12 @@
-
+<div *ngIf="autologin !== true" class="container-fluid">
+  <div class="row justify-content-center">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="login()"
+      style="text-align: center;"
+    >
+      Login
+    </button>
+  </div>
+</div>

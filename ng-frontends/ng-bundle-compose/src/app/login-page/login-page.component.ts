@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
 import { BundleComposeActionService } from "../services/bundle-compose-action.service";
 import { AuthenticationService, AuthRef, BackendLogEntry } from "shared";
@@ -10,11 +10,13 @@ import { AuthenticationService, AuthRef, BackendLogEntry } from "shared";
   styleUrls: ["./login-page.component.css"]
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
+  public autologin = false;
   private subscriptions: Subscription[] = [];
 
   constructor(
     private authenticationService: AuthenticationService,
     public actionService: BundleComposeActionService,
+    private route: ActivatedRoute,
     private router: Router
   ) {
     this.subscriptions.push(
@@ -22,29 +24,40 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         this.update();
       })
     );
+    this.subscriptions.push(
+      this.route.queryParams.subscribe(p => {
+        this.autologin = p["autologin"] || true;
+        this.update();
+      })
+    );
   }
 
-  ngOnInit() {
-    this.update();
-  }
+  ngOnInit(): void {}
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
-  }
-
-  update() {
+  update(): void {
     this.actionService.validateSession().subscribe(
       (data: BackendLogEntry[]) => {
         this.router.navigate(["/workflow-status-editor"]);
       },
       errResp => {
-        this.authenticationService.callWithRequiredAuthentications(
-          "login",
-          (refs: AuthRef[]) => {
-            this.actionService.login(refs);
-          }
-        );
+        if (this.autologin === true) {
+          this.login();
+        }
       }
     );
+  }
+
+  login() {
+    this.authenticationService.callWithRequiredAuthentications(
+      "login",
+      (refs: AuthRef[]) => {
+        this.autologin = false;
+        this.actionService.login(refs);
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 }

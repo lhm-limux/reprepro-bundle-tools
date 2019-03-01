@@ -99,7 +99,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
         this.changesService.update();
       },
       errResp => {
-        this.router.navigate(["/login-page"]);
+        this.router.navigate(["/login-page"], { queryParams: { autologin: false } });
       }
     );
   }
