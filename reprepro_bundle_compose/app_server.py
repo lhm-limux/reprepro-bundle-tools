@@ -146,7 +146,7 @@ async def handle_login(request):
 async def handle_logout(request):
     try:
         session, unused_workingDir = validateSession(request)
-        common_app_server.expire_session(session, sessionExpired)
+        common_app_server.expire_session(session)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
     return web.json_response([])
@@ -419,7 +419,7 @@ def emitOrCleanSessionCookie(response, session):
 
 def validateSession(request):
     sid = request.cookies['sessionId']
-    session = common_app_server.get_session(sid, sessionExpired)
+    session = common_app_server.get_session(sid)
     if not session:
         raise Exception("Invalid Session")
     workingDir = session.get('workingDir')
@@ -429,7 +429,7 @@ def validateSession(request):
 
 
 def createSession(workingDir):
-    session = common_app_server.create_session()
+    session = common_app_server.create_session(sessionExpired)
     session['workingDir'] = workingDir
     return session
 
@@ -438,7 +438,10 @@ def sessionExpired(session):
     workingDir = session.get('workingDir')
     # checking existence of ".apt-repos" to not incidentely remove a wrong folder
     if workingDir and os.path.exists(workingDir) and os.path.exists(os.path.join(workingDir, ".apt-repos")):
-        shutil.rmtree(workingDir)
+        try:
+            shutil.rmtree(workingDir)
+        except OSError as e:
+            logger.warn("Could not remove {}: {}".format(workingDir, e))
 
 
 def registerRoutes(args, app):

@@ -99,13 +99,16 @@ def mainLoop(progname=PROGNAME, description=__doc__, registerRoutes=None, serveD
         loop.run_until_complete(runner.cleanup())
 
 
-def create_session():
+def create_session(expireSessionCallback=None):
     '''
         This method creates and returns a new session object as a (generic) dict
         for holding session data. The session object already contains the following
         attributes:
         - 'id': containing the uniq session Id
         - 'touchedTime': initially holding a datetime object with the creation time
+        - 'expireSessionCallback': if provided at creation time, this callback will
+            be called for at destruction time with the session object as first
+            argument. It could contain app specific code for cleaning up the session.
     '''
     global __sessions
     session = dict()
@@ -114,35 +117,45 @@ def create_session():
         sid = str(uuid.uuid4())
     session['id'] = sid
     session['touchedTime'] = datetime.datetime.now()
+    if expireSessionCallback:
+        session['expireSessionCallback'] = expireSessionCallback
     __sessions[sid] = session
     return session
 
 
-def get_session(sid, expireSessionCallback=None):
+def get_session(sid):
     '''
         This method cleans up expired sessions and returns the session for session id `sid`
         or None, if there is no such valid session. It also updates the 'touchedTime' attribute
-        of the session to the datetime.datetime.now(). If the callback `expireSessionCallback` is
-        provided, it is called for each session that is about being removed with the session
-        object as first argument. It could contain app specific code for cleaning up a session.
+        of the session to the datetime.datetime.now().
     '''
     global __sessions
     # cleanup expired Sessions
-    for sid in __sessions.keys():
+    keys = list(__sessions.keys())
+    for sid in keys:
         session = __sessions.get(sid)
         if session and (datetime.datetime.now() - session['touchedTime']).seconds > SESSION_TIMEOUT_S:
-            expire_session(session, expireSessionCallback)
+            expire_session(session)
     session = __sessions.get(sid)
     if session:
         session['touchedTime'] = datetime.datetime.now()
     return session
 
 
-def expire_session(session, expireSessionCallback=None):
+def expire_session(session):
     sid = session['id']
+    expireSessionCallback = session.get('expireSessionCallback')
     if expireSessionCallback:
         expireSessionCallback(session)
     del __sessions[sid]
+
+
+def __expire_all_session():
+    keys = list(__sessions.keys())
+    for sid in keys:
+        session = __sessions.get(sid)
+        if session:
+            expire_session(session)
 
 
 async def handle_store_credentials(request):
@@ -189,6 +202,7 @@ def stop_backend_if_unused():
     global registeredClients
     if len(registeredClients) == 0:
         logger.info("stopping backend as there are no more frontends registered")
+        __expire_all_session()
         loop = asyncio.get_event_loop()
         loop.call_soon_threadsafe(loop.stop)
     else:
