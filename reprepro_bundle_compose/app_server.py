@@ -373,6 +373,14 @@ async def handle_get_workflow_metadata(request):
     return web.json_response(res)
 
 
+async def handle_validate_session(request):
+    try:
+        unused_session, unused_workingDir = validateSession(request)
+    except Exception as e:
+        return web.Response(text="Invalid Session: {}".format(e), status=401)
+    return web.json_response([])
+
+
 async def handle_router_link(request):
     '''
         pass router-links to angular' main entry page so that
@@ -440,6 +448,7 @@ def registerRoutes(args, app):
         web.get('/api/undoLastChange', handle_undo_last_change),
         web.get('/api/publishChanges', handle_publish_changes),
         web.get('/api/requiredAuth', handle_required_auth),
+        web.get('/api/validateSession', handle_validate_session),
         web.get('/api/login', handle_login),
     ])
     if not args.no_static_files:

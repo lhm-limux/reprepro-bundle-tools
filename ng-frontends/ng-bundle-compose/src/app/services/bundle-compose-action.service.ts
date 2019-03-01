@@ -28,16 +28,20 @@ import {
   AuthRef
 } from "shared";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { BehaviorSubject } from "rxjs";
+import { Observable, Subject } from "rxjs";
 
 @Injectable({
   providedIn: "root"
 })
 export class BundleComposeActionService {
-  private changed = new BehaviorSubject<BackendLogEntry[]>([]);
-  cast = this.changed.asObservable();
+  private successfullAction = new Subject<BackendLogEntry[]>();
+  cast = this.successfullAction.asObservable();
 
-  constructor(private config: ConfigService, private messages: MessagesService, private http: HttpClient) {}
+  constructor(
+    private config: ConfigService,
+    private messages: MessagesService,
+    private http: HttpClient
+  ) {}
 
   login(refs: AuthRef[]): void {
     const sp = this.messages.addSpinner("Logging in…");
@@ -50,13 +54,19 @@ export class BundleComposeActionService {
         (data: BackendLogEntry[]) => {
           this.messages.unsetSpinner(sp);
           this.messages.setMessages(data);
-          this.changed.next(data);
+          this.successfullAction.next(data);
         },
         errResp => {
           this.messages.unsetSpinner(sp);
           this.messages.setError("Login failed: " + errResp);
         }
       );
+  }
+
+  validateSession(): Observable<BackendLogEntry[]> {
+    return this.http.get<BackendLogEntry[]>(
+      this.config.getApiUrl("validateSession")
+    );
   }
 
   updateBundles(refs: AuthRef[]): void {
@@ -70,7 +80,7 @@ export class BundleComposeActionService {
         (data: BackendLogEntry[]) => {
           this.messages.unsetSpinner(sp);
           this.messages.setMessages(data);
-          this.changed.next(data);
+          this.successfullAction.next(data);
         },
         errResp => {
           this.messages.unsetSpinner(sp);
@@ -92,7 +102,7 @@ export class BundleComposeActionService {
         (data: BackendLogEntry[]) => {
           this.messages.unsetSpinner(sp);
           this.messages.setMessages(data);
-          this.changed.next(data);
+          this.successfullAction.next(data);
         },
         errResp => {
           this.messages.unsetSpinner(sp);
@@ -114,7 +124,7 @@ export class BundleComposeActionService {
         (data: BackendLogEntry[]) => {
           this.messages.unsetSpinner(sp);
           this.messages.setMessages(data);
-          this.changed.next(data);
+          this.successfullAction.next(data);
         },
         errResp => {
           this.messages.unsetSpinner(sp);
@@ -131,7 +141,7 @@ export class BundleComposeActionService {
         (data: BackendLogEntry[]) => {
           this.messages.unsetSpinner(sp);
           this.messages.setMessages(data);
-          this.changed.next(data);
+          this.successfullAction.next(data);
         },
         errResp => {
           this.messages.unsetSpinner(sp);
@@ -151,7 +161,7 @@ export class BundleComposeActionService {
         (data: BackendLogEntry[]) => {
           this.messages.unsetSpinner(sp);
           this.messages.setMessages(data);
-          this.changed.next(data);
+          this.successfullAction.next(data);
         },
         errResp => {
           this.messages.unsetSpinner(sp);

@@ -88,9 +88,20 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
         this.changesService.update();
       })
     );
-    this.workflowMetadataService.update();
-    this.managedBundleService.update();
-    this.changesService.update();
+    this.update();
+  }
+
+  update() {
+    this.actionService.validateSession().subscribe(
+      (data: BackendLogEntry[]) => {
+        this.workflowMetadataService.update();
+        this.managedBundleService.update();
+        this.changesService.update();
+      },
+      errResp => {
+        this.router.navigate(["/login-page"]);
+      }
+    );
   }
 
   ngOnDestroy() {

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import { Subscription } from "rxjs";
 import { BundleComposeActionService } from "../services/bundle-compose-action.service";
-import { AuthenticationService, AuthRef } from "shared";
+import { AuthenticationService, AuthRef, BackendLogEntry } from "shared";
 
 @Component({
   selector: "app-login-page",
@@ -19,23 +19,32 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   ) {
     this.subscriptions.push(
       this.actionService.cast.subscribe(data => {
-        if (data.length > 0) {
-          this.router.navigate(["/workflow-status-editor"]);
-        }
+        this.update();
       })
     );
   }
 
   ngOnInit() {
-    this.authenticationService.callWithRequiredAuthentications(
-      "login",
-      (refs: AuthRef[]) => {
-        this.actionService.login(refs);
-      }
-    );
+    this.update();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
+  }
+
+  update() {
+    this.actionService.validateSession().subscribe(
+      (data: BackendLogEntry[]) => {
+        this.router.navigate(["/workflow-status-editor"]);
+      },
+      errResp => {
+        this.authenticationService.callWithRequiredAuthentications(
+          "login",
+          (refs: AuthRef[]) => {
+            this.actionService.login(refs);
+          }
+        );
+      }
+    );
   }
 }
