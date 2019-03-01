@@ -11,6 +11,7 @@ import { AuthenticationService, AuthRef, BackendLogEntry } from "shared";
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
   public autologin = null;
+  public inAction = false;
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -22,6 +23,11 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.actionService.sessionStatusChanged.subscribe(() => {
         this.updateSessionStatus();
+      })
+    );
+    this.subscriptions.push(
+      this.actionService.cast.subscribe(() => {
+        this.inAction = false;
       })
     );
     this.subscriptions.push(
@@ -53,6 +59,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     this.authenticationService.callWithRequiredAuthentications(
       "login",
       (refs: AuthRef[]) => {
+        this.inAction = true;
         this.autologin = null;
         this.actionService.login(refs);
       }
