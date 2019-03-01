@@ -10,7 +10,7 @@ import { AuthenticationService, AuthRef, BackendLogEntry } from "shared";
   styleUrls: ["./login-page.component.css"]
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
-  public autologin = false;
+  public autologin = null;
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -20,27 +20,29 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     private router: Router
   ) {
     this.subscriptions.push(
-      this.actionService.cast.subscribe(data => {
-        this.update();
+      this.actionService.sessionStatusChanged.subscribe(() => {
+        this.updateSessionStatus();
       })
     );
     this.subscriptions.push(
       this.route.queryParams.subscribe(p => {
-        this.autologin = p["autologin"] || true;
-        this.update();
+        if (p["autologin"] === "true") {
+          this.autologin = true;
+          this.updateSessionStatus();
+        }
       })
     );
   }
 
   ngOnInit(): void {}
 
-  update(): void {
+  updateSessionStatus(): void {
     this.actionService.validateSession().subscribe(
       (data: BackendLogEntry[]) => {
         this.router.navigate(["/workflow-status-editor"]);
       },
       errResp => {
-        if (this.autologin === true) {
+        if (this.autologin) {
           this.login();
         }
       }
@@ -51,7 +53,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     this.authenticationService.callWithRequiredAuthentications(
       "login",
       (refs: AuthRef[]) => {
-        this.autologin = false;
+        this.autologin = null;
         this.actionService.login(refs);
       }
     );

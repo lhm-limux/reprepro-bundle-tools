@@ -19,12 +19,10 @@
 import { Injectable } from "@angular/core";
 import {
   ConfigService,
-  BundleDialogService,
   MessagesService,
   ManagedBundle,
   WorkflowMetadata,
   BackendLogEntry,
-  AuthType,
   AuthRef
 } from "shared";
 import { HttpClient, HttpParams } from "@angular/common/http";
@@ -36,6 +34,9 @@ import { Observable, Subject } from "rxjs";
 export class BundleComposeActionService {
   private successfullAction = new Subject<BackendLogEntry[]>();
   cast = this.successfullAction.asObservable();
+
+  private sessionStatus = new Subject();
+  sessionStatusChanged = this.sessionStatus.asObservable();
 
   constructor(
     private config: ConfigService,
@@ -54,11 +55,13 @@ export class BundleComposeActionService {
         (data: BackendLogEntry[]) => {
           this.messages.unsetSpinner(sp);
           this.messages.setMessages(data);
+          this.sessionStatus.next();
           this.successfullAction.next(data);
         },
         errResp => {
           this.messages.unsetSpinner(sp);
           this.messages.setError("Login failed: " + errResp);
+          this.sessionStatus.next();
         }
       );
   }
@@ -66,6 +69,22 @@ export class BundleComposeActionService {
   validateSession(): Observable<BackendLogEntry[]> {
     return this.http.get<BackendLogEntry[]>(
       this.config.getApiUrl("validateSession")
+    );
+  }
+
+  logout(): void {
+    const sp = this.messages.addSpinner("Logging out…");
+    this.http.get<BackendLogEntry[]>(this.config.getApiUrl("logout")).subscribe(
+      (data: BackendLogEntry[]) => {
+        this.messages.unsetSpinner(sp);
+        this.messages.setMessages(data);
+        this.sessionStatus.next();
+      },
+      errResp => {
+        this.messages.unsetSpinner(sp);
+        this.messages.setError("Logout failed: " + errResp);
+        this.sessionStatus.next();
+      }
     );
   }
 

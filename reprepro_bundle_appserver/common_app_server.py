@@ -118,26 +118,31 @@ def create_session():
     return session
 
 
-def get_session(sid, expireSession=None):
+def get_session(sid, expireSessionCallback=None):
     '''
         This method cleans up expired sessions and returns the session for session id `sid`
         or None, if there is no such valid session. It also updates the 'touchedTime' attribute
-        of the session to the datetime.datetime.now(). If the callback `expireSession` is provided,
-        it is called for each session that is about being removed with the session object as first
-        argument. It could contain app specific code for cleaning up a session.
+        of the session to the datetime.datetime.now(). If the callback `expireSessionCallback` is
+        provided, it is called for each session that is about being removed with the session
+        object as first argument. It could contain app specific code for cleaning up a session.
     '''
     global __sessions
     # cleanup expired Sessions
     for sid in __sessions.keys():
         session = __sessions.get(sid)
         if session and (datetime.datetime.now() - session['touchedTime']).seconds > SESSION_TIMEOUT_S:
-            if expireSession:
-                expireSession(session)
-            del __sessions[sid]
+            expire_session(session, expireSessionCallback)
     session = __sessions.get(sid)
     if session:
         session['touchedTime'] = datetime.datetime.now()
     return session
+
+
+def expire_session(session, expireSessionCallback=None):
+    sid = session['id']
+    if expireSessionCallback:
+        expireSessionCallback(session)
+    del __sessions[sid]
 
 
 async def handle_store_credentials(request):

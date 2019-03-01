@@ -16,7 +16,8 @@
  * https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
  ***********************************************************************/
 
-import { Component, OnInit, OnDestroy, HostListener, ChangeDetectionStrategy } from "@angular/core";
+import { Router } from "@angular/router";
+import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
 import localeDe from "@angular/common/locales/de";
 import { registerLocaleData } from "@angular/common";
 import { Subscription } from "rxjs";
@@ -25,24 +26,28 @@ import {
   MessagesService,
   BackendLogEntry
 } from "shared";
+import { BundleComposeActionService } from "./services/bundle-compose-action.service";
 
 registerLocaleData(localeDe, "de");
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
-  styleUrls: ["./app.component.css"],
+  styleUrls: ["./app.component.css"]
 })
 export class AppComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   public logs: BackendLogEntry[] = [];
   public spinners: string[] = [];
+  public loggedIn = null;
 
   title = "ng-bundle-compose";
   hlB = false;
 
   constructor(
     private backend: BackendRegisterService,
+    private actionService: BundleComposeActionService,
+    private router: Router,
     private messages: MessagesService
   ) {
     this.subscriptions.push(
@@ -53,10 +58,34 @@ export class AppComponent implements OnInit, OnDestroy {
         this.spinners = data;
       })
     );
+    this.subscriptions.push(
+      this.actionService.sessionStatusChanged.subscribe(() => {
+        this.updateSessionStatus();
+      })
+    );
+  }
+
+  updateSessionStatus(): void {
+    this.actionService.validateSession().subscribe(
+      (data: BackendLogEntry[]) => {
+        this.loggedIn = true;
+      },
+      errResp => {
+        this.loggedIn = null;
+        if (!this.router.url.startsWith("/login-page")) {
+          this.router.navigate(["/login-page"]);
+        }
+      }
+    );
   }
 
   ngOnInit(): void {
     this.backend.registerOnBackend();
+    this.updateSessionStatus();
+  }
+
+  logout(): void {
+    this.actionService.logout();
   }
 
   ngOnDestroy(): void {

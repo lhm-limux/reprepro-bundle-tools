@@ -20,10 +20,6 @@ import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
 import {
   WorkflowMetadata,
   ManagedBundle,
-  SelectFilterComponent,
-  BackendLogEntry,
-  UnpublishedChangesComponent,
-  BundleDialogService,
   AuthenticationService,
   MessagesService,
   VersionedChangesService,
@@ -88,20 +84,9 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
         this.changesService.update();
       })
     );
-    this.update();
-  }
-
-  update() {
-    this.actionService.validateSession().subscribe(
-      (data: BackendLogEntry[]) => {
-        this.workflowMetadataService.update();
-        this.managedBundleService.update();
-        this.changesService.update();
-      },
-      errResp => {
-        this.router.navigate(["/login-page"], { queryParams: { autologin: false } });
-      }
-    );
+    this.workflowMetadataService.update();
+    this.managedBundleService.update();
+    this.changesService.update();
   }
 
   ngOnDestroy() {
@@ -188,7 +173,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   }
 
   getShowContent(status: WorkflowMetadata) {
-    return !(["DROPPED", "STAGING", "NEW", "PRODUCTION"].includes(status.name));
+    return !["DROPPED", "STAGING", "NEW", "PRODUCTION"].includes(status.name);
   }
 
   markForStage(event: { stage: WorkflowMetadata; bundles: string[] }) {

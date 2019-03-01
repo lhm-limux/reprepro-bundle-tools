@@ -1,5 +1,5 @@
 <div class="card bg-info">
-  <h1 class="card-header">
+  <h2 class="card-header">
     <span
       title="Back"
       routerLink="../"
@@ -11,7 +11,17 @@
       <i class="fa fa-chevron-left"></i
     ></span>
     Bundle-Compose-App
-  </h1>
+    <span style="float: right"
+      ><button
+        *ngIf="loggedIn"
+        type="button"
+        class="btn btn-primary"
+        (click)="logout()"
+      >
+        Logout
+      </button></span
+    >
+  </h2>
 </div>
 
 <div *ngIf="logs.length > 0" class="mt-2">
@@ -51,7 +61,11 @@
 </div>
 
 <div *ngIf="spinners.length > 0" class="container-fluid">
-  <div *ngFor="let spinner of spinners" class="mt-2" style="text-align: center;" >
+  <div
+    *ngFor="let spinner of spinners"
+    class="mt-2"
+    style="text-align: center;"
+  >
     <strong>{{ spinner }}</strong>
     <div class="spinner-border ml-3" role="status" aria-hidden="true"></div>
   </div>

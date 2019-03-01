@@ -24,7 +24,7 @@ import { LoginPageComponent } from "./login-page/login-page.component";
 export const APP_ROUTES: Routes = [
   {
     path: "",
-    redirectTo: "login-page",
+    redirectTo: "/login-page?autologin=true",
     pathMatch: "full"
   },
   {
@@ -41,6 +41,6 @@ export const APP_ROUTES: Routes = [
   },
   {
     path: "**",
-    redirectTo: "workflow-status-editor"
+    redirectTo: "login-page"
   }
 ];

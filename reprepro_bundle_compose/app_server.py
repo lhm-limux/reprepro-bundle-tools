@@ -143,6 +143,15 @@ async def handle_login(request):
     return response
 
 
+async def handle_logout(request):
+    try:
+        session, unused_workingDir = validateSession(request)
+        common_app_server.expire_session(session, sessionExpired)
+    except Exception as e:
+        return web.Response(text="Invalid Session: {}".format(e), status=401)
+    return web.json_response([])
+
+
 async def handle_latest_published_change(request):
     unused_session, workingDir = validateSession(request)
     repo = git.Repo(workingDir)
@@ -450,6 +459,7 @@ def registerRoutes(args, app):
         web.get('/api/requiredAuth', handle_required_auth),
         web.get('/api/validateSession', handle_validate_session),
         web.get('/api/login', handle_login),
+        web.get('/api/logout', handle_logout),
     ])
     if not args.no_static_files:
         app.router.add_routes([
