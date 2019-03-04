@@ -170,3 +170,9 @@ def actionId_validate(actionId):
     if actionId in ["login", "publishChanges", "bundleSync"]:
         return actionId
     raise TypeError("invalid actionId")
+
+def SessionInfo(repoUrl, branch):
+    return {
+        'repoUrl': repoUrl,
+        'branch': branch
+    }

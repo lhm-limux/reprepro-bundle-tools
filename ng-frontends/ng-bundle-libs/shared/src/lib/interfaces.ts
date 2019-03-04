@@ -94,3 +94,8 @@ export interface AuthRequired {
   actionId: string;
   refs: AuthRef[];
 }
+
+export interface SessionInfo {
+  repoUrl: string;
+  branch: string;
+}

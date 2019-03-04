@@ -24,6 +24,7 @@ import { Subscription } from "rxjs";
 import {
   BackendRegisterService,
   MessagesService,
+  SessionInfo,
   BackendLogEntry
 } from "shared";
 import { BundleComposeActionService } from "./services/bundle-compose-action.service";
@@ -39,7 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   public logs: BackendLogEntry[] = [];
   public spinners: string[] = [];
-  public loggedIn = null;
+  public sessionInfo: SessionInfo = null;
 
   title = "ng-bundle-compose";
   hlB = false;
@@ -67,11 +68,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   updateSessionStatus(): void {
     this.actionService.validateSession().subscribe(
-      (data: BackendLogEntry[]) => {
-        this.loggedIn = true;
+      (data: SessionInfo) => {
+        this.sessionInfo = data;
       },
       errResp => {
-        this.loggedIn = null;
+        this.sessionInfo = null;
         if (!this.router.url.startsWith("/login-page")) {
           this.router.navigate(["/login-page"]);
         }

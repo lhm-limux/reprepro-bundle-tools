@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
 import { BundleComposeActionService } from "../services/bundle-compose-action.service";
-import { AuthenticationService, AuthRef, BackendLogEntry } from "shared";
+import { AuthenticationService, AuthRef, SessionInfo } from "shared";
 
 @Component({
   selector: "app-login-page",
@@ -44,7 +44,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
 
   updateSessionStatus(): void {
     this.actionService.validateSession().subscribe(
-      (data: BackendLogEntry[]) => {
+      (data: SessionInfo) => {
         this.router.navigate(["/workflow-status-editor"]);
       },
       errResp => {

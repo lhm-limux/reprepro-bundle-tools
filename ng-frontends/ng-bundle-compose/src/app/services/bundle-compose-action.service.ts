@@ -23,6 +23,7 @@ import {
   ManagedBundle,
   WorkflowMetadata,
   BackendLogEntry,
+  SessionInfo,
   AuthRef
 } from "shared";
 import { HttpClient, HttpParams } from "@angular/common/http";
@@ -66,10 +67,8 @@ export class BundleComposeActionService {
       );
   }
 
-  validateSession(): Observable<BackendLogEntry[]> {
-    return this.http.get<BackendLogEntry[]>(
-      this.config.getApiUrl("validateSession")
-    );
+  validateSession(): Observable<SessionInfo> {
+    return this.http.get<SessionInfo>(this.config.getApiUrl("validateSession"));
   }
 
   logout(): void {

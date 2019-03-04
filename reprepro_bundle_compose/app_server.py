@@ -134,6 +134,8 @@ async def handle_login(request):
             repo.git.checkout(branch)
             logger.info("Successfully cloned {} to a (temporary) local working directory, branch '{}'.".format(repoUrl, branch))
             session = createSession(tmpDir)
+            session["RepoUrl"] = repoUrl
+            session["Branch"] = branch
         except (Exception, GitCommandError) as e:
             logger.error("Login failed:\n{}".format(e))
             common_app_server.invalidate_credentials(ssId)
@@ -384,10 +386,10 @@ async def handle_get_workflow_metadata(request):
 
 async def handle_validate_session(request):
     try:
-        unused_session, unused_workingDir = validateSession(request)
+        session, unused_workingDir = validateSession(request)
+        return web.json_response(common_interfaces.SessionInfo(session['RepoUrl'], session['Branch']))
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
-    return web.json_response([])
 
 
 async def handle_router_link(request):

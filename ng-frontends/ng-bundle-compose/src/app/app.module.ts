@@ -29,6 +29,7 @@ import { ManagedBundleCardComponent } from "./workflow-status-editor/managed-bun
 import { WorkflowStatusCardComponent } from "./workflow-status-editor/workflow-status-card/workflow-status-card.component";
 import { ManagedBundleEditorComponent } from "./managed-bundle-editor/managed-bundle-editor.component";
 import { LoginPageComponent } from "./login-page/login-page.component";
+import { SplitPipe } from './pipes/split.pipe';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { LoginPageComponent } from "./login-page/login-page.component";
     ManagedBundleCardComponent,
     WorkflowStatusCardComponent,
     ManagedBundleEditorComponent,
-    LoginPageComponent
+    LoginPageComponent,
+    SplitPipe
   ],
   imports: [
     BrowserModule,
