@@ -13,8 +13,7 @@
     Bundle-Compose-App
     <span style="float: right"
       ><div *ngIf="sessionInfo">
-        {{ sessionInfo.repoUrl | split: "/":-1 }}
-        [{{ sessionInfo.branch }}]
+        <span [title]="sessionInfo.repoUrl">{{ sessionInfo.repoUrl | split: "/":-1 }} [{{ sessionInfo.branch }}]</span>
         <button type="button" class="btn btn-secondary" (click)="logout()">
           Logout
         </button>
