@@ -12,11 +12,44 @@
     ></span>
     Bundle-Compose-App
     <span style="float: right"
-      ><div *ngIf="sessionInfo">
-        <span [title]="sessionInfo.repoUrl">{{ sessionInfo.repoUrl | split: "/":-1 }} [{{ sessionInfo.branch }}]</span>
-        <button type="button" class="btn btn-secondary" (click)="logout()">
-          Logout
-        </button>
+      ><div *ngIf="sessionInfo" class="container">
+        <div class="row">
+          <div class="col" style="text-align: right;">
+            <div [title]="sessionInfo.repoUrl">
+              {{ sessionInfo.repoUrl | split: "/":-1 }}
+              [{{ sessionInfo.branch }}]
+            </div>
+
+            <div
+              *ngFor="let auth of authService.getKnownAuthentities()"
+              class="badge badge-light ml-2"
+              style="font-size: medium;"
+            >
+              {{ auth.authId | uppercase }}
+              <i
+                [title]="auth.authId"
+                class="fa fa-key"
+                style="font-size: large;"
+              ></i>
+              {{ auth.user }}
+              <button
+                type="button"
+                class="close ml-2"
+                data-dismiss="alert"
+                aria-label="Forget"
+                (click)="authService.forgetCredentials(auth.authId)"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="col-sm-2">
+            <button type="button" class="btn btn-secondary" (click)="logout()">
+              Logout
+            </button>
+          </div>
+        </div>
       </div>
     </span>
   </h2>

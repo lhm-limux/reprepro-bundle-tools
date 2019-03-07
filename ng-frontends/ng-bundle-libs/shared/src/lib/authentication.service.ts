@@ -100,6 +100,11 @@ export class AuthenticationService {
     });
   }
 
+  public forgetCredentials(authId: string) {
+    const auth = this.knownAuthRefs.delete(authId);
+    // TODO: remove from backend
+  }
+
   getDefaultUsers() {
     const defaultUsers = new Map<string, string>();
     this.knownAuthRefs.forEach((value, key) => {
@@ -128,5 +133,13 @@ export class AuthenticationService {
       iv: encrypted.iv.toString(),
       key: encrypted.key.toString()
     };
+  }
+
+  public getKnownAuthentities(): { authId: string; user: string }[] {
+    const res = [];
+    for (const key of this.knownAuthRefs.keys()) {
+      res.push({ authId: key, user: this.knownAuthRefs.get(key).user });
+    }
+    return res;
   }
 }

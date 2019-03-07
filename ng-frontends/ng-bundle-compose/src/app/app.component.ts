@@ -25,6 +25,7 @@ import {
   BackendRegisterService,
   MessagesService,
   SessionInfo,
+  AuthenticationService,
   BackendLogEntry
 } from "shared";
 import { BundleComposeActionService } from "./services/bundle-compose-action.service";
@@ -48,6 +49,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private backend: BackendRegisterService,
     private actionService: BundleComposeActionService,
+    public authService: AuthenticationService,
     private router: Router,
     private messages: MessagesService
   ) {
