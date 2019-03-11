@@ -16,4 +16,4 @@ build-in-buildenv:
 clean:
 	make -C ng-frontends/ng-bundle clean
 	make -C ng-frontends/ng-bundle-compose clean
-	rm -Rf docker-buildenv/built
+	rm -Rf docker-buildenv/built .npm .config

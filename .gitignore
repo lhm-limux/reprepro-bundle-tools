@@ -5,6 +5,7 @@
 /.pybuild
 /.vscode
 /.npm
+/.config
 /docker-buildenv/built
 /docker-backend/built
 debian/.debhelper/
