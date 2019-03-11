@@ -33,7 +33,8 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
-/symlinks-created
+/.symlinks-created
+/.installed
 /projects
 /src/assets/css/bootstrap.min.css
 /src/assets/css/font-awesome.min.css

@@ -2,10 +2,7 @@ SHELL:=/bin/bash
 
 build: dist/ng-bundle
 
-install: create-symlinks package-lock.json
-
-package-lock.json: package.json
-	npm install
+install: .symlinks-created .installed
 
 dist/shared: $(shell find ../ng-bundle-libs/shared -type f)
 	ng build --project="shared"
@@ -13,11 +10,18 @@ dist/shared: $(shell find ../ng-bundle-libs/shared -type f)
 dist/ng-bundle: dist/shared $(shell find src -type f)
 	ng build
 
+.installed: package.json
+	npm install
+	touch .installed
+
+.symlinks-created:
+	find projects.symlink src | grep -P ".symlink$$" | while read i; do \
+		echo "$$i"; \
+		linkFrom="$$(cat $$i)"; linkTo="$${i/.symlink/}"; \
+		rm -f "$$linkTo"; ln -s "$$linkFrom" "$$linkTo"; \
+	done
+	touch .symlinks-created
+
 clean:
-	rm -Rf dist/shared dist/ng-bundle-compose node_modules symlinks-created
+	rm -Rf dist/shared dist/ng-bundle node_modules .symlinks-created .installed
 
-create-symlinks: symlinks-created
-
-symlinks-created:
-	find projects.symlink src | grep -P ".symlink$$" | while read i; do echo "$$i"; linkFrom="$$(cat $$i)"; linkTo="$${i/.symlink/}"; rm -f "$$linkTo"; ln -s "$$linkFrom" "$$linkTo"; done
-	touch symlinks-created
