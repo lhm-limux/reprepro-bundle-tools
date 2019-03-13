@@ -91,7 +91,7 @@ def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
                     logger.warn("Es gibt einen neuen Status im Bundle-Repository. Bitte manuell im File '{}' das {} von Status '{}' auf '{}' umstellen.".format(BUNDLES_LIST_FILE, bundle, bundle.getStatus(), suiteStatus))
         if tracApi:
             if not bundle.getTrac():
-                if bundle.getStatus() > BundleStatus.STAGING:
+                if bundle.getStatus() > BundleStatus.STAGING and bundle.getStatus() < BundleStatus.DROPPED:
                     tid = createTracTicketForBundle(tracApi, bundle, workingDir=workingDir)
                     bundle.setTrac(tid)
                 else:
