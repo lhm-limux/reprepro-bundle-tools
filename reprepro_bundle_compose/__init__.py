@@ -60,7 +60,7 @@ def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
         cmd = preUpdateHook.split()
         logger.info("Calling pre_update_bundles hook '{}'".format(" ".join(cmd)))
         try:
-            subprocess.check_call(cmd)
+            subprocess.check_call(cmd, cwd=workingDir)
         except Exception as e:
             logger.warning("Hook execution failed: {}".format(e))
 
