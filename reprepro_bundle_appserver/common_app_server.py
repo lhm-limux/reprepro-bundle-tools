@@ -55,7 +55,7 @@ RE_REGISTER_DELAY_SECONDS = 2
 
 events = set()
 __sessions = dict() # of session-id to dict (with session data)
-SESSION_TIMEOUT_S = 240
+SESSION_TIMEOUT_S = 60*60*24 # increased session timeout to 1d
 registeredClients = set()
 __storedPwds = dict() # storageId -> encryptedPwd
 
