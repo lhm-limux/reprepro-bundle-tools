@@ -1,1 +1,3 @@
+INFO[reprepro_bundle_compose]: Calling pre_update_bundles hook 'echo update-Hook called'
+update-Hook called
 WARNING[reprepro_bundle_compose]: File …TESTDIR…/bundle-compose.status not found.

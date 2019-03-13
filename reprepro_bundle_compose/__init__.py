@@ -48,9 +48,6 @@ if os.path.isdir(os.path.join(HERE, "reprepro_bundle_compose")):
     sys.path.insert(0, HERE)
 
 progname = "bundle-compose"
-tracConfFiles =    [ os.path.join(PROJECT_DIR, ".bundle-compose.trac.conf"),     os.path.join(os.path.expanduser("~"), ".config", progname, "trac.conf") ]
-gitRepoConfFiles = [ os.path.join(PROJECT_DIR, ".bundle-compose.git-repo.conf"), os.path.join(os.path.expanduser("~"), ".config", progname, "git-repo.conf") ]
-hooksConfFiles =   [ os.path.join(PROJECT_DIR, ".bundle-compose.hooks.conf"),    os.path.join(os.path.expanduser("~"), ".config", progname, "hooks.conf") ]
 
 APT_REPOS_CMD = os.path.join(PROJECT_DIR, "apt-repos/bin/apt-repos")
 if not os.path.exists(APT_REPOS_CMD):
@@ -58,6 +55,15 @@ if not os.path.exists(APT_REPOS_CMD):
 
 
 def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
+    preUpdateHook = getHooksConfig(workingDir=workingDir).get('pre_update_bundles', None)
+    if preUpdateHook:
+        cmd = preUpdateHook.split()
+        logger.info("Calling pre_update_bundles hook '{}'".format(" ".join(cmd)))
+        try:
+            subprocess.check_call(cmd)
+        except Exception as e:
+            logger.warning("Hook execution failed: {}".format(e))
+
     # TODO: apt_repos.setAptReposBaseDir() - Achtung wir sind hier nicht threadsafe, verwenden aber potentiell Threads!
     repo_suites = getBundleRepoSuites(workingDir=workingDir)
     managed_bundles = parseBundles(workingDir=workingDir)
@@ -184,15 +190,27 @@ def getTargetRepoSuites(stage=None, workingDir=PROJECT_DIR):
     return res
 
 
-def getGitRepoConfig():
+def getGitRepoConfig(workingDir=PROJECT_DIR):
+    gitRepoConfFiles = [
+        os.path.join(workingDir, ".bundle-compose.git-repo.conf"),
+        os.path.join(os.path.expanduser("~"), ".config", progname, "git-repo.conf")
+    ]
     return __getConfig(gitRepoConfFiles, warnType="git-repo")
 
 
-def getTracConfig():
+def getTracConfig(workingDir=PROJECT_DIR):
+    tracConfFiles = [
+        os.path.join(workingDir, ".bundle-compose.trac.conf"),
+        os.path.join(os.path.expanduser("~"), ".config", progname, "trac.conf")
+    ]
     return __getConfig(tracConfFiles, warnType="trac")
 
 
-def getHooksConfig():
+def getHooksConfig(workingDir=PROJECT_DIR):
+    hooksConfFiles = [
+        os.path.join(workingDir, ".bundle-compose.hooks.conf"),
+        os.path.join(os.path.expanduser("~"), ".config", progname, "hooks.conf")
+    ]
     return __getConfig(hooksConfFiles)
 
 
