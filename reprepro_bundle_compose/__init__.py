@@ -190,31 +190,31 @@ def getTargetRepoSuites(stage=None, workingDir=PROJECT_DIR):
     return res
 
 
-def getGitRepoConfig(workingDir=PROJECT_DIR):
+def getGitRepoConfig(required=False, workingDir=PROJECT_DIR):
     gitRepoConfFiles = [
         os.path.join(workingDir, ".bundle-compose.git-repo.conf"),
         os.path.join(os.path.expanduser("~"), ".config", progname, "git-repo.conf")
     ]
-    return __getConfig(gitRepoConfFiles, warnType="git-repo")
+    return __getConfig(gitRepoConfFiles, confType="git-repo", required=required)
 
 
-def getTracConfig(workingDir=PROJECT_DIR):
+def getTracConfig(required=False, workingDir=PROJECT_DIR):
     tracConfFiles = [
         os.path.join(workingDir, ".bundle-compose.trac.conf"),
         os.path.join(os.path.expanduser("~"), ".config", progname, "trac.conf")
     ]
-    return __getConfig(tracConfFiles, warnType="trac")
+    return __getConfig(tracConfFiles, confType="trac", required=required)
 
 
-def getHooksConfig(workingDir=PROJECT_DIR):
+def getHooksConfig(required=False, workingDir=PROJECT_DIR):
     hooksConfFiles = [
         os.path.join(workingDir, ".bundle-compose.hooks.conf"),
         os.path.join(os.path.expanduser("~"), ".config", progname, "hooks.conf")
     ]
-    return __getConfig(hooksConfFiles)
+    return __getConfig(hooksConfFiles, confType="hooks", required=required)
 
 
-def __getConfig(confFiles, warnType=None):
+def __getConfig(confFiles, confType, required=False):
     res = dict()
     res['__file__'] = None
     found = None
@@ -223,8 +223,10 @@ def __getConfig(confFiles, warnType=None):
             found = confFile
             break
     if not found:
-        if warnType:
-            logger.warning("No {} configuration file found at {}".format(warnType, ", ".join(confFiles)))
+        if required:
+            msg = "No {} configuration file found at {}".format(confType, ", ".join(confFiles))
+            logger.warning(msg)
+            raise Exception(msg)
         return res
     with apt_pkg.TagFile(found) as tagFile:
         res['__file__'] = found
