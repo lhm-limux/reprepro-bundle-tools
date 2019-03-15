@@ -150,7 +150,10 @@ export class AuthenticationService {
   public getKnownAuthentities(): { authId: string; user: string }[] {
     const res = [];
     for (const key of this.knownAuthRefs.keys()) {
-      res.push({ authId: key, user: this.knownAuthRefs.get(key).user });
+      const user = this.knownAuthRefs.get(key).user;
+      if (user.length > 0) {
+        res.push({ authId: key, user: this.knownAuthRefs.get(key).user });
+      }
     }
     return res;
   }

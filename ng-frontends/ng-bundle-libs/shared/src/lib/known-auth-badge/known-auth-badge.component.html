@@ -1,0 +1,17 @@
+<div
+  class="badge badge-light ml-2"
+  style="font-size: medium;"
+>
+  {{ authId | uppercase }}
+  <i [title]="authId" class="fa fa-key" style="font-size: large;"></i>
+  {{ user }}
+  <button
+    type="button"
+    class="close ml-2"
+    data-dismiss="alert"
+    aria-label="Forget"
+    (click)="emitForget(authId)"
+  >
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>

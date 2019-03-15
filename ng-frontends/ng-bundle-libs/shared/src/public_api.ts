@@ -31,4 +31,5 @@ export * from './lib/select-filter/select-filter.component';
 export * from './lib/extra-auth-modal/extra-auth-modal.component';
 export * from './lib/fontawsome-toggle-button/fontawsome-toggle-button.component';
 export * from './lib/unpublished-changes/unpublished-changes.component';
+export * from './lib/known-auth-badge/known-auth-badge.component';
 export * from './lib/shared.module';

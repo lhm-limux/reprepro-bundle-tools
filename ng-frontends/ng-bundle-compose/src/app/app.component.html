@@ -20,28 +20,13 @@
               [{{ sessionInfo.branch }}]
             </div>
 
-            <div
+            <lib-known-auth-badge
               *ngFor="let auth of authService.getKnownAuthentities()"
-              class="badge badge-light ml-2"
-              style="font-size: medium;"
+              [authId]="auth.authId"
+              [user]="auth.user"
+              (forget)="authService.forgetCredentials($event)"
             >
-              {{ auth.authId | uppercase }}
-              <i
-                [title]="auth.authId"
-                class="fa fa-key"
-                style="font-size: large;"
-              ></i>
-              {{ auth.user }}
-              <button
-                type="button"
-                class="close ml-2"
-                data-dismiss="alert"
-                aria-label="Forget"
-                (click)="authService.forgetCredentials(auth.authId)"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
+            </lib-known-auth-badge>
           </div>
 
           <div class="col-sm-2">

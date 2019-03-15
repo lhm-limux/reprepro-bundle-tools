@@ -23,6 +23,7 @@ import { SelectFilterComponent } from "./select-filter/select-filter.component";
 import { UnpublishedChangesComponent } from "./unpublished-changes/unpublished-changes.component";
 import { FontawsomeToggleButtonComponent } from "./fontawsome-toggle-button/fontawsome-toggle-button.component";
 import { ExtraAuthModalComponent } from "./extra-auth-modal/extra-auth-modal.component";
+import { KnownAuthBadgeComponent } from './known-auth-badge/known-auth-badge.component';
 
 @NgModule({
   imports: [
@@ -35,13 +36,15 @@ import { ExtraAuthModalComponent } from "./extra-auth-modal/extra-auth-modal.com
     SelectFilterComponent,
     UnpublishedChangesComponent,
     FontawsomeToggleButtonComponent,
-    ExtraAuthModalComponent
+    ExtraAuthModalComponent,
+    KnownAuthBadgeComponent
   ],
   exports: [
     SelectFilterComponent,
     UnpublishedChangesComponent,
     FontawsomeToggleButtonComponent,
-    ExtraAuthModalComponent
+    ExtraAuthModalComponent,
+    KnownAuthBadgeComponent
   ],
   entryComponents: [ExtraAuthModalComponent]
 })
