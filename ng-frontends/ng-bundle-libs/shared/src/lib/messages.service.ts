@@ -2,6 +2,7 @@ import { BackendLogEntry } from "./interfaces";
 import { Injectable } from "@angular/core";
 import { Subject, BehaviorSubject, of } from "rxjs";
 import { delay, count } from "rxjs/operators";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Injectable({
   providedIn: "root"
@@ -41,6 +42,12 @@ export class MessagesService {
 
   setError(message: string) {
     this.messages.next([{ logger: null, level: "ERROR", message: message }]);
+  }
+
+  setErrorResponse(msg: string, errResp: HttpErrorResponse) {
+    this.setError(
+      `${msg}: ${errResp.status} ${errResp.statusText} (${errResp.error})`
+    );
   }
 
   setMessages(messages: BackendLogEntry[]) {

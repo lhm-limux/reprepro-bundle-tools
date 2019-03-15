@@ -26,7 +26,11 @@ import {
   SessionInfo,
   AuthRef
 } from "shared";
-import { HttpClient, HttpParams } from "@angular/common/http";
+import {
+  HttpClient,
+  HttpParams,
+  HttpErrorResponse
+} from "@angular/common/http";
 import { Observable, Subject } from "rxjs";
 
 @Injectable({
@@ -59,9 +63,9 @@ export class BundleComposeActionService {
           this.sessionStatus.next();
           this.successfullAction.next(data);
         },
-        errResp => {
+        (errResp: HttpErrorResponse) => {
           this.messages.unsetSpinner(sp);
-          this.messages.setError("Login failed: " + errResp);
+          this.messages.setErrorResponse("Login failed", errResp);
           this.sessionStatus.next();
         }
       );
@@ -79,9 +83,9 @@ export class BundleComposeActionService {
         this.messages.setMessages(data);
         this.sessionStatus.next();
       },
-      errResp => {
+      (errResp: HttpErrorResponse) => {
         this.messages.unsetSpinner(sp);
-        this.messages.setError("Logout failed: " + errResp);
+        this.messages.setErrorResponse("Logout failed", errResp);
         this.sessionStatus.next();
       }
     );
@@ -100,9 +104,9 @@ export class BundleComposeActionService {
           this.messages.setMessages(data);
           this.successfullAction.next(data);
         },
-        errResp => {
+        (errResp: HttpErrorResponse) => {
           this.messages.unsetSpinner(sp);
-          this.messages.setError("Update Bundles failed: " + errResp);
+          this.messages.setErrorResponse("Update Bundles failed", errResp);
         }
       );
   }
@@ -122,9 +126,9 @@ export class BundleComposeActionService {
           this.messages.setMessages(data);
           this.successfullAction.next(data);
         },
-        errResp => {
+        (errResp: HttpErrorResponse) => {
           this.messages.unsetSpinner(sp);
-          this.messages.setError("Mark for stage failed: " + errResp);
+          this.messages.setErrorResponse("Mark for stage failed", errResp);
         }
       );
   }
@@ -144,9 +148,9 @@ export class BundleComposeActionService {
           this.messages.setMessages(data);
           this.successfullAction.next(data);
         },
-        errResp => {
+        (errResp: HttpErrorResponse) => {
           this.messages.unsetSpinner(sp);
-          this.messages.setError("Set Target failed: " + errResp);
+          this.messages.setErrorResponse("Set Target failed", errResp);
         }
       );
   }
@@ -161,9 +165,9 @@ export class BundleComposeActionService {
           this.messages.setMessages(data);
           this.successfullAction.next(data);
         },
-        errResp => {
+        (errResp: HttpErrorResponse) => {
           this.messages.unsetSpinner(sp);
-          this.messages.setError("Undo last Change failed: " + errResp);
+          this.messages.setErrorResponse("Undo last Change failed", errResp);
         }
       );
   }
@@ -181,9 +185,9 @@ export class BundleComposeActionService {
           this.messages.setMessages(data);
           this.successfullAction.next(data);
         },
-        errResp => {
+        (errResp: HttpErrorResponse) => {
           this.messages.unsetSpinner(sp);
-          this.messages.setError("Publish Changes failed: " + errResp);
+          this.messages.setErrorResponse("Publish Changes failed", errResp);
         }
       );
   }

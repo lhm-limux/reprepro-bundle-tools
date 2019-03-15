@@ -1,9 +1,14 @@
 import * as CryptoJS from "crypto-js";
-import { HttpParams, HttpClient } from "@angular/common/http";
+import {
+  HttpParams,
+  HttpClient,
+  HttpErrorResponse
+} from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ConfigService } from "./config.service";
 import { AuthType, AuthRef, AuthRequired } from "./interfaces";
 import { BundleDialogService } from "./bundle-dialog.service";
+import { MessagesService } from "./messages.service";
 import { AuthData } from "./extra-auth-modal/extra-auth-modal.component";
 
 @Injectable({
@@ -13,6 +18,7 @@ export class AuthenticationService {
   constructor(
     private dialogService: BundleDialogService,
     private config: ConfigService,
+    private messages: MessagesService,
     private http: HttpClient
   ) {}
 
@@ -57,8 +63,11 @@ export class AuthenticationService {
                       });
                       action(Array.from(this.knownAuthRefs.values()));
                     },
-                    errResp => {
-                      console.error("Store credentials failed: " + errResp);
+                    (errResp: HttpErrorResponse) => {
+                      this.messages.setErrorResponse(
+                        "Store credentials failed",
+                        errResp
+                      );
                     }
                   );
                 }
@@ -67,8 +76,11 @@ export class AuthenticationService {
             action(Array.from(this.knownAuthRefs.values()));
           }
         },
-        errResp => {
-          console.error("Get required authentications failed: " + errResp);
+        (errResp: HttpErrorResponse) => {
+          this.messages.setErrorResponse(
+            "Get required authentications failed",
+            errResp
+          );
         }
       );
   }
