@@ -12,4 +12,14 @@ services:
     user: ${CURRENT_USER}
     restart: "no"
 
+  buildenv-debian:
+    build:
+      context: .
+      dockerfile: Dockerfile-debian
+    image: node-build-debian
+    volumes:
+      - ..:/build/
+    user: ${CURRENT_USER}
+    restart: "no"
+
 

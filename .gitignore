@@ -7,7 +7,9 @@
 /.npm
 /.config
 /docker-buildenv/built
+/docker-buildenv/debian_control
 /docker-backend/built
+/reprepro-bundle-tools-build-deps_0.0.1_all.deb
 debian/.debhelper/
 debian/python3-reprepro-bundle-tools.debhelper.log
 debian/python3-reprepro-bundle-tools.postinst.debhelper

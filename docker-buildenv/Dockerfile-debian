@@ -1,0 +1,12 @@
+FROM node-build
+
+COPY debian_control /debian/control
+
+RUN apt update && apt install -y \
+        build-essential \
+        equivs \
+        devscripts && \
+    mk-build-deps --tool 'apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends -y' --install /debian/control && \
+    rm -rf /var/lib/apt/lists/*
+
+CMD [ "make", "-C", "/build", "debian-build-in-buildenv" ]
