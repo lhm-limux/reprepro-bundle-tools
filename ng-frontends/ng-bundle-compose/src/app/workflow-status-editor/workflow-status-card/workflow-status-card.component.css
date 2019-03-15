@@ -1,7 +1,7 @@
 .folder {
   position: relative;
   font-size: x-large;
-  z-index: 2;
+  z-index: 0;
 }
 
 .counter {
@@ -9,5 +9,5 @@
   right: -20px;
   top: -7px;
   font-size: small;
-  z-index: -1;
+  z-index: 1;
 }

@@ -24,8 +24,6 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
   styleUrls: ["./fontawsome-toggle-button.component.css"]
 })
 export class FontawsomeToggleButtonComponent {
-  hovered = false;
-
   @Input()
   status = false;
 
