@@ -18,7 +18,7 @@ services:
       dockerfile: Dockerfile-debian
     image: node-build-debian
     volumes:
-      - ..:/build/
+      - ..:/debian-build/build/
     user: ${CURRENT_USER}
     restart: "no"
 
