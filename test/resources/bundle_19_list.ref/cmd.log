@@ -2,13 +2,13 @@ INFO[bundle]: You are now using bundle 'mybionic/0002'
 INFO[apt_repos]: Using basedir '.apt-repos'
 INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
 
-Package          | Version           | Suite                | Arch  | Section        | Source     
-================ | ================= | ==================== | ===== | ============== | ===========
-0ad              | 0.0.22-4          | bundle:mybionic/0002 | amd64 | universe/games | 0ad        
-0ad              | 0.0.22-4          | bundle:mybionic/0002 | i386  | universe/games | 0ad        
-389-ds           | 1.3.7.10-1ubuntu1 | bundle:mybionic/0002 | all   | universe/net   | 389-ds-base
-389-ds-base      | 1.3.7.10-1ubuntu1 | bundle:mybionic/0002 | amd64 | universe/net   | 389-ds-base
-389-ds-base      | 1.3.7.10-1ubuntu1 | bundle:mybionic/0002 | i386  | universe/net   | 389-ds-base
-389-ds-base-libs | 1.3.7.10-1ubuntu1 | bundle:mybionic/0002 | amd64 | universe/libs  | 389-ds-base
-389-ds-base-libs | 1.3.7.10-1ubuntu1 | bundle:mybionic/0002 | i386  | universe/libs  | 389-ds-base
+Source      | Package          | Version           | Arch  | Section        | Suite               
+=========== | ================ | ================= | ===== | ============== | ====================
+0ad         | 0ad              | 0.0.22-4          | amd64 | universe/games | bundle:mybionic/0002
+0ad         | 0ad              | 0.0.22-4          | i386  | universe/games | bundle:mybionic/0002
+389-ds-base | 389-ds           | 1.3.7.10-1ubuntu1 | all   | universe/net   | bundle:mybionic/0002
+389-ds-base | 389-ds-base      | 1.3.7.10-1ubuntu1 | amd64 | universe/net   | bundle:mybionic/0002
+389-ds-base | 389-ds-base      | 1.3.7.10-1ubuntu1 | i386  | universe/net   | bundle:mybionic/0002
+389-ds-base | 389-ds-base-libs | 1.3.7.10-1ubuntu1 | amd64 | universe/libs  | bundle:mybionic/0002
+389-ds-base | 389-ds-base-libs | 1.3.7.10-1ubuntu1 | i386  | universe/libs  | bundle:mybionic/0002
 

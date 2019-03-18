@@ -555,7 +555,7 @@ def print_metadata(bundle):
 def get_bundle_list(bundle, fallback=None):
     if bundle.getOwnSuiteName():
         with open("/dev/null", "w") as devnull:
-            return subprocess.check_output([APT_REPOS_CMD, "-b .apt-repos", "ls", "-s", bundle.getOwnSuiteName(), "-r", "." ], stderr=devnull).decode('utf-8')
+            return subprocess.check_output([APT_REPOS_CMD, "-b .apt-repos", "ls", "-s", bundle.getOwnSuiteName(), "-col", "CpvaSs", "-r", "." ], stderr=devnull).decode('utf-8')
     return fallback
 
 
