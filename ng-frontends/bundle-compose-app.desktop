@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Bundle-Compose-App
+GenericName=Bereitstellungen Verwalten
+X-GNOME-FullName=Bundle-Compose-App
+Comment=Bereitstellungen von Bundles verwalten
+Exec=bundle-compose-app
+Terminal=false
+Type=Application
+Icon=/usr/lib/reprepro-bundle-apps/ng-bundle-compose/assets/icon.png
+StartupNotify=true

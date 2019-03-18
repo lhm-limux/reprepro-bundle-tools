@@ -2,3 +2,4 @@ bin/bundle-app							/usr/bin/
 bin/bundle-compose-app						/usr/bin/
 ng-frontends/ng-bundle/dist/ng-bundle/*	 			/usr/lib/reprepro-bundle-apps/ng-bundle/
 ng-frontends/ng-bundle-compose/dist/ng-bundle-compose/*		/usr/lib/reprepro-bundle-apps/ng-bundle-compose/
+ng-frontends/bundle-compose-app.desktop				/usr/share/applications/
