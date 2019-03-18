@@ -2,7 +2,7 @@ SHELL:=/bin/bash
 PRJDIR:=$(CURDIR)
 DOCKER_COMPOSE:=source ./setup_env.sh && docker-compose
 
-build: docker-buildenv/built
+build: docker-buildenv/.buildenv.built
 	$(DOCKER_COMPOSE) -f docker-buildenv/docker-compose.yml run --rm buildenv
 
 debian-build: docker-buildenv/.buildenv.built docker-buildenv/.buildenv-debian.built
