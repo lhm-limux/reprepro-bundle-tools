@@ -77,24 +77,25 @@ async def handle_required_auth(request):
                 "Please enter your {CredentialType} authentication data in order to clone the GIT Reposiory!"
             ))
         elif "bundleSync" == req['actionId']:
+            workingDir = None
             try:
-                unused_session, unused_workingDir = validateSession(request)
+                unused_session, workingDir = validateSession(request)
             except Exception as e:
                 return web.Response(text="Invalid Session: {}".format(e), status=401)
             res.extend(getRequiredAuthForConfig(
                 availableRefs,
-                getTracConfig(),
+                getTracConfig(workingDir=workingDir),
                 "TracUrl",
                 "Please enter your {CredentialType} authentication data to sync with Trac!"
             ))
         elif "publishChanges" == req['actionId']:
             try:
-                unused_session, unused_workingDir = validateSession(request)
+                unused_session, workingDir = validateSession(request)
             except Exception as e:
                 return web.Response(text="Invalid Session: {}".format(e), status=401)
             res.extend(getRequiredAuthForConfig(
                 availableRefs,
-                getGitRepoConfig(),
+                getGitRepoConfig(workingDir=workingDir),
                 "RepoUrl",
                 "Please enter your {CredentialType} authentication data to publish changes to GIT!"
             ))
@@ -254,7 +255,7 @@ async def handle_publish_changes(request):
 
     repoUrl, credType, useAuthentication = None, None, None
     try:
-        config = getGitRepoConfig(required=True)
+        config = getGitRepoConfig(required=True, workingDir=workingDir)
         repoUrl = config["RepoUrl"]
         credType = config.get("CredentialType", "").upper()
         useAuthentication = len(credType) > 0
@@ -347,7 +348,7 @@ async def handle_update_bundles(request):
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
     logger.info("handling 'Update Bundles'")
-    config = getTracConfig()
+    config = getTracConfig(workingDir=workingDir)
     tracUrl  = config.get("TracUrl")
     credType = config.get("CredentialType", "").upper()
     useAuthentication = len(credType) > 0
@@ -394,7 +395,7 @@ async def handle_get_managed_bundles(request):
     logger.debug("handle_get_managed_bundles called")
     res = list()
     bundles = await parseBundlesAsync(tpe, workingDir=workingDir)
-    tracUrl = getTracConfig().get('TracUrl')
+    tracUrl = getTracConfig(workingDir=workingDir).get('TracUrl')
     for (unused_id, bundle) in sorted(bundles.items()):
         res.append(common_interfaces.ManagedBundle(bundle, tracBaseUrl = tracUrl))
     logger.debug("handle_get_managed_bundles finished")
@@ -412,7 +413,7 @@ async def handle_get_managed_bundle_infos(request):
     logger.debug("handle_get_managed_bundle_infos called")
     ids = common_interfaces.BundleIDs_validate(json.loads(request.rel_url.query['bundles']))
     bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe, ids, workingDir=workingDir), workingDir=workingDir)
-    tracUrl = getTracConfig().get('TracUrl')
+    tracUrl = getTracConfig(workingDir=workingDir).get('TracUrl')
     futures = [ asyncio.wrap_future(tpe.submit(common_interfaces.ManagedBundleInfo, bundle, tracBaseUrl = tracUrl))
                 for bundle in bundles.values() ]
     (done, _) = await asyncio.wait(futures, return_when=asyncio.ALL_COMPLETED)

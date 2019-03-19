@@ -192,24 +192,22 @@ def getTargetRepoSuites(stage=None, workingDir=PROJECT_DIR):
 
 def getGitRepoConfig(required=False, workingDir=PROJECT_DIR):
     gitRepoConfFiles = [
-        os.path.join(workingDir, ".bundle-compose.git-repo.conf"),
-        os.path.join(os.path.expanduser("~"), ".config", progname, "git-repo.conf")
+        os.path.join(os.path.expanduser("~"), ".config", progname, "git-repo.conf"),
+        os.path.join(workingDir, ".bundle-compose.git-repo.conf")
     ]
     return __getConfig(gitRepoConfFiles, confType="git-repo", required=required)
 
 
 def getTracConfig(required=False, workingDir=PROJECT_DIR):
     tracConfFiles = [
-        os.path.join(workingDir, ".bundle-compose.trac.conf"),
-        os.path.join(os.path.expanduser("~"), ".config", progname, "trac.conf")
+        os.path.join(workingDir, ".bundle-compose.trac.conf")
     ]
     return __getConfig(tracConfFiles, confType="trac", required=required)
 
 
 def getHooksConfig(required=False, workingDir=PROJECT_DIR):
     hooksConfFiles = [
-        os.path.join(workingDir, ".bundle-compose.hooks.conf"),
-        os.path.join(os.path.expanduser("~"), ".config", progname, "hooks.conf")
+        os.path.join(workingDir, ".bundle-compose.hooks.conf")
     ]
     return __getConfig(hooksConfFiles, confType="hooks", required=required)
 
