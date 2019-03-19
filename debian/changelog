@@ -1,3 +1,34 @@
+reprepro-bundle-tools (0.5.0) bionic; urgency=medium
+
+  Bundle-Compose-App:
+  * authentication and session-support
+  * better performance
+  * added license headers
+  * implemented caching for the git changelog
+  * bundle/bundle-compose: apt-repos call with fall back to apt-repos version installed on the system
+  * added encrypted credential transmission between frontend and backend.
+    NOTE: this encryption doesn't protect the transmission itself,
+    it is aimed to protect the credential in the storage - which means
+    that neither frontend nor backend remember all required parts to
+    restore the secret for a long time.
+
+  Reprepro-Bundle-Tools:
+  * introduced hooks
+  * better sanity checks for ./bundle
+  * bundle: new switches --no-info and --no-upgrade-keep-section to prevent section changes during package updates
+  * bundle-compose: put update-rules in separate lines within the distributions-file
+  * introduced creation of 'dynamic-distibutions' file to separate static and dynamic parts of a target repo configuration
+  * bundle: added new switch 'bundle ls -w …' to do some active waiting for server-changes
+  * changed columns order for apr-repos output in './bundle ls/show' and trac ticket creation
+  * ...and even more improvements and bug-fixes
+
+  Drafts for a new debian package apt-add-bundle
+
+  Build-System:
+  * introduced a docker based buildsystem for ad hoc builds and debian-builds
+
+ -- Christoph Lutz <christoph.lutz@interface-ag.de>  Tue, 19 Mar 2019 09:27:12 +0100
+
 reprepro-bundle-tools (0.0.1) bionic; urgency=medium
 
     * started to setup debian packaging for the reprepro-bundle-tools
