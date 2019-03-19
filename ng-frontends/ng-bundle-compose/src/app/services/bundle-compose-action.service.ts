@@ -49,7 +49,7 @@ export class BundleComposeActionService {
     private http: HttpClient
   ) {}
 
-  login(refs: AuthRef[]): void {
+  login(refs: AuthRef[], onError: any = null): void {
     const sp = this.messages.addSpinner("Logging in…");
     const params = new HttpParams().set("refs", JSON.stringify(refs));
     this.http
@@ -66,6 +66,9 @@ export class BundleComposeActionService {
         (errResp: HttpErrorResponse) => {
           this.messages.unsetSpinner(sp);
           this.messages.setErrorResponse("Login failed", errResp);
+          if (onError) {
+            onError();
+          }
           this.sessionStatus.next();
         }
       );

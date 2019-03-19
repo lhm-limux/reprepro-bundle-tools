@@ -59,7 +59,9 @@ export class AuthenticationService {
                       refs.forEach(r => {
                         r.key = this.tmpKeys.get(r.authId);
                         this.tmpKeys.delete(r.authId);
-                        this.knownAuthRefs.set(r.authId, r);
+                        if (r.user.length > 0) {
+                          this.knownAuthRefs.set(r.authId, r);
+                        }
                       });
                       action(Array.from(this.knownAuthRefs.values()));
                     },
@@ -149,11 +151,8 @@ export class AuthenticationService {
 
   public getKnownAuthentities(): { authId: string; user: string }[] {
     const res = [];
-    for (const key of this.knownAuthRefs.keys()) {
-      const user = this.knownAuthRefs.get(key).user;
-      if (user.length > 0) {
-        res.push({ authId: key, user: this.knownAuthRefs.get(key).user });
-      }
+    for (const authRef of this.knownAuthRefs.values()) {
+      res.push({ authId: authRef.authId, user: authRef.user });
     }
     return res;
   }

@@ -61,7 +61,10 @@ export class LoginPageComponent implements OnInit, OnDestroy {
       (refs: AuthRef[]) => {
         this.inAction = true;
         this.autologin = null;
-        this.actionService.login(refs);
+        this.actionService.login(refs, () => {
+          this.inAction = false;
+          this.autologin = null;
+        });
       }
     );
   }

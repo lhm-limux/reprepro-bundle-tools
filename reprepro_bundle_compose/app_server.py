@@ -350,13 +350,13 @@ async def handle_update_bundles(request):
     config = getTracConfig()
     tracUrl  = config.get("TracUrl")
     credType = config.get("CredentialType", "").upper()
-    useAuthentication = tracUrl and len(credType) > 0
+    useAuthentication = len(credType) > 0
     user, password, ssId = "", "", None
     try:
         if useAuthentication:
             (user, password, ssId) = common_app_server.get_credentials(request, credType)
     except Exception as e:
-        return web.Response(text="Illegal Arguments Provided: {}".format(e), status=400)
+        '''Credentials are not mandatory for update_bundles - so just pass'''
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
@@ -451,9 +451,8 @@ async def handle_get_configured_targets(request):
 
 
 async def handle_get_workflow_metadata(request):
-    workingDir = None
     try:
-        unused_session, workingDir = validateSession(request)
+        unused_session, _workingDir = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
