@@ -1,43 +1,47 @@
 <div class="card bg-info">
-  <h2 class="card-header">
-    <span
-      title="Back"
-      routerLink="../"
-      (mouseover)="hlB = true"
-      (mouseleave)="hlB = false"
-      [ngClass]="'badge ' + (hlB ? 'badge-secondary' : 'badge-info')"
-      style="outline: none"
-    >
-      <i class="fa fa-chevron-left"></i
-    ></span>
-    Bundle-Compose-App
-    <span style="float: right"
-      ><div *ngIf="sessionInfo" class="container">
-        <div class="row">
-          <div class="col" style="text-align: right;">
-            <div [title]="sessionInfo.repoUrl">
-              {{ sessionInfo.repoUrl | split: "/":-1 }}
-              [{{ sessionInfo.branch }}]
-            </div>
-
-            <lib-known-auth-badge
-              *ngFor="let auth of authService.getKnownAuthentities()"
-              [authId]="auth.authId"
-              [user]="auth.user"
-              (forget)="authService.forgetCredentials($event)"
-            >
-            </lib-known-auth-badge>
-          </div>
-
-          <div class="col-sm-2">
-            <button type="button" class="btn btn-secondary" (click)="logout()">
-              Logout
-            </button>
-          </div>
-        </div>
+  <div class="card-header container-fluid">
+    <div class="row">
+      <div class="col">
+        <h2>
+          <span
+            title="Back"
+            routerLink="../"
+            (mouseover)="hlB = true"
+            (mouseleave)="hlB = false"
+            [ngClass]="'badge ' + (hlB ? 'badge-secondary' : 'badge-info')"
+            style="outline: none"
+          >
+            <i class="fa fa-chevron-left"></i
+          ></span>
+          Bundle-Compose-App
+        </h2>
       </div>
-    </span>
-  </h2>
+      <div
+        *ngIf="sessionInfo"
+        class="col"
+        style="float: right; text-align: right"
+      >
+        <div [title]="sessionInfo.repoUrl">
+          <h3>
+            {{ sessionInfo.repoUrl | split: "/":-1 }} [{{ sessionInfo.branch }}]
+          </h3>
+        </div>
+
+        <lib-known-auth-badge
+          *ngFor="let auth of authService.getKnownAuthentities()"
+          [authId]="auth.authId"
+          [user]="auth.user"
+          (forget)="authService.forgetCredentials($event)"
+        >
+        </lib-known-auth-badge>
+      </div>
+      <div *ngIf="sessionInfo" class="col" style="max-width: 7em;">
+        <button type="button" class="btn btn-secondary" (click)="logout()">
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div *ngIf="logs.length > 0" class="mt-2">
