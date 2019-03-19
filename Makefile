@@ -27,6 +27,7 @@ debian-build-in-buildenv:
 	mkdir -p deb
 	for i in $$(cat debian/files | awk '{print $$1}'); do cp ../$$i deb/; done
 	cp ../*.changes deb/
+	@echo -e "\nDebian-Build finished SUCCESSFULLY! Find Build-Results in folder ./deb/\n"
 
 clean:
 	make -C ng-frontends/ng-bundle clean
