@@ -242,7 +242,7 @@ def createTracTicketForBundle(trac, bundle, workingDir=PROJECT_DIR):
     package_list = subprocess.check_output([APT_REPOS_CMD, "-b .apt-repos", "ls", "-s", str(bundle.getID()), "-col", "CpvaSs", "-r", "." ], cwd=workingDir)
     description = description.replace("__DYNAMIC_PACKAGE_LIST__", package_list.decode("utf-8").rstrip())
     return trac.createTicket(subject, description, {
-        'type': 'Betriebsübernahme',
+        'type': 'Betriebsuebernahme',
         'deliveryrepo': bundle.getID(),
         'bereitstellung': bundle.getTarget(),
         'milestone': milestone
