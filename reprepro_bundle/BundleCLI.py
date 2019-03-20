@@ -74,7 +74,7 @@ def main():
     DEFAULT_HIGHLIGHTED = DEFAULT_OWN_SUITE + "," + DEFAULT_USER_REPO
 
     GIT_REPO_URL = getGitRepoUrl('origin', None)
-    GIT_BRANCH = 'test'
+    GIT_BRANCH = 'master'
 
     # fixup to get help-messages for subcommands that require positional argmuments
     # so that "apt-repos -h <subcommand>" prints a help-message and not an error

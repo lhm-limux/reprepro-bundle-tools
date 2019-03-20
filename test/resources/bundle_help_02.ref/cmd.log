@@ -64,4 +64,4 @@ additional arguments for git-commit management:
                         branch is used (if set).
   --git-branch GIT_BRANCH
                         GIT-Repository branch used to pull and push during
-                        --clean-commit. The default is 'test'.
+                        --clean-commit. The default is 'master'.
