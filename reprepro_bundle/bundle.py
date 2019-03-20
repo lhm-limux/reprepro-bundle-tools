@@ -24,7 +24,7 @@ import apt_pkg
 import getpass
 import apt_repos
 
-from reprepro_bundle import PROJECT_DIR,BundleError
+from reprepro_bundle import BundleError
 from .package_status import PackageStatus
 from .package import Package
 from apt_repos import PackageField
@@ -43,7 +43,7 @@ class Bundle():
         repositories involved in filling the bundle with packages.
     '''
 
-    def __init__(self, bundleName, basedir=PROJECT_DIR):
+    def __init__(self, bundleName, basedir):
         '''
             Parses `bundleName` which could be in the form [repo/bundle/]<distribution>[/<bundleID>]
             and either uses the specified bundleID or creates a new bundleID (after scanning the

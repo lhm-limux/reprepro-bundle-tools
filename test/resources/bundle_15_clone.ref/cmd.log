@@ -15,4 +15,7 @@ INFO[bundle]: Setting add-from to 'bundle:mybionic/0001'
 INFO[bundle]: Setting upgrade-from to 'None'
 INFO[reprepro_bundle.bundle]: Creating sources_control.list for 1 suites
 INFO[reprepro_bundle.bundle]: Updating and Querying suite bundle:mybionic/0001
+INFO[bundle]: Adding Update-Rules for suite bundle:mybionic/0001 with 2 entries
+INFO[apt_repos.Repository]: Scanning Repository 'Bundle-Repositories for mybionic' (file://{PWD}/repo/bundle/)
+INFO[reprepro_bundle.bundle]: Creating config files for bundle 'mybionic/0002'
 bundle:mybionic/0001

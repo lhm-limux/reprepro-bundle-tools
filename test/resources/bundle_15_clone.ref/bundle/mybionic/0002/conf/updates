@@ -1,1 +1,12 @@
+Name: from-bundle-mybionic-0001
+Method: file://…TESTDIR…/repo/bundle/mybionic/0001/
+Suite: mybionic
+Components: main restricted universe multiverse partner
+#UDebComponents: main restricted universe multiverse partner
+UDebComponents:
+Architectures: i386 amd64 source
+VerifyRelease: blindtrust
+GetInRelease: no
+FilterSrcList: purge FilterSrcList-from-bundle-mybionic-0001
+DownloadListsAs: .gz
 

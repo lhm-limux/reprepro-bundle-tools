@@ -42,7 +42,7 @@ from contextlib import contextmanager
 CANCEL_REMARK = "# Note: clean this file completely to CANCEL this current '{action}' action\n"
 
 import reprepro_bundle
-from reprepro_bundle import BundleError
+from reprepro_bundle import PROJECT_DIR, BundleError
 from .update_rule import UpdateRule
 from .bundle import Bundle
 
@@ -216,9 +216,9 @@ def cmd_init(args):
         Subcommand init: Reserves a new bundle ID and creates a new empty bundle for the given distribution
     '''
     #bundle = setupContext(args) - no setup here because context can only be initialized inside the commit_context
-    with choose_commit_context(None, args, "INITIALIZED bundle '{bundleName}'", args.bundleName[0]) as (bundle, git_add):
+    with choose_commit_context(None, args, "INITIALIZED bundle '{bundleName}'", args.bundleName[0]) as (bundle, git_add, cwd):
         git_add.append(create_reprepro_config(bundle))
-        git_add.append(updateReposConfig())
+        git_add.append(updateReposConfig(cwd=cwd))
 
 
 def cmd_edit(args):
@@ -226,7 +226,7 @@ def cmd_edit(args):
         Subcommand edit: Add / Remove/ Upgrade/ Downgrade packages to/in the bundle by editing an automatically prepared list of available packages.
     '''
     bundle = setupContext(args)
-    with choose_commit_context(bundle, args, "EDITED sources_control.list of bundle '{bundleName}'") as (bundle, git_add):
+    with choose_commit_context(bundle, args, "EDITED sources_control.list of bundle '{bundleName}'") as (bundle, git_add, unused_cwd):
         originCopy = tempfile.NamedTemporaryFile(delete=False).name
         shutil.copyfile(bundle.scl, originCopy)
         update_sources_control_list(bundle, args, CANCEL_REMARK.format(action="edit"))
@@ -247,7 +247,7 @@ def cmd_blacklist(args):
         Subcommand blacklist: Edit the bundle's blacklist to mark particular binary packages contained in a source package as blacklisted. Blacklisted packages will not be added to the bundle.
     '''
     bundle = setupContext(args)
-    with choose_commit_context(bundle, args, "EDITED blacklist of bundle '{bundleName}'") as (bundle, git_add):
+    with choose_commit_context(bundle, args, "EDITED blacklist of bundle '{bundleName}'") as (bundle, git_add, unused_cwd):
         originCopy = None
         if os.path.exists(bundle.getBlacklistFile()):
             originCopy = tempfile.NamedTemporaryFile(delete=False).name
@@ -272,7 +272,7 @@ def cmd_meta(args):
         Subcommand meta: Edit the bundle's metadata
     '''
     bundle = setupContext(args)
-    with choose_commit_context(bundle, args, "EDITED metadata of bundle '{bundleName}'") as (bundle, git_add):
+    with choose_commit_context(bundle, args, "EDITED metadata of bundle '{bundleName}'") as (bundle, git_add, unused_cwd):
         create_reprepro_config(bundle)
         infofile = edit_meta(bundle, CANCEL_REMARK.format(action="meta"))
         if infofile:
@@ -330,15 +330,15 @@ def cmd_seal(args):
     applied_diff = sourcesInReprepro.symmetric_difference(applied)
     if len(applied_diff) > 0 or len(not_applied) > 0:
         raise BundleError("Sorry, the sources_control.list is not (yet?) fully applied to the reprepro-repository! Differences found for " + ", ".join(sorted(applied_diff | not_applied)))
-    with choose_commit_context(bundle, args, "SEALED bundle '{bundleName}'") as (bundle, git_add):
+    with choose_commit_context(bundle, args, "SEALED bundle '{bundleName}'") as (bundle, git_add, cwd):
         infofile = edit_meta(bundle, CANCEL_REMARK.format(action="seal"))
         if not infofile:
             return
         git_add.append(infofile)
         git_add.append(bundle.updateInfofile(rollout=True))
         git_add.append(create_reprepro_config(bundle, readOnly=True))
-        git_add.append(updateReposConfig())
-    sealedHook = reprepro_bundle.getHooksConfig().get('bundle_sealed', None)
+        git_add.append(updateReposConfig(cwd=cwd))
+    sealedHook = reprepro_bundle.getHooksConfig(cwd=cwd).get('bundle_sealed', None)
     if sealedHook:
         info = bundle.getInfo()
         target = "{}".format(info.get("Target", "no-target"))
@@ -346,9 +346,9 @@ def cmd_seal(args):
         cmd = [arg.format(bundleName=bundle.bundleName, bundleSuiteName=bundle.getOwnSuiteName(), subject=subject, target=target) for arg in sealedHook.split()]
         logger.info("Calling bundle_sealed hook '{}'".format(" ".join(cmd)))
         try:
-            subprocess.check_call(cmd)
+            subprocess.check_call(cmd, cwd=cwd)
         except Exception as e:
-            logger.warning("Hook execution failed: {}".format(e))
+            logger.warning("Hook execution failed in folder {}: {}".format(cwd, e))
 
 
 def cmd_apply(args):
@@ -370,7 +370,7 @@ def cmd_apply(args):
     cmd = [repreproCmd, "-b", "repo/bundle/{}".format(bundle.bundleName), "--noskipold", "update"]
     logger.info("Executing '{}'".format(" ".join(cmd)))
     subprocess.check_call(cmd)
-    with choose_commit_context(bundle, args, "APPLIED changes on bundle '{bundleName}'") as (bundle, git_add):
+    with choose_commit_context(bundle, args, "APPLIED changes on bundle '{bundleName}'") as (bundle, git_add, unused_cwd):
         git_add.append(update_sources_control_list(bundle, args))
         bundle.normalizeSourcesControlList()
         git_add.append(create_reprepro_config(bundle))
@@ -380,8 +380,8 @@ def cmd_update_repos_config(args):
     '''
         Subcommand update-repos-config: updates the file repo/bundle/bundle.repos
     '''
-    with choose_commit_context(None, args, "UPDATED apt-repos config") as (unused_bundle, git_add):
-        git_add.append(updateReposConfig())
+    with choose_commit_context(None, args, "UPDATED apt-repos config") as (unused_bundle, git_add, cwd):
+        git_add.append(updateReposConfig(cwd=cwd))
 
 
 def cmd_clone(args):
@@ -390,7 +390,7 @@ def cmd_clone(args):
     '''
     bundle = setupContext(args, require_editable=False)
     print(bundle.getOwnSuiteName())
-    with choose_commit_context(None, args, "CLONED bundle '{srcBundleName} --> '{bundleName}'".format(srcBundleName=bundle.bundleName, bundleName="{bundleName}"), bundle.distribution) as (newBundle, git_add):
+    with choose_commit_context(None, args, "CLONED bundle '{srcBundleName} --> '{bundleName}'".format(srcBundleName=bundle.bundleName, bundleName="{bundleName}"), bundle.distribution) as (newBundle, git_add, cwd):
         git_add.append(create_reprepro_config(newBundle))
         shutil.copy(bundle.getInfoFile(), newBundle.getInfoFile())
         git_add.append(newBundle.updateInfofile(bundleName=True, basedOn=bundle.bundleName, rollout=False))
@@ -402,8 +402,8 @@ def cmd_clone(args):
         args.add_from = srcSuiteName
         args.reference_suites = None
         git_add.append(update_sources_control_list(newBundle, args))
-        git_add.append(updateReposConfig())
-
+        git_add.append(updateReposConfig(cwd=cwd))
+        git_add.append(create_reprepro_config(newBundle))
 
 
 def cmd_bundles(args):
@@ -424,9 +424,9 @@ def cmd_bundles(args):
             print(" ".join((bundle.bundleName, editable, target, subject, creator)))
 
 
-def scanBundles():
+def scanBundles(cwd=PROJECT_DIR):
     res = set()
-    bundle_root = os.path.join("repo", "bundle")
+    bundle_root = os.path.join(cwd, "repo", "bundle")
     for distribution in os.listdir(bundle_root):
         distribution_path = os.path.join(bundle_root, distribution)
         if not os.path.isdir(distribution_path):
@@ -436,21 +436,21 @@ def scanBundles():
             if not os.path.isdir(bundle_path):
                 continue
             try:
-                bundle = Bundle(bundle_path)
+                bundle = Bundle(os.path.relpath(bundle_path, cwd), basedir=cwd)
                 res.add(bundle)
             except BundleError as e:
                 logger.info("Skipping invalid bundle '{}': {}".format(bundle_path, str(e)))
     return res
 
 
-def updateReposConfig():
-    bundle_root = os.path.join("repo", "bundle")
+def updateReposConfig(cwd=PROJECT_DIR):
+    bundle_root = os.path.join(cwd, "repo", "bundle")
     confFile = os.path.join(bundle_root, "bundle.repos")
     with open(confFile, "w") as out:
         print('[', file=out)
         dist = None
         liEnd = None
-        for bundle in sorted(scanBundles()):
+        for bundle in sorted(scanBundles(cwd=cwd)):
             if dist != bundle.distribution:
                 dist = bundle.distribution
                 if liEnd:
@@ -473,7 +473,7 @@ def updateReposConfig():
 
 
 def setupContext(args, require_editable=True, require_own_suite=False):
-    bundle = Bundle(args.bundleName[0])
+    bundle = Bundle(args.bundleName[0], basedir=PROJECT_DIR)
     if require_editable and not bundle.isEditable():
         raise BundleError("Not allowed to modify bundle '{}' as it is readonly!".format(bundle.bundleName))
     if not os.path.isdir(bundle.getTemplateDir()):
@@ -657,23 +657,23 @@ def choose_commit_context(bundle, args, commit_msg, bundleName=None):
     if args.clean_commit and args.commit:
         raise BundleError("The command line switches --clean-commit and --commit can't be used together!")
     if args.clean_commit:
-        with git_clean_commit_and_push_context(args.git_repo_url, args.git_branch, bundle, args.own_suite, commit_msg, bundleName) as (bundle, git_add_list):
-            yield (bundle, git_add_list)
+        with git_clean_commit_and_push_context(args.git_repo_url, args.git_branch, bundle, args.own_suite, commit_msg, bundleName) as (bundle, git_add_list, cwd):
+            yield (bundle, git_add_list, cwd)
     elif args.commit:
-        with git_local_commit_context(bundle, commit_msg, bundleName) as (bundle, git_add_list):
-            yield (bundle, git_add_list)
+        with git_local_commit_context(bundle, commit_msg, bundleName) as (bundle, git_add_list, cwd):
+            yield (bundle, git_add_list, cwd)
     else:
         if (not bundle) and bundleName:
-            bundle = Bundle(bundleName)
-        yield (bundle, list())
+            bundle = Bundle(bundleName, basedir=PROJECT_DIR)
+        yield (bundle, list(), PROJECT_DIR)
 
 
 @contextmanager
 def git_local_commit_context(bundle, commit_msg, bundleName=None):
     git_add_list = list() # of filenames
     if (not bundle) and bundleName:
-        bundle = Bundle(bundleName)
-    yield (bundle, git_add_list)
+        bundle = Bundle(bundleName, basedir=PROJECT_DIR)
+    yield (bundle, git_add_list, PROJECT_DIR)
     bundleName = bundle.bundleName if bundle else None
     git_commit(git_add_list, commit_msg.format(bundleName=bundleName))
 
@@ -682,14 +682,12 @@ def git_local_commit_context(bundle, commit_msg, bundleName=None):
 def git_clean_commit_and_push_context(git_repo_url, git_branch, bundle, own_suite, commit_msg, bundleName=None):
     if not git_repo_url:
         raise BundleError("Could not determine the git repository url. Use --git-repo-url to set one explicitely.")
-    oldDir = os.getcwd()
     # clone to temp dir
     tmpDir = tempfile.mkdtemp()
     basedir = os.path.join(tmpDir, 'local_repo')
     logger.debug("Cloning {} to {}".format(git_repo_url, basedir))
     subprocess.check_call(('git', 'clone', git_repo_url, basedir))
-    os.chdir(basedir)
-    subprocess.check_call(('git', 'checkout', git_branch))
+    subprocess.check_call(('git', 'checkout', git_branch), cwd=basedir)
 
     if bundle:
         bundle = Bundle(bundle.bundleName, basedir)
@@ -702,37 +700,36 @@ def git_clean_commit_and_push_context(git_repo_url, git_branch, bundle, own_suit
         logger.warning(str(e))
     git_add_list = list() # of filenames
 
-    yield (bundle, git_add_list)
+    yield (bundle, git_add_list, basedir)
 
     bundleName = bundle.bundleName if bundle else None
-    git_commit(git_add_list, commit_msg.format(bundleName=bundleName))
-    git_push(git_branch)
-    os.chdir(oldDir)
+    git_commit(git_add_list, commit_msg.format(bundleName=bundleName), cwd=basedir)
+    git_push(git_branch, cwd=basedir)
     shutil.rmtree(tmpDir)
 
 
-def git_commit(git_add_list, msg):
+def git_commit(git_add_list, msg, cwd=PROJECT_DIR):
     if len(git_add_list) == 0:
         logger.info("Nothing to add for git commit --> skipping git commit")
         return
     try:
         add_cmd = ['git', 'add']
         add_cmd.extend(git_add_list)
-        subprocess.check_call(add_cmd)
-        subprocess.check_call(('git', 'commit', '-m', msg))
+        subprocess.check_call(add_cmd, cwd=cwd)
+        subprocess.check_call(('git', 'commit', '-m', msg), cwd=cwd)
     except subprocess.CalledProcessError as e:
-        for line in "Committing '{}' failed for folder '{}':\n{}".format(msg, os.getcwd(), e).split("\n"):
+        for line in "Committing '{}' failed for folder '{}':\n{}".format(msg, cwd, e).split("\n"):
             logger.warning(line)
 
 
-def git_push(git_branch):
+def git_push(git_branch, cwd=PROJECT_DIR):
     try:
-        subprocess.check_call(('git', 'push', 'origin', git_branch))
+        subprocess.check_call(('git', 'push', 'origin', git_branch), cwd=cwd)
     except subprocess.CalledProcessError:
         # did the 'push' failed because of another person pushed before?
         # - fix this situation and retry the 'push'
-        subprocess.check_call(('git', 'pull', '-r'))
-        subprocess.check_call(('git', 'push', 'origin', git_branch))
+        subprocess.check_call(('git', 'pull', '-r'), cwd=cwd)
+        subprocess.check_call(('git', 'push', 'origin', git_branch), cwd=cwd)
 
 
 if __name__ == "__main__":

@@ -41,10 +41,13 @@ if os.path.isdir(os.path.join(HERE, "reprepro_bundle")):
     sys.path.insert(0, HERE)
 
 PROGNAME = "bundle"
-hooksConfFiles = [ os.path.join(PROJECT_DIR, ".bundle.hooks.conf"), os.path.join(os.path.expanduser("~"), ".config", PROGNAME, "hooks.conf") ]
 
 
-def getHooksConfig():
+def getHooksConfig(cwd=PROJECT_DIR):
+    hooksConfFiles = [
+        os.path.join(cwd, ".bundle.hooks.conf"),
+        os.path.join(os.path.expanduser("~"), ".config", PROGNAME, "hooks.conf")
+    ]
     return __getConfig(hooksConfFiles)
 
 
