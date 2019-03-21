@@ -8,7 +8,8 @@
             routerLink="../"
             (mouseover)="hlB = true"
             (mouseleave)="hlB = false"
-            [ngClass]="'badge ' + (hlB ? 'badge-secondary' : 'badge-info')"
+            class="badge text-dark"
+            [ngClass]="hlB ? 'badge-secondary' : 'badge-info'"
             style="outline: none"
           >
             <i class="fa fa-chevron-left"></i
@@ -21,11 +22,24 @@
         class="col"
         style="float: right; text-align: right"
       >
-        <div [title]="sessionInfo.repoUrl">
-          <h3>
-            {{ sessionInfo.repoUrl | split: "/":-1 }} [{{ sessionInfo.branch }}]
-          </h3>
-        </div>
+        <h3>
+          <span *ngIf="isLink(sessionInfo.repoUrl)">
+            <a [href]="sessionInfo.repoUrl" class="text-dark" target="_blank"
+              >{{ sessionInfo.repoUrl | split: "/":-1 }}
+            </a>
+          </span>
+          <span
+            *ngIf="!isLink(sessionInfo.repoUrl)"
+            [title]="sessionInfo.repoUrl"
+          >
+            {{ sessionInfo.repoUrl | split: "/":-1 }}
+          </span>
+          <span
+            class="badge badge-pill badge-info text-dark"
+            style="font-size: smaller; vertical-align: middle; border-style: solid; border-width: 1px;"
+            ><i class="fa fa-code-fork"></i> {{ sessionInfo.branch }}</span
+          >
+        </h3>
 
         <lib-known-auth-badge
           *ngFor="let auth of authService.getKnownAuthentities()"

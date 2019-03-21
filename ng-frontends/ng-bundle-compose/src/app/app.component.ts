@@ -91,6 +91,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.actionService.logout();
   }
 
+  isLink(url: string) {
+    return url.startsWith("http");
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
     this.backend.unregisterFromBackend();
