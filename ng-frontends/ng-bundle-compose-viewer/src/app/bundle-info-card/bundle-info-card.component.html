@@ -1,10 +1,13 @@
-<div class="card text-dark border-secondary" style="width: 600px;">
+<div
+  class="card text-dark border-secondary"
+  style="width: 35rem; max-width: 100%;"
+>
   <div class="card-header">
     <b>{{ bundle.id }}</b>
-    <div class="badge-pill badge-dark float-right mx-2">
+    <div class="badge-pill badge-dark float-right mx-2 mt-2">
       <b>Target: {{ bundle.target | uppercase }}</b>
     </div>
-    <div class="badge-pill badge-success float-right mx-2">
+    <div class="badge-pill badge-success float-right mx-2 mt-2">
       <b>Status: {{ bundle.status | uppercase }}</b>
     </div>
   </div>
@@ -22,6 +25,6 @@
     <div *ngIf="bundle.ticket && !bundle.ticketUrl">
       Ticket: <b>#{{ bundle.ticket }}</b>
     </div>
-    <div>Creator: {{ bundle.creator }}</div>
   </div>
+  <div class="card-footer">Creator: {{ bundle.creator }}</div>
 </div>

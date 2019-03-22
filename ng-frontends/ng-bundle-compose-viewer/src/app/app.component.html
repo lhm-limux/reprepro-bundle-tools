@@ -1,6 +1,6 @@
 <div class="card bg-info">
   <h1 class="card-header">
-    Bundle Übersicht und Suche
+    Bundle-Übersicht und Suche
   </h1>
 </div>
 
@@ -18,15 +18,14 @@
       (change)="handleSearch(search.value)"
       (keyup)="handleSearch(search.value)"
     />
+    {{ bundleInfos.length }} Treffer
   </div>
 </div>
 
-<div class="container-fluid">
-  <div class="card-deck">
-    <app-bundle-info-card
-      *ngFor="let info of bundleInfos"
-      [bundle]="info"
-      class="mt-3"
-    ></app-bundle-info-card>
-  </div>
+<div class="card-deck m-4">
+  <app-bundle-info-card
+    *ngFor="let info of bundleInfos"
+    [bundle]="info"
+    class="mt-3"
+  ></app-bundle-info-card>
 </div>
