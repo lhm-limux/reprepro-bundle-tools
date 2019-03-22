@@ -27,6 +27,7 @@ import argparse
 import logging
 import re
 import subprocess
+import json
 import apt_pkg
 import apt_repos
 import reprepro_bundle_compose
@@ -81,19 +82,25 @@ def main():
     parser.set_defaults(debug=False)
 
     # subcommand parsers
-    parse_ub     = subparsers.add_parser("update-bundles",  help=cmd_update_bundles.__doc__, description=cmd_update_bundles.__doc__, aliases=['ub'])
-    parse_stage  = subparsers.add_parser("mark-for-stage",  help=cmd_stage.__doc__, description=cmd_stage.__doc__, aliases=['stage', 'mark'])
-    parse_list   = subparsers.add_parser("list",  help=cmd_list.__doc__, description=cmd_list.__doc__, aliases=['ls', 'lsb'])
-    parse_apply  = subparsers.add_parser("apply",  help=cmd_apply.__doc__, description=cmd_apply.__doc__)
+    parse_ub       = subparsers.add_parser("update-bundles", help=cmd_update_bundles.__doc__, description=cmd_update_bundles.__doc__, aliases=['ub'])
+    parse_stage    = subparsers.add_parser("mark-for-stage", help=cmd_stage.__doc__, description=cmd_stage.__doc__, aliases=['stage', 'mark'])
+    parse_list     = subparsers.add_parser("list", help=cmd_list.__doc__, description=cmd_list.__doc__, aliases=['ls', 'lsb'])
+    parse_apply    = subparsers.add_parser("apply", help=cmd_apply.__doc__, description=cmd_apply.__doc__)
+    parse_jsondump = subparsers.add_parser("jsondump", help=cmd_jsondump.__doc__, description=cmd_jsondump.__doc__)
 
     parse_ub.set_defaults(sub_function=cmd_update_bundles, sub_parser=parse_ub)
     parse_stage.set_defaults(sub_function=cmd_stage, sub_parser=parse_stage)
     parse_list.set_defaults(sub_function=cmd_list, sub_parser=parse_list)
     parse_apply.set_defaults(sub_function=cmd_apply, sub_parser=parse_apply)
+    parse_jsondump.set_defaults(sub_function=cmd_jsondump, sub_parser=parse_jsondump)
 
     for p in [parse_ub]:
         p.add_argument("--no-trac", action="store_true", help="""
                         Don't sync against trac.""")
+
+    for p in [parse_jsondump]:
+        p.add_argument('outputFilename', nargs=1, help="""
+                        Name of the ouptFile for the json-dump.""")
 
     for p in [parse_list]:
         p.add_argument("-s", "--stage", default=None, choices=sorted(BundleStatus.getAvailableStages()), help="""
@@ -182,6 +189,23 @@ def cmd_list(args):
                 print("{}\n{}".format(headline, "=" * len(headline)))
             listBundles(selected, tracUrl)
             nl = "\n"
+
+
+def cmd_jsondump(args):
+    '''
+        Dump bundle-infos to a json file.
+    '''
+    with open(args.outputFilename[0], "w", encoding="utf-8") as jsonFile:
+        logger.info("Scanning Bundles")
+        bundles = parseBundles(getBundleRepoSuites())
+        tracUrl = getTracConfig().get('TracUrl')
+        logger.info("Extracting Bundle-Infos")
+        bundleInfos = list()
+        for bid, bundle in sorted(bundles.items()):
+            logger.debug("Extracting Infos for {}".format(bid))
+            bundleInfos.append(__extractBundleInfos(bundle, tracUrl))
+        print(json.dumps(bundleInfos, sort_keys=True, indent=4), file=jsonFile)
+    logger.info("Bundles-Infos SUCCESSFULLY dumped to file '{}'".format(args.outputFilename[0]))
 
 
 def cmd_apply(args):
@@ -328,17 +352,27 @@ def filterBundles(bundles, status):
 
 def listBundles(bundles, tracUrl=None):
     for bundle in sorted(bundles):
-        info = bundle.getInfo()
-        subject = ""
-        if info:
-            notes = info.get("Releasenotes", "")
-            subject = notes[0:notes.find("\n")]
-        ticketUrl = ""
-        if tracUrl and bundle.getTrac():
-            if not tracUrl.endswith("/"):
-                tracUrl += "/"
-            ticketUrl = " --> " + urljoin(tracUrl, "ticket/{}".format(bundle.getTrac()))
-        print("{} [{}] {}{}".format(bundle.getID(), bundle.getTarget(), subject, ticketUrl))
+        infos = __extractBundleInfos(bundle, tracUrl)
+        ticketUrl = " --> " + infos['ticketUrl'] if len(infos['ticketUrl']) > 0 else ""
+        print("{} [{}] {}{}".format(bundle.getID(), bundle.getTarget(), infos['subject'], ticketUrl))
+
+
+def __extractBundleInfos(bundle, tracUrl=None):
+    info = bundle.getInfo()
+    ticketUrl = ""
+    if tracUrl and bundle.getTrac():
+        if not tracUrl.endswith("/"):
+            tracUrl += "/"
+        ticketUrl = urljoin(tracUrl, "ticket/{}".format(bundle.getTrac()))
+    return {
+        'id': bundle.getID(),
+        'target': bundle.getTarget(),
+        'status': str(bundle.getStatus()),
+        'basedOn': info.get("BasedOn") or "NEW",
+        'subject': info.get("Releasenotes", "--no-subject--").split("\n", 1)[0],
+        'creator': info.get("Creator", "unknown"),
+        'ticketUrl': ticketUrl
+    }
 
 
 def getPublicKeyIDs(gpgFile):
