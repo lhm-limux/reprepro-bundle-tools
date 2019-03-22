@@ -11,7 +11,7 @@ dist/ng-bundle-compose-viewer: $(shell find src -type f)
 	ng build --base-href ./
 
 .installed: package.json
-	npm install
+	npm ci
 	touch .installed
 
 .symlinks-created:
