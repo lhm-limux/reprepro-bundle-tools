@@ -4,6 +4,18 @@
   </h1>
 </div>
 
+<div>
+  <span *ngFor="let dist of distSet.keys()"
+    >{{ dist }} ({{ distSet.get(dist) }})
+  </span>
+  <span *ngFor="let status of statusSet.keys()"
+    >{{ status | uppercase }} ({{ statusSet.get(status) }})
+  </span>
+  <span *ngFor="let target of targetSet.keys()"
+    >{{ target | uppercase }} ({{ targetSet.get(target) }})
+  </span>
+</div>
+
 <div class="m-3">
   <p>{{ error | json }}</p>
   <div

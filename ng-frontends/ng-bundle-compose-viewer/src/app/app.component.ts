@@ -10,9 +10,14 @@ import { distinct } from "rxjs/operators";
   styleUrls: ["./app.component.css"]
 })
 export class AppComponent implements OnInit {
+  error: HttpErrorResponse;
+
   allBundleInfos: BundleInfo[] = [];
   bundleInfos: BundleInfo[] = [];
-  error: HttpErrorResponse;
+
+  statusSet = new Map<string, number>();
+  targetSet = new Map<string, number>();
+  distSet = new Map<string, number>();
 
   constructor(private infoService: BundleInfosService) {}
 
@@ -21,6 +26,18 @@ export class AppComponent implements OnInit {
       (data: BundleInfo[]) => {
         this.allBundleInfos = data;
         this.handleSearch();
+
+        this.statusSet.clear();
+        this.targetSet.clear();
+        this.distSet.clear();
+        this.allBundleInfos.forEach(b => {
+          this.statusSet.set(b.status, this.statusSet.get(b.status) + 1 || 1);
+          this.targetSet.set(b.target, this.targetSet.get(b.target) + 1 || 1);
+          const info = this.parseBundleId(b.id);
+          if (info) {
+            this.distSet.set(info.dist, this.distSet.get(info.dist) + 1 || 1);
+          }
+        });
       },
       (errResp: HttpErrorResponse) => {
         this.error = errResp;
