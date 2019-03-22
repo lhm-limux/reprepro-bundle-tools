@@ -8,7 +8,7 @@ dist/shared: $(shell find ../ng-bundle-libs/shared -type f)
 	ng build --project="shared"
 
 dist/ng-bundle-compose-viewer: $(shell find src -type f)
-	ng build
+	ng build --base-href ./
 
 .installed: package.json
 	npm install
