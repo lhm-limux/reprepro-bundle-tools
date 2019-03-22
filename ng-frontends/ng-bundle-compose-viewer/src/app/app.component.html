@@ -1,9 +1,32 @@
 <div class="card bg-info">
   <h1 class="card-header">
-    Bundle-Compose-Viewer
+    Bundle Übersicht und Suche
   </h1>
 </div>
+
 <div class="m-3">
-  <h1>Bundle Übersicht und Suche</h1>
-  <!--p *ngFor="let info of bundleInfos">{{ info.id }}</p-->
+  <p>{{ error | json }}</p>
+  <div
+    class="container"
+    style="min-width: 10em; max-width: 55em; text-align: center;"
+  >
+    <input
+      #search
+      type="text"
+      class="form-control form-control-lg"
+      placeholder="Suchbegriff(e)"
+      (change)="handleSearch(search.value)"
+      (keyup)="handleSearch(search.value)"
+    />
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="card-deck">
+    <app-bundle-info-card
+      *ngFor="let info of bundleInfos"
+      [bundle]="info"
+      class="mt-3"
+    ></app-bundle-info-card>
+  </div>
 </div>

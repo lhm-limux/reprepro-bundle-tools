@@ -1,0 +1,11 @@
+[
+    {
+        "basedOn": "NEW",
+        "creator": "creator",
+        "id": "bundle:mybionic/0001",
+        "status": "staging",
+        "subject": "An Example Bundle",
+        "target": "standard",
+        "ticketUrl": ""
+    }
+]

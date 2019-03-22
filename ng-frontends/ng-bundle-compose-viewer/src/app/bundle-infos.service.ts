@@ -16,8 +16,8 @@
  * https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
  ***********************************************************************/
 import { Injectable } from "@angular/core";
-import { Subject, Observable } from "rxjs";
-import { HttpClient, HttpParams } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
 
 export interface BundleInfo {
   id: string;
@@ -26,6 +26,7 @@ export interface BundleInfo {
   basedOn: string;
   subject: string;
   creator: string;
+  ticket: string;
   ticketUrl: string;
 }
 
@@ -36,6 +37,6 @@ export class BundleInfosService {
   constructor(private http: HttpClient) {}
 
   getBundleInfos(): Observable<BundleInfo[]> {
-    return this.http.get<BundleInfo[]>("../../bundles.json");
+    return this.http.get<BundleInfo[]>("./assets/bundles.json");
   }
 }
