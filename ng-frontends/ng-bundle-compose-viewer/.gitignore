@@ -1,9 +1,14 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
-#
-# generated files and timestamps
+ 
+# generated files, symlinks and make-timestamps
 /projects
 /.symlinks-created
 /.installed
+/src/assets/css/bootstrap.min.css
+/src/assets/css/font-awesome.min.css
+/src/assets/fonts/fontawesome-webfont.ttf
+/src/assets/fonts/fontawesome-webfont.woff
+/src/assets/fonts/fontawesome-webfont.woff2
 
 # compiled output
 /dist
