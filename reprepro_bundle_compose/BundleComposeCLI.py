@@ -371,6 +371,7 @@ def __extractBundleInfos(bundle, tracUrl=None):
         'basedOn': info.get("BasedOn") or "NEW",
         'subject': info.get("Releasenotes", "--no-subject--").split("\n", 1)[0],
         'creator': info.get("Creator", "unknown"),
+        'ticket': bundle.getTrac() or "",
         'ticketUrl': ticketUrl
     }
 
