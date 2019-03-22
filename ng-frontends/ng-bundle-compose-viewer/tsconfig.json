@@ -16,6 +16,14 @@
     "lib": [
       "es2017",
       "dom"
-    ]
+    ],
+    "paths": {
+      "managed-bundle-lib": [
+        "dist/managed-bundle-lib"
+      ],
+      "managed-bundle-lib/*": [
+        "dist/managed-bundle-lib/*"
+      ]
+    }
   }
 }
