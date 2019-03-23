@@ -4,19 +4,33 @@
   </h1>
 </div>
 
-<div>
-  <span *ngFor="let dist of distSet.keys()"
-    >{{ dist }} ({{ distSet.get(dist) }})
-  </span>
-  <span *ngFor="let status of statusSet.keys()"
-    >{{ status | uppercase }} ({{ statusSet.get(status) }})
-  </span>
-  <span *ngFor="let target of targetSet.keys()"
-    >{{ target | uppercase }} ({{ targetSet.get(target) }})
-  </span>
+<div class="container-fluid m-3">
+  <div class="row">
+    <app-select-filter
+      class="col col-3"
+      field="Distribution"
+      [valuesMap]="distMap"
+      [(selected)]="selectedDist"
+      (selectedChange)="update()"
+    ></app-select-filter>
+    <app-select-filter
+      class="col col-3"
+      field="Status"
+      [valuesMap]="statusMap"
+      [(selected)]="selectedStatus"
+      (selectedChange)="update()"
+    ></app-select-filter>
+    <app-select-filter
+      class="col col-3"
+      field="Target"
+      [valuesMap]="targetMap"
+      [(selected)]="selectedTarget"
+      (selectedChange)="update()"
+    ></app-select-filter>
+  </div>
 </div>
 
-<div class="m-3">
+<div class="m-3 mt-5">
   <p>{{ error | json }}</p>
   <div
     class="container"
