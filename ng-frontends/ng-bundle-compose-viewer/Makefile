@@ -2,10 +2,10 @@ SHELL:=/bin/bash
 
 build: dist/ng-bundle-compose-viewer
 
-install: .symlinks-created .installed
+prod:
+	ng build --base-href ./ --prod
 
-dist/shared: $(shell find ../ng-bundle-libs/shared -type f)
-	ng build --project="shared"
+install: .symlinks-created .installed
 
 dist/ng-bundle-compose-viewer: $(shell find src -type f)
 	ng build --base-href ./

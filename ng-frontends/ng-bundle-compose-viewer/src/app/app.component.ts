@@ -60,7 +60,6 @@ export class AppComponent implements OnInit {
   }
 
   update() {
-    console.log(this.allBundleInfos.length);
     this.filteredAllBundleInfos = this.allBundleInfos.filter(b => {
       const dist = this.parseBundleId(b.id).dist || "unknown";
       return (
