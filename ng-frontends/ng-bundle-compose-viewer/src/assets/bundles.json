@@ -6,6 +6,7 @@
         "status": "staging",
         "subject": "An Example Bundle",
         "target": "standard",
-        "ticketUrl": ""
+	"ticket": "12345",
+        "ticketUrl": "http://myTicketSystem/ticket/12345"
     }
 ]
