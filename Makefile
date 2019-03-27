@@ -3,7 +3,10 @@ PRJDIR:=$(CURDIR)
 DOCKER_COMPOSE:=source ./setup_env.sh && docker-compose
 
 build: docker-buildenv/.buildenv.built
-	$(DOCKER_COMPOSE) -f docker-buildenv/docker-compose.yml run --rm buildenv
+	$(DOCKER_COMPOSE) -f docker-buildenv/docker-compose.yml run --rm buildenv make -C /build build-in-buildenv
+
+prod: docker-buildenv/.buildenv.built debian-build
+	$(DOCKER_COMPOSE) -f docker-buildenv/docker-compose.yml run --rm buildenv make -C /build prod-in-buildenv
 
 debian-build: docker-buildenv/.buildenv.built docker-buildenv/.buildenv-debian.built
 	$(DOCKER_COMPOSE) -f docker-buildenv/docker-compose.yml run --rm buildenv-debian
@@ -21,6 +24,10 @@ docker-buildenv/.buildenv-debian.built: docker-buildenv/Dockerfile-debian docker
 build-in-buildenv:
 	HOME="$(PRJDIR)" make -C ng-frontends/ng-bundle install build
 	HOME="$(PRJDIR)" make -C ng-frontends/ng-bundle-compose install build
+	HOME="$(PRJDIR)" make -C ng-frontends/ng-bundle-compose-viewer install build
+
+prod-in-buildenv:
+	HOME="$(PRJDIR)" make -C ng-frontends/ng-bundle-compose-viewer prod
 
 debian-build-in-buildenv:
 	USER="build" HOME="$(PRJDIR)" dpkg-buildpackage

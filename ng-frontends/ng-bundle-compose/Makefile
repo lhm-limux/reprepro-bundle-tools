@@ -4,6 +4,10 @@ build: src/favicon.ico dist/ng-bundle-compose
 
 install: .symlinks-created .installed
 
+prod: clean install src/favicon.ico dist/shared
+	#ng build --prod
+	ng build
+
 dist/shared: $(shell find ../ng-bundle-libs/shared -type f)
 	ng build --project="shared"
 
@@ -14,7 +18,7 @@ src/favicon.ico: src/assets/icon.png
 	/usr/bin/convert -resize x16 -gravity center -crop 16x16+0+0 src/assets/icon.png -flatten -colors 256 -background transparent src/favicon.ico
 
 .installed: package.json
-	npm install
+	npm ci
 	touch .installed
 
 .symlinks-created:

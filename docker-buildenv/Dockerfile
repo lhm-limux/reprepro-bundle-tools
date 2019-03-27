@@ -7,7 +7,7 @@ RUN apt update && apt install -y \
         make && \
     rm -rf /var/lib/apt/lists/*
 
-RUN /usr/bin/npm install -g npm@5.5.1 && \
+RUN /usr/bin/npm install -g npm@6.9.0 && \
     rm /usr/bin/npm && \
     /usr/local/bin/npm install -g @angular/cli@6.2.5 && \
     mkdir /build

@@ -2,6 +2,10 @@ SHELL:=/bin/bash
 
 build: dist/ng-bundle
 
+prod: clean install dist/shared
+	#ng build --prod
+	ng build
+
 install: .symlinks-created .installed
 
 dist/shared: $(shell find ../ng-bundle-libs/shared -type f)
@@ -11,7 +15,7 @@ dist/ng-bundle: dist/shared $(shell find src -type f)
 	ng build
 
 .installed: package.json
-	npm install
+	npm ci
 	touch .installed
 
 .symlinks-created:

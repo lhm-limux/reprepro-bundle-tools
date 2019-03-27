@@ -18,11 +18,12 @@ override_dh_gencontrol:
 	dh_gencontrol
 
 override_dh_auto_build:
-	HOME=$(CURDIR) npm install npm@5.5.1 @angular/cli@6.2.5
+	HOME=$(CURDIR) npm install npm@6.9.0
+	HOME=$(CURDIR) npm install @angular/cli@6.2.5
 	export PATH=$(CURDIR)/node_modules/.bin:$$PATH && \
 		export HOME=$(CURDIR) && \
-		make -C ng-frontends/ng-bundle install build && \
-		make -C ng-frontends/ng-bundle-compose install build
+		make -C ng-frontends/ng-bundle prod && \
+		make -C ng-frontends/ng-bundle-compose prod
 	dh_auto_build
 
 override_dh_auto_install:
