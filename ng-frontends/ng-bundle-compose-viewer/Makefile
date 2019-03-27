@@ -1,8 +1,11 @@
 SHELL:=/bin/bash
 
-build: dist/ng-bundle-compose-viewer
+build: src/favicon.ico dist/ng-bundle-compose-viewer
 
 prod: clean install bundle-compose-viewer.tgz
+
+src/favicon.ico: src/assets/icon.png
+	/usr/bin/convert -resize x16 -gravity center -crop 16x16+0+0 src/assets/icon.png -flatten -colors 256 -background transparent src/favicon.ico
 
 bundle-compose-viewer.tgz:
 	ng build --base-href ./ --prod
