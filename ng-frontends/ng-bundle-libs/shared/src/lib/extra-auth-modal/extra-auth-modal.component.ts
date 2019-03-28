@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { DialogComponent, DialogService } from "ng2-bootstrap-modal";
+import { SimpleModalComponent } from "ngx-simple-modal";
 import { AuthType } from "../interfaces";
 
 export interface ExtraAuthArgs {
@@ -17,11 +17,12 @@ export interface AuthData {
 }
 
 @Component({
+  selector: "extra-auth-modal",
   templateUrl: "./extra-auth-modal.component.html",
   styleUrls: ["./extra-auth-modal.component.css"]
 })
 export class ExtraAuthModalComponent
-  extends DialogComponent<ExtraAuthArgs, AuthData[]>
+  extends SimpleModalComponent<ExtraAuthArgs, AuthData[]>
   implements ExtraAuthArgs, OnInit {
   authData: AuthData[] = [];
 
@@ -30,8 +31,8 @@ export class ExtraAuthModalComponent
   title: string;
   message: string;
 
-  constructor(dialogService: DialogService) {
-    super(dialogService);
+  constructor() {
+    super();
   }
 
   confirmOnEnter(event) {
