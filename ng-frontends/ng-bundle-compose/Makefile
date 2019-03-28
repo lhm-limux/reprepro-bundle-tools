@@ -5,8 +5,7 @@ build: src/favicon.ico dist/ng-bundle-compose
 install: .symlinks-created .installed
 
 prod: clean install src/favicon.ico dist/shared
-	#ng build --prod
-	ng build
+	ng build --prod --aot=false --build-optimizer=false
 
 dist/shared: $(shell find ../ng-bundle-libs/shared -type f)
 	ng build --project="shared"

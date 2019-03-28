@@ -3,8 +3,7 @@ SHELL:=/bin/bash
 build: dist/ng-bundle
 
 prod: clean install dist/shared
-	#ng build --prod
-	ng build
+	ng build --prod --aot=false --build-optimizer=false
 
 install: .symlinks-created .installed
 
