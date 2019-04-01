@@ -148,7 +148,7 @@ def cmd_update_bundles(args):
     if not args.no_trac:
         try:
             config = getTracConfig()
-            tracApi = trac_api.TracApi(config['TracUrl'], config['User'], config.get('Password'))
+            tracApi = trac_api.TracApi(config['TracUrl'], config.get('User'), config.get('Password'))
         except KeyError as e:
             logger.warn("Missing Key {} in config file '{}' --> no synchronization with trac will be done!".format(e, config['__file__']))
         except Exception as e:

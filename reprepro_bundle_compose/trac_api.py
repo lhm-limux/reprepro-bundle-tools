@@ -22,10 +22,14 @@ from urllib.parse import urljoin, urlparse, urlunparse
 import getpass
 
 class TracApi:
-    def __init__(self, tracUrl, user, passwd=None):
+    def __init__(self, tracUrl, user=None, passwd=None):
         if not tracUrl.endswith("/"):
             tracUrl += "/"
         self.__tracUrl = tracUrl
+        if not user:
+            user = input("Please enter Username for Trac '{}': ".format(tracUrl))
+            if len(user) == 0:
+                raise ValueError("Username must not be empty!")
         if not passwd:
             passwd = getpass.getpass("Please enter Trac-Password for user '{}' at '{}': ".format(user, tracUrl))
             if len(passwd) == 0:
