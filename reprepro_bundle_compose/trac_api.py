@@ -18,7 +18,7 @@
 # https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
 ##########################################################################
 from xmlrpc.client import ServerProxy, ProtocolError
-from urllib.parse import urljoin, urlparse, urlunparse
+from urllib.parse import urljoin, urlparse, urlunparse, quote
 import getpass
 
 class TracApi:
@@ -35,7 +35,8 @@ class TracApi:
             if len(passwd) == 0:
                 raise ValueError("Password must not be empty!")
         url = urlparse(tracUrl)
-        proxyurl = "".join([url.scheme, '://', str(user), ':', str(passwd), '@', url.netloc, url.path, "login/rpc"])
+        userinfo = "{}:{}".format(user, passwd)
+        proxyurl = "".join([quote(url.scheme), '://', quote(userinfo), '@', quote(url.netloc), quote(url.path + "login/rpc")])
         self.server = ServerProxy(proxyurl)
         # ensure the connection works
         try:
