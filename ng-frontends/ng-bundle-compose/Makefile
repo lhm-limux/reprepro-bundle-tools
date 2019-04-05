@@ -4,7 +4,7 @@ build: src/favicon.ico dist/ng-bundle-compose
 
 install: .symlinks-created .installed
 
-prod: clean install src/favicon.ico dist/shared
+prod: clean install src/favicon.ico dist/shared dist/bundle-auth
 	ng build --prod --aot=false --build-optimizer=false
 
 dist/shared: $(shell find ../ng-bundle-libs/shared -type f)
