@@ -20,11 +20,11 @@ import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
 import {
   WorkflowMetadata,
   ManagedBundle,
-  AuthenticationService,
   MessagesService,
   VersionedChangesService,
   AuthRef
 } from "shared";
+import { AuthenticationService } from "bundle-auth";
 import { WorkflowMetadataService } from "../services/workflow-metadata.service";
 import { Router } from "@angular/router";
 import { ManagedBundleService } from "../services/managed-bundle.service";

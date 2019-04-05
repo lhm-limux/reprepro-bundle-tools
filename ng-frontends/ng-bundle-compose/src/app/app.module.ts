@@ -24,6 +24,7 @@ import { APP_ROUTES } from "./app.routes";
 import { AppComponent } from "./app.component";
 import { HttpClientModule } from "@angular/common/http";
 import { SharedModule } from "shared";
+import { BundleAuthModule } from "bundle-auth";
 import { WorkflowStatusEditorComponent } from "./workflow-status-editor/workflow-status-editor.component";
 import { ManagedBundleCardComponent } from "./workflow-status-editor/managed-bundle-card/managed-bundle-card.component";
 import { WorkflowStatusCardComponent } from "./workflow-status-editor/workflow-status-card/workflow-status-card.component";
@@ -45,6 +46,7 @@ import { SplitPipe } from "./pipes/split.pipe";
     BrowserModule,
     HttpClientModule,
     SharedModule,
+    BundleAuthModule,
     RouterModule.forRoot(APP_ROUTES)
   ],
   providers: [],

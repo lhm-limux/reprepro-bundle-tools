@@ -10,7 +10,10 @@ prod: clean install src/favicon.ico dist/shared
 dist/shared: $(shell find ../ng-bundle-libs/shared -type f)
 	ng build --project="shared"
 
-dist/ng-bundle-compose: dist/shared $(shell find src -type f)
+dist/bundle-auth: $(shell find ../ng-bundle-libs/bundle-auth -type f)
+	ng build --project="bundle-auth"
+
+dist/ng-bundle-compose: dist/shared dist/bundle-auth $(shell find src -type f)
 	ng build
 
 src/favicon.ico: src/assets/icon.png
@@ -29,5 +32,5 @@ src/favicon.ico: src/assets/icon.png
 	touch .symlinks-created
 
 clean:
-	rm -Rf dist/shared dist/ng-bundle-compose node_modules .symlinks-created .installed
+	rm -Rf dist/shared dist/bundle-auth dist/ng-bundle-compose node_modules .symlinks-created .installed
 

@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
 import { BundleComposeActionService } from "../services/bundle-compose-action.service";
-import { AuthenticationService, AuthRef, SessionInfo } from "shared";
+import { SessionInfo, AuthRef } from "shared";
+import { AuthenticationService } from "bundle-auth";
 
 @Component({
   selector: "app-login-page",

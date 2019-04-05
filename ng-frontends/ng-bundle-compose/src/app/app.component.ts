@@ -25,9 +25,9 @@ import {
   BackendRegisterService,
   MessagesService,
   SessionInfo,
-  AuthenticationService,
   BackendLogEntry
 } from "shared";
+import { AuthenticationService } from "bundle-auth";
 import { BundleComposeActionService } from "./services/bundle-compose-action.service";
 
 registerLocaleData(localeDe, "de");
