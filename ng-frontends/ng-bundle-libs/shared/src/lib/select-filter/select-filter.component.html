@@ -9,7 +9,8 @@
             (click)="toggle(key)"
             [ngClass]="selected.has(key) ? 'btn-success' : 'btn-secondary'"
           >
-            {{ key }} ({{ valuesMap.get(key) }})
+            {{ key }}
+            <span *ngIf="valuesMap.get(key)">({{ valuesMap.get(key) }})</span>
             <i
               class="fa"
               [ngClass]="selected.has(key) ? 'fa-check-square' : 'fa-square'"

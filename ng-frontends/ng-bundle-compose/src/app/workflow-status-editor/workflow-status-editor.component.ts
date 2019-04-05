@@ -61,8 +61,8 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     public actionService: BundleComposeActionService,
     private router: Router
   ) {
-    this.availableWorkflow.set(STAGES_AND_CANDIDATES, 1);
-    this.availableWorkflow.set(OTHERS, 1);
+    this.availableWorkflow.set(STAGES_AND_CANDIDATES, null);
+    this.availableWorkflow.set(OTHERS, null);
   }
 
   ngOnInit() {
