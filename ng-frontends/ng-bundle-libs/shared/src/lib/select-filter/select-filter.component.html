@@ -3,13 +3,17 @@
     <div class="card-title text-center">{{ field }}</div>
     <div class="container container-fluid">
       <div class="row">
-        <div *ngFor="let value of values" class="col p-1">
+        <div *ngFor="let key of valuesMap.keys()" class="col p-1">
           <button
             class="btn btn-sm btn-block"
-            (click)="toggle(value)"
-            [ngClass]="selected.has(value) ? 'btn-secondary' : 'btn-light'"
+            (click)="toggle(key)"
+            [ngClass]="selected.has(key) ? 'btn-success' : 'btn-secondary'"
           >
-            {{ value }}
+            {{ key }} ({{ valuesMap.get(key) }})
+            <i
+              class="fa"
+              [ngClass]="selected.has(key) ? 'fa-check-square' : 'fa-square'"
+            ></i>
           </button>
         </div>
       </div>
