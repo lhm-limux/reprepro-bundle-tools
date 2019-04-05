@@ -48,7 +48,7 @@ export class BundleListComponent implements OnInit, OnDestroy {
   username = "chlu";
 
   constructor(
-    private bls: BundleListService,
+    public bls: BundleListService,
     private router: Router
   ) {}
 
