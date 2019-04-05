@@ -5,18 +5,25 @@ import {
   HttpErrorResponse
 } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { ConfigService } from "./config.service";
-import { AuthType, AuthRef, AuthRequired } from "./interfaces";
-import { BundleDialogService } from "./bundle-dialog.service";
-import { MessagesService } from "./messages.service";
-import { AuthData } from "./extra-auth-modal/extra-auth-modal.component";
+import {
+  ConfigService,
+  AuthType,
+  AuthRef,
+  AuthRequired,
+  MessagesService
+} from "shared";
+import { SimpleModalService } from "ngx-simple-modal";
+import {
+  ExtraAuthModalComponent,
+  AuthData
+} from "./extra-auth-modal/extra-auth-modal.component";
 
 @Injectable({
   providedIn: "root"
 })
 export class AuthenticationService {
   constructor(
-    private dialogService: BundleDialogService,
+    private modalService: SimpleModalService,
     private config: ConfigService,
     private messages: MessagesService,
     private http: HttpClient
@@ -50,8 +57,13 @@ export class AuthenticationService {
       .subscribe(
         (data: AuthType[]) => {
           if (data.length > 0) {
-            this.dialogService
-              .createExtraAuthModal(data, defaultUsers)
+            this.modalService
+              .addModal(ExtraAuthModalComponent, {
+                title: "Authentication required…",
+                message: "",
+                authTypes: data,
+                defaultUsers: defaultUsers
+              })
               .subscribe((authData: AuthData[]) => {
                 if (authData) {
                   this.storeCredentials(authData).subscribe(

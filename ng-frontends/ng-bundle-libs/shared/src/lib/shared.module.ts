@@ -18,44 +18,21 @@
 
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { SimpleModalModule, SimpleModalOptions } from "ngx-simple-modal";
-import { defaultSimpleModalOptions } from "ngx-simple-modal/dist/simple-modal/simple-modal-options";
 import { SelectFilterComponent } from "./select-filter/select-filter.component";
 import { UnpublishedChangesComponent } from "./unpublished-changes/unpublished-changes.component";
 import { FontawsomeToggleButtonComponent } from "./fontawsome-toggle-button/fontawsome-toggle-button.component";
-import { ExtraAuthModalComponent } from "./extra-auth-modal/extra-auth-modal.component";
-import { KnownAuthBadgeComponent } from "./known-auth-badge/known-auth-badge.component";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    SimpleModalModule.forRoot(
-      {
-        container: document.body
-      },
-      {
-        ...defaultSimpleModalOptions,
-        ...{
-          closeOnEscape: true,
-          closeOnClickOutside: false,
-        }
-      }
-    )
-  ],
+  imports: [CommonModule],
   declarations: [
     SelectFilterComponent,
     UnpublishedChangesComponent,
-    FontawsomeToggleButtonComponent,
-    ExtraAuthModalComponent,
-    KnownAuthBadgeComponent
+    FontawsomeToggleButtonComponent
   ],
   exports: [
     SelectFilterComponent,
     UnpublishedChangesComponent,
-    FontawsomeToggleButtonComponent,
-    ExtraAuthModalComponent,
-    KnownAuthBadgeComponent
-  ],
-  entryComponents: [ExtraAuthModalComponent]
+    FontawsomeToggleButtonComponent
+  ]
 })
 export class SharedModule {}
