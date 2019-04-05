@@ -11,19 +11,19 @@
     <select-filter
       class="col mb-1"
       field="Show Workflow Steps"
-      [values]="availableWorkflow"
+      [valuesMap]="availableWorkflow"
       [(selected)]="selectedWorkflow"
     ></select-filter>
     <select-filter
       class="col mb-1"
       field="Distributions"
-      [values]="managedBundleService.getAvailableDistributions()"
+      [valuesMap]="managedBundleService.getAvailableDistributions()"
       [(selected)]="selectedDistributions"
     ></select-filter>
     <select-filter
       class="col mb-1"
       field="Targets"
-      [values]="managedBundleService.getAvailableTargets()"
+      [valuesMap]="managedBundleService.getAvailableTargets()"
       [(selected)]="selectedTargets"
     ></select-filter>
     <div class="col mb-1">

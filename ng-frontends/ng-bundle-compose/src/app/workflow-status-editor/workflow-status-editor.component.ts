@@ -46,7 +46,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   workflowMetadata: WorkflowMetadata[] = [];
   configuredStages: string[] = [];
 
-  availableWorkflow = [STAGES_AND_CANDIDATES, OTHERS];
+  availableWorkflow = new Map<string, number>();
   selectedWorkflow = new Set<string>();
 
   selectedDistributions = new Set<string>();
@@ -60,7 +60,10 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
     public managedBundleService: ManagedBundleService,
     public actionService: BundleComposeActionService,
     private router: Router
-  ) {}
+  ) {
+    this.availableWorkflow.set(STAGES_AND_CANDIDATES, 1);
+    this.availableWorkflow.set(OTHERS, 1);
+  }
 
   ngOnInit() {
     this._restoreSettings();
@@ -96,10 +99,10 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   initSelections() {
     if (this.needInit && this.managedBundleService.hasElements()) {
       this.selectedDistributions = new Set(
-        this.managedBundleService.getAvailableDistributions()
+        this.managedBundleService.getAvailableDistributions().keys()
       );
       this.selectedTargets = new Set(
-        this.managedBundleService.getAvailableTargets()
+        this.managedBundleService.getAvailableTargets().keys()
       );
       this.needInit = false;
     }

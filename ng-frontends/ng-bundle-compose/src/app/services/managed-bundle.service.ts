@@ -121,13 +121,19 @@ export class ManagedBundleService {
     return bundles.filter(bi => bi.bundle.status.name === status.name);
   }
 
-  getAvailableDistributions(): string[] {
-    const bundles = Array.from(this.managedBundles.values());
-    return Array.from(new Set(bundles.map(bi => bi.bundle.distribution)));
+  getAvailableDistributions(): Map<string, number> {
+    const res = new Map<string, number>();
+    for (const b of this.managedBundles.values()) {
+      res.set(b.bundle.distribution, res.get(b.bundle.distribution) + 1 || 1);
+    }
+    return res;
   }
 
-  getAvailableTargets(): string[] {
-    const bundles = Array.from(this.managedBundles.values());
-    return Array.from(new Set(bundles.map(bi => bi.bundle.target)));
+  getAvailableTargets(): Map<string, number> {
+    const res = new Map<string, number>();
+    for (const b of this.managedBundles.values()) {
+      res.set(b.bundle.target, res.get(b.bundle.target) + 1 || 1);
+    }
+    return res;
   }
 }
