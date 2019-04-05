@@ -160,6 +160,41 @@
           }
         }
       }
+    },
+    "bundle-auth": {
+      "root": "projects/bundle-auth",
+      "sourceRoot": "projects/bundle-auth/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/bundle-auth/tsconfig.lib.json",
+            "project": "projects/bundle-auth/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/bundle-auth/src/test.ts",
+            "tsConfig": "projects/bundle-auth/tsconfig.spec.json",
+            "karmaConfig": "projects/bundle-auth/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/bundle-auth/tsconfig.lib.json",
+              "projects/bundle-auth/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "ng-bundle-compose"

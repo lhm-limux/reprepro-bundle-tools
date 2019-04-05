@@ -24,6 +24,12 @@
       ],
       "shared/*": [
         "dist/shared/*"
+      ],
+      "bundle-auth": [
+        "dist/bundle-auth"
+      ],
+      "bundle-auth/*": [
+        "dist/bundle-auth/*"
       ]
     }
   }
