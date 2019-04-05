@@ -1,20 +1,20 @@
 /***********************************************************************
-* Copyright (c) 2018 Landeshauptstadt München
-*           (c) 2018 Christoph Lutz (InterFace AG)
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the European Union Public Licence (EUPL),
-* version 1.1 (or any later version).
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* European Union Public Licence for more details.
-*
-* You should have received a copy of the European Union Public Licence
-* along with this program. If not, see
-* https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
-***********************************************************************/
+ * Copyright (c) 2018 Landeshauptstadt München
+ *           (c) 2018 Christoph Lutz (InterFace AG)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the European Union Public Licence (EUPL),
+ * version 1.1 (or any later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * European Union Public Licence for more details.
+ *
+ * You should have received a copy of the European Union Public Licence
+ * along with this program. If not, see
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
+ ***********************************************************************/
 
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
@@ -26,7 +26,6 @@ import { ConfigService } from "shared";
   providedIn: "root"
 })
 export class BundleListService {
-
   private changed = new Subject();
   cast = this.changed.asObservable();
 
@@ -46,29 +45,49 @@ export class BundleListService {
     );
   }
 
-  getAvailableDistributions(): Set<string> {
-    return new Set(this.bundles.map(bundle => bundle.distribution));
+  getAvailableDistributions(): Map<string, number> {
+    const res = new Map<string, number>();
+    for (const b of this.bundles) {
+      res.set(b.distribution, res.get(b.distribution) + 1 || 1);
+    }
+    return res;
   }
 
-  getAvailableTargets(): Set<string> {
-    return new Set(this.bundles.map(bundle => bundle.target));
+  getAvailableTargets(): Map<string, number> {
+    const res = new Map<string, number>();
+    for (const b of this.bundles) {
+      res.set(b.target, res.get(b.target) + 1 || 1);
+    }
+    return res;
   }
 
   getUserOrOthers(user: string, bundle: Bundle): string {
     return bundle.creator === user ? user : "Others";
   }
 
-  getAvailableUserOrOthers(user: string): Set<string> {
-    return new Set(
-      this.bundles.map(bundle => this.getUserOrOthers(user, bundle))
-    );
+  getAvailableUserOrOthers(user: string): Map<string, number> {
+    const res = new Map<string, number>();
+    for (const b of this.bundles) {
+      const k = this.getUserOrOthers(user, b);
+      res.set(k, res.get(k) + 1 || 1);
+    }
+    return res;
   }
 
-  getAvailableReadonly(): Set<boolean> {
-    return new Set(this.bundles.map(bundle => bundle.readonly));
+  getAvailableReadonly(): Map<boolean, number> {
+    const res = new Map<boolean, number>();
+    for (const b of this.bundles) {
+      res.set(b.readonly, res.get(b.readonly) + 1 || 1);
+    }
+    return res;
   }
 
-  getAvailableStates(): Set<"Readonly" | "Editable"> {
-    return new Set(this.bundles.map(bundle => bundle.readonly ? "Readonly" : "Editable"));
+  getAvailableStates(): Map<"Readonly" | "Editable", number> {
+    const res = new Map<"Readonly" | "Editable", number>();
+    for (const b of this.bundles) {
+      const k = b.readonly ? "Readonly" : "Editable";
+      res.set(k, res.get(k) + 1 || 1);
+    }
+    return res;
   }
 }

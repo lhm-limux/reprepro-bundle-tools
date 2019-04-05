@@ -1,17 +1,48 @@
 <div class="bg-light w-75">
   <div class="row">
-    <select-filter class="col" field="Distribution" [values]="bls.getAvailableDistributions()" [(selected)]="selectedDistributions"></select-filter>
-    <select-filter class="col" field="Zustand" [values]="bls.getAvailableStates()" [(selected)]="selectedStates"></select-filter>
-    <select-filter class="col" field="Target" [values]="bls.getAvailableTargets()" [(selected)]="selectedTargets"></select-filter>
-    <select-filter class="col" field="Creator" [values]="bls.getAvailableUserOrOthers(username)" [(selected)]="selectedCreators"></select-filter>
+    <select-filter
+      class="col"
+      field="Distribution"
+      [valuesMap]="bls.getAvailableDistributions()"
+      [(selected)]="selectedDistributions"
+    ></select-filter>
+    <select-filter
+      class="col"
+      field="Zustand"
+      [valuesMap]="bls.getAvailableStates()"
+      [(selected)]="selectedStates"
+    ></select-filter>
+    <select-filter
+      class="col"
+      field="Target"
+      [valuesMap]="bls.getAvailableTargets()"
+      [(selected)]="selectedTargets"
+    ></select-filter>
+    <select-filter
+      class="col"
+      field="Creator"
+      [valuesMap]="bls.getAvailableUserOrOthers(username)"
+      [(selected)]="selectedCreators"
+    ></select-filter>
   </div>
 </div>
 <h2>Bundle-Liste</h2>
 <div class="card-columns">
-  <div *ngFor="let bundle of getBundles()" [ngClass]="(bundle === highlighted) ? 'card text-white bg-info' : 'card border-info'"
-    (click)="navigateTo(bundle)" (mouseover)="highlighted = bundle" (mouseleave)="highlighted = null">
+  <div
+    *ngFor="let bundle of getBundles()"
+    [ngClass]="
+      bundle === highlighted ? 'card text-white bg-info' : 'card border-info'
+    "
+    (click)="navigateTo(bundle)"
+    (mouseover)="highlighted = bundle"
+    (mouseleave)="highlighted = null"
+  >
     <div class="card-header">
-      <i [ngClass]="bundle.readonly ? 'fa fa-lock mr-2' : 'fa fa-unlock mr-2'" style="font-size: x-large" aria-hidden="true"></i>
+      <i
+        [ngClass]="bundle.readonly ? 'fa fa-lock mr-2' : 'fa fa-unlock mr-2'"
+        style="font-size: x-large"
+        aria-hidden="true"
+      ></i>
       <b> {{ bundle.name }}</b> --> [{{ bundle.target }}]
     </div>
     <div class="card-body">

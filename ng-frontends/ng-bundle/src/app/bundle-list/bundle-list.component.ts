@@ -1,33 +1,33 @@
 /***********************************************************************
-* Copyright (c) 2018 Landeshauptstadt München
-*           (c) 2018 Christoph Lutz (InterFace AG)
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the European Union Public Licence (EUPL),
-* version 1.1 (or any later version).
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* European Union Public Licence for more details.
-*
-* You should have received a copy of the European Union Public Licence
-* along with this program. If not, see
-* https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
-***********************************************************************/
+ * Copyright (c) 2018 Landeshauptstadt München
+ *           (c) 2018 Christoph Lutz (InterFace AG)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the European Union Public Licence (EUPL),
+ * version 1.1 (or any later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * European Union Public Licence for more details.
+ *
+ * You should have received a copy of the European Union Public Licence
+ * along with this program. If not, see
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
+ ***********************************************************************/
 
 import { Subscription } from "rxjs";
 import { BundleListService } from "./bundle-list.service";
 import { ServerLogComponent } from "./../server-log/server-log.component";
 import {
   Component,
-  OnInit, OnDestroy,
+  OnInit,
+  OnDestroy,
   SystemJsNgModuleLoader,
   HostListener
 } from "@angular/core";
 import { Bundle } from "shared";
 import { Router } from "@angular/router";
-
 
 @Component({
   selector: "bundle-list",
@@ -47,10 +47,7 @@ export class BundleListComponent implements OnInit, OnDestroy {
 
   username = "chlu";
 
-  constructor(
-    public bls: BundleListService,
-    private router: Router
-  ) {}
+  constructor(public bls: BundleListService, private router: Router) {}
 
   ngOnInit() {
     this._restoreSettings();
@@ -64,10 +61,14 @@ export class BundleListComponent implements OnInit, OnDestroy {
 
   initSelections() {
     if (this.needInit && this.bls.bundles.length > 0) {
-      this.selectedCreators = new Set(this.bls.getAvailableUserOrOthers(this.username));
-      this.selectedDistributions = new Set(this.bls.getAvailableDistributions());
-      this.selectedStates = new Set(this.bls.getAvailableStates());
-      this.selectedTargets = new Set(this.bls.getAvailableTargets());
+      this.selectedCreators = new Set(
+        this.bls.getAvailableUserOrOthers(this.username).keys()
+      );
+      this.selectedDistributions = new Set(
+        this.bls.getAvailableDistributions().keys()
+      );
+      this.selectedStates = new Set(this.bls.getAvailableStates().keys());
+      this.selectedTargets = new Set(this.bls.getAvailableTargets().keys());
       this.needInit = false;
     }
   }
@@ -80,13 +81,11 @@ export class BundleListComponent implements OnInit, OnDestroy {
         this.selectedStates.has(b.readonly ? "Readonly" : "Editable")
       )
       .filter(b =>
-        this.selectedCreators.has(
-          this.bls.getUserOrOthers(this.username, b)
-        )
+        this.selectedCreators.has(this.bls.getUserOrOthers(this.username, b))
       );
   }
 
-  navigateTo(bundle): void {
+  navigateTo(bundle: Bundle): void {
     this._storeSettings();
     this.router.navigate([
       "/bundle/",
