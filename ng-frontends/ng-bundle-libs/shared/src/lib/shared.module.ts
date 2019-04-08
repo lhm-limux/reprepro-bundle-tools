@@ -21,18 +21,24 @@ import { CommonModule } from "@angular/common";
 import { SelectFilterComponent } from "./select-filter/select-filter.component";
 import { UnpublishedChangesComponent } from "./unpublished-changes/unpublished-changes.component";
 import { FontawsomeToggleButtonComponent } from "./fontawsome-toggle-button/fontawsome-toggle-button.component";
+import { MessagesSpinnersComponent } from "./messages-spinners/messages-spinners.component";
+import { MessagesLogsComponent } from "./messages-logs/messages-logs.component";
 
 @NgModule({
   imports: [CommonModule],
   declarations: [
     SelectFilterComponent,
     UnpublishedChangesComponent,
-    FontawsomeToggleButtonComponent
+    FontawsomeToggleButtonComponent,
+    MessagesSpinnersComponent,
+    MessagesLogsComponent
   ],
   exports: [
     SelectFilterComponent,
     UnpublishedChangesComponent,
-    FontawsomeToggleButtonComponent
+    FontawsomeToggleButtonComponent,
+    MessagesSpinnersComponent,
+    MessagesLogsComponent
   ]
 })
 export class SharedModule {}

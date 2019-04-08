@@ -21,12 +21,7 @@ import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
 import localeDe from "@angular/common/locales/de";
 import { registerLocaleData } from "@angular/common";
 import { Subscription } from "rxjs";
-import {
-  BackendRegisterService,
-  MessagesService,
-  SessionInfo,
-  BackendLogEntry
-} from "shared";
+import { BackendRegisterService, MessagesService, SessionInfo } from "shared";
 import { AuthenticationService } from "bundle-auth";
 import { BundleComposeActionService } from "./services/bundle-compose-action.service";
 
@@ -39,8 +34,6 @@ registerLocaleData(localeDe, "de");
 })
 export class AppComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
-  public logs: BackendLogEntry[] = [];
-  public spinners: string[] = [];
   public sessionInfo: SessionInfo = null;
 
   title = "ng-bundle-compose";
@@ -53,14 +46,6 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     private messages: MessagesService
   ) {
-    this.subscriptions.push(
-      this.messages.msgChanged.subscribe(data => (this.logs = data))
-    );
-    this.subscriptions.push(
-      this.messages.spinnerChanged.subscribe(data => {
-        this.spinners = data;
-      })
-    );
     this.subscriptions.push(
       this.actionService.sessionStatusChanged.subscribe(() => {
         this.updateSessionStatus();

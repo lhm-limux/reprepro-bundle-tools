@@ -1,0 +1,10 @@
+<div *ngIf="spinners.length > 0" class="container-fluid">
+  <div
+    *ngFor="let spinner of spinners"
+    class="mt-2"
+    style="text-align: center;"
+  >
+    <strong>{{ spinner }}</strong>
+    <div class="spinner-border ml-3" role="status" aria-hidden="true"></div>
+  </div>
+</div>
