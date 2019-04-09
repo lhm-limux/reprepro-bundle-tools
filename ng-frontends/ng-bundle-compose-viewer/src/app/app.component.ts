@@ -1,19 +1,16 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { BundleInfosService, BundleInfo } from "./bundle-infos.service";
-import { HttpErrorResponse } from "@angular/common/http";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.css"]
 })
-export class AppComponent implements OnInit {
-  error: HttpErrorResponse;
+export class AppComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription[] = [];
 
-  allBundleInfos: BundleInfo[] = [];
-  filteredAllBundleInfos: BundleInfo[] = [];
   bundleInfos: BundleInfo[] = [];
-
   statusMap = new Map<string, number>();
   targetMap = new Map<string, number>();
   distMap = new Map<string, number>();
@@ -23,45 +20,38 @@ export class AppComponent implements OnInit {
   selectedDist = new Set<string>();
   searchStr = "";
 
-  constructor(private infoService: BundleInfosService) {}
+  constructor(private infos: BundleInfosService) {}
 
   ngOnInit(): void {
-    this.infoService.getBundleInfos().subscribe(
-      (data: BundleInfo[]) => {
-        this.allBundleInfos = data;
+    this.subscriptions.push(
+      this.infos.cast.subscribe(() => {
+        this.statusMap = this.infos.statusMap;
+        this.targetMap = this.infos.targetMap;
+        this.distMap = this.infos.distMap;
 
-        this.statusMap.clear();
-        this.targetMap.clear();
-        this.distMap.clear();
-        this.allBundleInfos.forEach(b => {
-          this.statusMap.set(b.status, this.statusMap.get(b.status) + 1 || 1);
-          this.targetMap.set(b.target, this.targetMap.get(b.target) + 1 || 1);
-          const info = this.parseBundleId(b.id);
-          if (info) {
-            this.distMap.set(info.dist, this.distMap.get(info.dist) + 1 || 1);
-          }
-        });
         this.selectedStatus = new Set<string>(this.statusMap.keys());
         this.selectedTarget = new Set<string>(this.targetMap.keys());
         this.selectedDist = new Set<string>(this.distMap.keys());
         this.selectedStatus.delete("dropped");
 
-        this.update();
-      },
-      (errResp: HttpErrorResponse) => {
-        this.error = errResp;
-      }
+        this.updateFilter();
+      })
     );
+    this.infos.update();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 
   handleSearch(searchString: string = "") {
     this.searchStr = searchString;
-    this.update();
+    this.updateFilter();
   }
 
-  update() {
-    this.filteredAllBundleInfos = this.allBundleInfos.filter(b => {
-      const dist = this.parseBundleId(b.id).dist || "unknown";
+  updateFilter() {
+    const preFiltered = [...this.infos.bundleInfos.values()].filter(b => {
+      const dist = this.infos.parseBundleId(b.id).dist || "unknown";
       return (
         this.selectedStatus.has(b.status) &&
         this.selectedTarget.has(b.target) &&
@@ -70,45 +60,32 @@ export class AppComponent implements OnInit {
     });
 
     const search = this.searchStr.split(" ");
-    this.bundleInfos = this.filteredAllBundleInfos.filter(
-      (info: BundleInfo) => {
-        if (this.searchStr.length === 0) {
-          return true;
-        }
-        const bid = this.parseBundleId(info.id);
-        for (const s of search) {
-          if (s.length === 0) {
-            continue;
-          }
-          if (bid) {
-            if (Number.parseInt(s, 10) === bid.num) {
-              continue;
-            }
-          }
-          if (info.subject.toLowerCase().includes(s.toLowerCase())) {
-            continue;
-          }
-          if (info.ticket.toLowerCase().includes(s.toLowerCase())) {
-            continue;
-          }
-          if (info.creator.toLowerCase().includes(s.toLowerCase())) {
-            continue;
-          }
-          return false;
-        }
+    this.bundleInfos = preFiltered.filter((info: BundleInfo) => {
+      if (this.searchStr.length === 0) {
         return true;
       }
-    );
-  }
-
-  private parseBundleId(bid: string): { dist: string; num: number } {
-    const parts = bid.split(":");
-    if (parts.length === 2) {
-      const p2 = parts[1].split("/");
-      if (p2.length === 2) {
-        return { dist: p2[0], num: Number.parseInt(p2[1], 10) };
+      const bid = this.infos.parseBundleId(info.id);
+      for (const s of search) {
+        if (s.length === 0) {
+          continue;
+        }
+        if (bid) {
+          if (Number.parseInt(s, 10) === bid.num) {
+            continue;
+          }
+        }
+        if (info.subject.toLowerCase().includes(s.toLowerCase())) {
+          continue;
+        }
+        if (info.ticket.toLowerCase().includes(s.toLowerCase())) {
+          continue;
+        }
+        if (info.creator.toLowerCase().includes(s.toLowerCase())) {
+          continue;
+        }
+        return false;
       }
-    }
-    return undefined;
+      return true;
+    });
   }
 }

@@ -4,6 +4,8 @@
   </h1>
 </div>
 
+<lib-messages-logs></lib-messages-logs>
+
 <div class="container-fluid m-3">
   <div class="row">
     <select-filter
@@ -11,21 +13,21 @@
       field="Distribution"
       [valuesMap]="distMap"
       [(selected)]="selectedDist"
-      (selectedChange)="update()"
+      (selectedChange)="updateFilter()"
     ></select-filter>
     <select-filter
       class="col col-3"
       field="Status"
       [valuesMap]="statusMap"
       [(selected)]="selectedStatus"
-      (selectedChange)="update()"
+      (selectedChange)="updateFilter()"
     ></select-filter>
     <select-filter
       class="col col-3"
       field="Target"
       [valuesMap]="targetMap"
       [(selected)]="selectedTarget"
-      (selectedChange)="update()"
+      (selectedChange)="updateFilter()"
     ></select-filter>
   </div>
 </div>

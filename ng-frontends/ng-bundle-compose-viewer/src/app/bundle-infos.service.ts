@@ -16,8 +16,9 @@
  * https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
  ***********************************************************************/
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { MessagesService } from "shared";
+import { Subscription, Subject } from "rxjs";
 
 export interface BundleInfo {
   id: string;
@@ -34,9 +35,56 @@ export interface BundleInfo {
   providedIn: "root"
 })
 export class BundleInfosService {
-  constructor(private http: HttpClient) {}
+  private changed = new Subject();
+  cast = this.changed.asObservable();
 
-  getBundleInfos(): Observable<BundleInfo[]> {
-    return this.http.get<BundleInfo[]>("./assets/bundles.json");
+  public bundleInfos = new Map<string, BundleInfo>();
+  public bundleDeps = new Map<string, string[]>();
+
+  public statusMap = new Map<string, number>();
+  public targetMap = new Map<string, number>();
+  public distMap = new Map<string, number>();
+
+  constructor(private http: HttpClient, private messages: MessagesService) {}
+
+  update() {
+    return this.http.get<BundleInfo[]>("./assets/bundles.json").subscribe(
+      (data: BundleInfo[]) => {
+        this.bundleInfos.clear();
+        data.forEach(bundleInfo =>
+          this.bundleInfos.set(bundleInfo.id, bundleInfo)
+        );
+
+        this.statusMap.clear();
+        this.targetMap.clear();
+        this.distMap.clear();
+        this.bundleInfos.forEach(b => {
+          this.statusMap.set(b.status, this.statusMap.get(b.status) + 1 || 1);
+          this.targetMap.set(b.target, this.targetMap.get(b.target) + 1 || 1);
+          const info = this.parseBundleId(b.id);
+          if (info) {
+            this.distMap.set(info.dist, this.distMap.get(info.dist) + 1 || 1);
+          }
+        });
+        this.changed.next();
+      },
+      (errResp: HttpErrorResponse) => {
+        this.messages.setErrorResponse(
+          "Failed to read bundles overview",
+          errResp
+        );
+      }
+    );
+  }
+
+  public parseBundleId(bid: string): { dist: string; num: number } {
+    const parts = bid.split(":");
+    if (parts.length === 2) {
+      const p2 = parts[1].split("/");
+      if (p2.length === 2) {
+        return { dist: p2[0], num: Number.parseInt(p2[1], 10) };
+      }
+    }
+    return undefined;
   }
 }

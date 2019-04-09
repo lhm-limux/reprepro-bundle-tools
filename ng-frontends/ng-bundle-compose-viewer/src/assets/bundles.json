@@ -1,12 +1,42 @@
 [
-    {
-        "basedOn": "NEW",
-        "creator": "creator",
-        "id": "bundle:mybionic/0001",
-        "status": "staging",
-        "subject": "An Example Bundle",
-        "target": "standard",
-	"ticket": "12345",
-        "ticketUrl": "http://myTicketSystem/ticket/12345"
-    }
+  {
+    "basedOn": "NEW",
+    "creator": "creator",
+    "id": "bundle:mybionic/0001",
+    "status": "new",
+    "subject": "An Example Bundle A",
+    "target": "standard",
+    "ticket": "12345",
+    "ticketUrl": "http://myTicketSystem/ticket/12345"
+  },
+  {
+    "basedOn": "NEW",
+    "creator": "creator",
+    "id": "bundle:mybionic/0002",
+    "status": "new",
+    "subject": "My favourite Bundle B",
+    "target": "standard",
+    "ticket": "12346",
+    "ticketUrl": "http://myTicketSystem/ticket/12346"
+  },
+  {
+    "basedOn": "NEW",
+    "creator": "creator",
+    "id": "bundle:mybionic/0003",
+    "status": "new",
+    "subject": "A very good feature Bundle C",
+    "target": "standard",
+    "ticket": "12347",
+    "ticketUrl": "http://myTicketSystem/ticket/12347"
+  },
+  {
+    "basedOn": "NEW",
+    "creator": "creator",
+    "id": "bundle:mybionic/0004",
+    "status": "new",
+    "subject": "A glorious Bundle D",
+    "target": "standard",
+    "ticket": "12348",
+    "ticketUrl": "http://myTicketSystem/ticket/12348"
+  }
 ]
