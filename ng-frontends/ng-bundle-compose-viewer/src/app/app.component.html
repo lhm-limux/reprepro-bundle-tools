@@ -33,7 +33,6 @@
 </div>
 
 <div class="m-3 mt-5">
-  <p>{{ error | json }}</p>
   <div
     class="container"
     style="min-width: 10em; max-width: 55em; text-align: center;"
@@ -54,6 +53,7 @@
   <app-bundle-info-card
     *ngFor="let info of bundleInfos"
     [bundle]="info"
+    [deps]="bundleDeps.get(info.id)"
     class="mt-3"
   ></app-bundle-info-card>
 </div>

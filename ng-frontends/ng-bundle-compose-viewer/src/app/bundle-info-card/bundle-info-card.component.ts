@@ -10,6 +10,9 @@ export class BundleInfoCardComponent implements OnInit {
   @Input()
   bundle: BundleInfo;
 
+  @Input()
+  deps: string[];
+
   constructor() {}
 
   ngOnInit() {}

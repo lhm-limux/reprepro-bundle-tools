@@ -11,6 +11,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   bundleInfos: BundleInfo[] = [];
+  bundleDeps = new Map<string, string[]>();
   statusMap = new Map<string, number>();
   targetMap = new Map<string, number>();
   distMap = new Map<string, number>();
@@ -25,13 +26,15 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions.push(
       this.infos.cast.subscribe(() => {
-        this.statusMap = this.infos.statusMap;
-        this.targetMap = this.infos.targetMap;
-        this.distMap = this.infos.distMap;
+        this.statusMap = new Map(this.infos.statusMap);
+        this.targetMap = new Map(this.infos.targetMap);
+        this.distMap = new Map(this.infos.distMap);
+        this.bundleDeps = new Map(this.infos.bundleDeps);
 
-        this.selectedStatus = new Set<string>(this.statusMap.keys());
-        this.selectedTarget = new Set<string>(this.targetMap.keys());
-        this.selectedDist = new Set<string>(this.distMap.keys());
+
+        this.selectedStatus = new Set(this.statusMap.keys());
+        this.selectedTarget = new Set(this.targetMap.keys());
+        this.selectedDist = new Set(this.distMap.keys());
         this.selectedStatus.delete("dropped");
 
         this.updateFilter();

@@ -25,6 +25,12 @@
     <div *ngIf="bundle.ticket && !bundle.ticketUrl">
       Ticket: <b>#{{ bundle.ticket }}</b>
     </div>
+    <div *ngIf="deps">
+      Abhängig von:
+      <span *ngFor="let d of deps; let last = last"
+        >{{ d }}<span *ngIf="!last">, </span></span
+      >
+    </div>
   </div>
   <div class="card-footer">Creator: {{ bundle.creator }}</div>
 </div>

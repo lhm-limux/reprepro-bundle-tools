@@ -48,7 +48,7 @@ export class BundleInfosService {
   constructor(private http: HttpClient, private messages: MessagesService) {}
 
   update() {
-    return this.http.get<BundleInfo[]>("./assets/bundles.json").subscribe(
+    this.http.get<BundleInfo[]>("./assets/bundles.json").subscribe(
       (data: BundleInfo[]) => {
         this.bundleInfos.clear();
         data.forEach(bundleInfo =>
@@ -69,8 +69,27 @@ export class BundleInfosService {
         this.changed.next();
       },
       (errResp: HttpErrorResponse) => {
+        this.messages.setErrorResponse("Failed to read bundles.json", errResp);
+      }
+    );
+
+    this.http.get<string[][]>("./assets/bundle-deps.json").subscribe(
+      (data: string[][]) => {
+        this.bundleDeps.clear();
+        for (const edge of data) {
+          if (edge.length === 2) {
+            const from = edge[0].replace("bundle/", "bundle:");
+            const to = edge[1].replace("bundle/", "bundle:");
+            const deps = this.bundleDeps.get(from) || [];
+            deps.push(to);
+            this.bundleDeps.set(from, deps);
+          }
+        }
+        this.changed.next();
+      },
+      (errResp: HttpErrorResponse) => {
         this.messages.setErrorResponse(
-          "Failed to read bundles overview",
+          "Failed to read bundle-deps.json",
           errResp
         );
       }
