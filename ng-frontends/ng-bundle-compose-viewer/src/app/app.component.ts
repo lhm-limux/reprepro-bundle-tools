@@ -31,7 +31,6 @@ export class AppComponent implements OnInit, OnDestroy {
         this.distMap = new Map(this.infos.distMap);
         this.bundleDeps = new Map(this.infos.bundleDeps);
 
-
         this.selectedStatus = new Set(this.statusMap.keys());
         this.selectedTarget = new Set(this.targetMap.keys());
         this.selectedDist = new Set(this.distMap.keys());
@@ -90,5 +89,11 @@ export class AppComponent implements OnInit, OnDestroy {
       }
       return true;
     });
+  }
+
+  selectBundle(bid: string) {
+    if (this.infos.bundleInfos.has(bid)) {
+      this.bundleInfos = [this.infos.bundleInfos.get(bid)];
+    }
   }
 }
