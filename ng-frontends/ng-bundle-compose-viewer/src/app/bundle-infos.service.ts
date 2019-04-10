@@ -88,9 +88,8 @@ export class BundleInfosService {
         this.changed.next();
       },
       (errResp: HttpErrorResponse) => {
-        this.messages.setErrorResponse(
-          "Failed to read bundle-deps.json",
-          errResp
+        this.messages.setWarning(
+          "Bundle-Abhängigkeiten werden derzeit nicht angezeigt! (bundle-deps.json fehlt)"
         );
       }
     );

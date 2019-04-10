@@ -44,6 +44,10 @@ export class MessagesService {
     this.messages.next([{ logger: null, level: "ERROR", message: message }]);
   }
 
+  setWarning(message: string) {
+    this.messages.next([{ logger: null, level: "WARNING", message: message }]);
+  }
+
   setErrorResponse(msg: string, errResp: HttpErrorResponse) {
     this.setError(
       `${msg}: ${errResp.status} ${errResp.statusText} (${errResp.error})`
