@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { BundleInfo } from "../bundle-infos.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-bundle-info-card",
@@ -13,14 +14,7 @@ export class BundleInfoCardComponent implements OnInit {
   @Input()
   deps: string[];
 
-  @Output()
-  bundleSelected = new EventEmitter<string>();
-
-  constructor() {}
-
-  selectBundle(bid: string) {
-    this.bundleSelected.next(bid);
-  }
+  constructor(private router: Router) {}
 
   ngOnInit() {}
 }

@@ -1,0 +1,51 @@
+<div class="container-fluid m-3">
+  <div class="row">
+    <select-filter
+      class="col col-3"
+      field="Distribution"
+      [valuesMap]="distMap"
+      [(selected)]="selectedDist"
+      (selectedChange)="update()"
+    ></select-filter>
+    <select-filter
+      class="col col-3"
+      field="Status"
+      [valuesMap]="statusMap"
+      [(selected)]="selectedStatus"
+      (selectedChange)="update()"
+    ></select-filter>
+    <select-filter
+      class="col col-3"
+      field="Target"
+      [valuesMap]="targetMap"
+      [(selected)]="selectedTarget"
+      (selectedChange)="update()"
+    ></select-filter>
+  </div>
+</div>
+
+<div class="m-3 mt-5">
+  <div
+    class="container"
+    style="min-width: 10em; max-width: 55em; text-align: center;"
+  >
+    <input
+      #search
+      type="text"
+      class="form-control form-control-lg"
+      placeholder="Suchbegriff(e)"
+      (change)="handleSearch(search.value)"
+      (keyup)="handleSearch(search.value)"
+    />
+    {{ bundleInfos.length }} Treffer
+  </div>
+</div>
+
+<div class="card-deck m-4">
+  <app-bundle-info-card
+    *ngFor="let info of bundleInfos"
+    [bundle]="info"
+    [deps]="bundleDeps.get(info.id)"
+    class="mt-3"
+  ></app-bundle-info-card>
+</div>

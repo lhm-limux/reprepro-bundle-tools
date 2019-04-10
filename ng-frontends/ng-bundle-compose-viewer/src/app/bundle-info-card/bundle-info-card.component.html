@@ -29,9 +29,9 @@
       Abhängig von:
       <a
         *ngFor="let d of deps; let last = last"
-        class="text-dark"
+        [routerLink]="['./']"
+        [queryParams]="{ bid: d }"
         style="color: inherit; outline: 0;"
-        (click)="selectBundle(d)"
         >{{ d }}<span *ngIf="!last">, </span></a
       >
     </div>
