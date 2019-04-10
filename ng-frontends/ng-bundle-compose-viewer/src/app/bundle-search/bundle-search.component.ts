@@ -1,8 +1,11 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
-import { BundleInfo, BundleInfosService } from "../bundle-infos.service";
-import { jsonpCallbackContext } from "@angular/common/http/src/module";
+import {
+  BundleInfo,
+  BundleInfosService,
+  INDEPENDENT_ONES
+} from "../bundle-infos.service";
 
 @Component({
   selector: "app-bundle-search",
@@ -19,10 +22,12 @@ export class BundleSearchComponent implements OnInit, OnDestroy {
   statusMap = new Map<string, number>();
   targetMap = new Map<string, number>();
   distMap = new Map<string, number>();
+  showOnlyMap = new Map<string, number>();
 
   selectedStatus = new Set<string>();
   selectedTarget = new Set<string>();
   selectedDist = new Set<string>();
+  selectedShowOnly = new Set<string>();
   searchStr = "";
 
   constructor(
@@ -44,6 +49,7 @@ export class BundleSearchComponent implements OnInit, OnDestroy {
         this.targetMap = new Map(this.infos.targetMap);
         this.distMap = new Map(this.infos.distMap);
         this.bundleDeps = new Map(this.infos.bundleDeps);
+        this.showOnlyMap = new Map(this.infos.independentOnesMap);
 
         this.selectedStatus = new Set(this.statusMap.keys());
         this.selectedTarget = new Set(this.targetMap.keys());
@@ -75,12 +81,17 @@ export class BundleSearchComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const selectOnlyIndependentOnes = this.selectedShowOnly.has(
+      INDEPENDENT_ONES
+    );
+
     const preFiltered = [...this.infos.bundleInfos.values()].filter(b => {
       const dist = this.infos.parseBundleId(b.id).dist || "unknown";
       return (
         this.selectedStatus.has(b.status) &&
         this.selectedTarget.has(b.target) &&
-        this.selectedDist.has(dist)
+        this.selectedDist.has(dist) &&
+        (!selectOnlyIndependentOnes || !this.bundleDeps.get(b.id))
       );
     });
 

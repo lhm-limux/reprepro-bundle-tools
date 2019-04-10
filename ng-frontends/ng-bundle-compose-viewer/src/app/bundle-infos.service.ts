@@ -31,6 +31,8 @@ export interface BundleInfo {
   ticketUrl: string;
 }
 
+export const INDEPENDENT_ONES = "Independent Bundles";
+
 @Injectable({
   providedIn: "root"
 })
@@ -44,6 +46,7 @@ export class BundleInfosService {
   public statusMap = new Map<string, number>();
   public targetMap = new Map<string, number>();
   public distMap = new Map<string, number>();
+  public independentOnesMap = new Map<string, number>();
 
   constructor(private http: HttpClient, private messages: MessagesService) {}
 
@@ -66,6 +69,7 @@ export class BundleInfosService {
             this.distMap.set(info.dist, this.distMap.get(info.dist) + 1 || 1);
           }
         });
+        this.updateIndependentOnesMap();
         this.changed.next();
       },
       (errResp: HttpErrorResponse) => {
@@ -85,14 +89,30 @@ export class BundleInfosService {
             this.bundleDeps.set(from, deps);
           }
         }
+        this.updateIndependentOnesMap();
         this.changed.next();
       },
       (errResp: HttpErrorResponse) => {
         this.messages.setWarning(
-          "Bundle-Abhängigkeiten werden derzeit nicht angezeigt! (bundle-deps.json fehlt)"
+          "Bundle-Dependencies could not be shown at the moment! (bundle-deps.json missing)"
         );
       }
     );
+  }
+
+  private updateIndependentOnesMap() {
+    this.independentOnesMap.clear();
+    if (this.bundleDeps.size === 0) {
+      return;
+    }
+    for (const b of this.bundleInfos.values()) {
+      if (!this.bundleDeps.get(b.id)) {
+        this.independentOnesMap.set(
+          INDEPENDENT_ONES,
+          this.independentOnesMap.get(INDEPENDENT_ONES) + 1 || 1
+        );
+      }
+    }
   }
 
   public parseBundleId(bid: string): { dist: string; num: number } {

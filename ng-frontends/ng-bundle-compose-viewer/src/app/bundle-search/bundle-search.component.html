@@ -21,6 +21,14 @@
       [(selected)]="selectedTarget"
       (selectedChange)="update()"
     ></select-filter>
+    <select-filter
+      *ngIf="showOnlyMap.size > 0"
+      class="col col-3"
+      field="Show only"
+      [valuesMap]="showOnlyMap"
+      [(selected)]="selectedShowOnly"
+      (selectedChange)="update()"
+    ></select-filter>
   </div>
 </div>
 
