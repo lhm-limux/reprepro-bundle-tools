@@ -76,24 +76,27 @@ def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
         if not bundle and suite:
             bundle = ManagedBundle(None, suite)
             managed_bundles[id] = bundle
+            logger.info("Added {} with status '{}'".format(bundle, bundle.getStatus()))
         elif bundle and not suite:
             if bundle.getStatus() != BundleStatus.DROPPED:
-                logger.warn("Das verwendete {} kann derzeit physikalisch nicht von apt-repos gefunden werden. Bitte überprüfen!".format(bundle))
+                logger.warn("Could not find an apt-repos suite for bundle {}. Please check!".format(bundle))
         else:
             bundle.setRepoSuite(suite)
             if bundle.getInfo().get("Target") != bundle.getTarget():
-                logger.warn("Das Target-Feld für {} ist nicht mehr aktuell. Bitte manuell im File '{}' von '{}' auf '{}' umstellen.".format(bundle, BUNDLES_LIST_FILE, bundle.getTarget(), bundle.getInfo().get("Target")))
+                logger.warn("Target-fields for {} and it's info-file dont't match ('{}' vs. '{}'). Please solve this manually.".format(bundle, bundle.getTarget(), bundle.getInfo().get("Target")))
             suiteStatus = BundleStatus.getByTags(suite.getTags())
             if bundle.getStatus() < suiteStatus:
                 if bundle.getStatus().allowsOverride():
                     bundle.setStatus(suiteStatus)
+                    logger.info("Updated {} to status '{}'".format(bundle, suiteStatus))
                 else:
-                    logger.warn("Es gibt einen neuen Status im Bundle-Repository. Bitte manuell im File '{}' das {} von Status '{}' auf '{}' umstellen.".format(BUNDLES_LIST_FILE, bundle, bundle.getStatus(), suiteStatus))
+                    logger.warn("Status of {} doesn't match it's apt-repos tag-status ('{}' vs. '{}'). Please solve this manually.".format(bundle, bundle.getStatus(), suiteStatus))
         if tracApi:
             if not bundle.getTrac():
                 if bundle.getStatus() > BundleStatus.STAGING and bundle.getStatus() < BundleStatus.DROPPED:
                     tid = createTracTicketForBundle(tracApi, bundle, workingDir=workingDir)
                     bundle.setTrac(tid)
+                    logger.info("Created Trac-ticket #{} for {}. Don't forget to publish this change!".format(bundle.getTrac(), bundle))
                 else:
                     continue
             ticket = tracApi.getTicketValues(bundle.getTrac())
@@ -101,14 +104,15 @@ def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
             if bundle.getStatus() < fetchedTracStatus:
                 if bundle.getStatus().allowsOverride():
                     bundle.setStatus(fetchedTracStatus)
+                    logger.info("Updated {} to status '{}'".format(bundle, fetchedTracStatus))
                 else:
-                    logger.warn("Es gibt einen neuen Status im Trac-Ticket #{}. Bitte manuell im File '{}' das {} von Status '{}' auf '{}' umstellen.".format(bundle.getTrac(), BUNDLES_LIST_FILE, bundle, bundle.getStatus(), fetchedTracStatus))
+                    logger.warn("Status of {} doesn't match it's Trac-ticket status ('{}' vs. '{}'). Please solve this manually.".format(bundle, bundle.getStatus(), fetchedTracStatus))
                     continue
             pushTracStatus = bundle.getStatus().getTracStatus()
             pushTracResolution = bundle.getStatus().getTracResolution()
             if pushTracStatus and ticket['status'] != pushTracStatus:
-                tracApi.updateTicket(bundle.getTrac(), "Bundle Status-Update durch Broker", None, pushTracStatus, pushTracResolution if pushTracResolution else "")
-                logger.info("Updated {}, Trac-Ticket #{} to '{}'".format(bundle, bundle.getTrac(), (pushTracStatus + " as " + pushTracResolution) if pushTracResolution else pushTracStatus))
+                tracApi.updateTicket(bundle.getTrac(), "Automatically updated by bundle-compose", None, pushTracStatus, pushTracResolution if pushTracResolution else "")
+                logger.info("Updated Trac-Tickets #{} of {} to Status '{}'".format(bundle.getTrac(), bundle, (pushTracStatus + " as " + pushTracResolution) if pushTracResolution else pushTracStatus))
 
     storeBundles(managed_bundles, workingDir=workingDir)
 

@@ -1,3 +1,5 @@
 INFO[reprepro_bundle_compose]: Calling pre_update_bundles hook 'echo update-Hook called'
 update-Hook called
 WARNING[reprepro_bundle_compose]: File …TESTDIR…/bundle-compose.status not found.
+INFO[reprepro_bundle_compose]: Added bundle:mybionic/0001 with status 'new'
+INFO[reprepro_bundle_compose]: Added bundle:mybionic/0002 with status 'staging'
