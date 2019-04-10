@@ -13,7 +13,7 @@ export class MessagesLogsComponent implements OnInit, OnDestroy {
 
   public logs: BackendLogEntry[] = [];
 
-  constructor(private messages: MessagesService) {}
+  constructor(public messages: MessagesService) {}
 
   ngOnInit() {
     this.subscriptions.push(

@@ -18,7 +18,17 @@
         >
       </div>
       <div class="col">
-        <div *ngFor="let line of log.message.split('\n')">{{ line }}</div>
+        <div *ngFor="let line of log.message.split('\n')">
+          <span *ngFor="let w of line.split(' ')">
+            <a
+              *ngIf="messages.getRouterLink(w); let rl; else: elseBlock"
+              [routerLink]="rl"
+              class="text-dark"
+              style="outline: none;"
+              >{{ w }} </a
+            ><ng-template #elseBlock>{{ w }} </ng-template>
+          </span>
+        </div>
       </div>
       <button
         *ngIf="i === 0"

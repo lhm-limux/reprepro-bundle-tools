@@ -21,11 +21,25 @@ import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
 import localeDe from "@angular/common/locales/de";
 import { registerLocaleData } from "@angular/common";
 import { Subscription } from "rxjs";
-import { BackendRegisterService, MessagesService, SessionInfo } from "shared";
+import {
+  BackendRegisterService,
+  MessagesService,
+  SessionInfo,
+  LoggedWordToRouterLink
+} from "shared";
 import { AuthenticationService } from "bundle-auth";
 import { BundleComposeActionService } from "./services/bundle-compose-action.service";
 
 registerLocaleData(localeDe, "de");
+
+class WordMapper extends LoggedWordToRouterLink {
+  getRouterLink(word: string) {
+    return (
+      this.getBundleRouterLink(word, "/managed-bundle/") ||
+      super.getRouterLink(word)
+    );
+  }
+}
 
 @Component({
   selector: "app-root",
@@ -46,6 +60,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     private messages: MessagesService
   ) {
+    this.messages.setLoggedWordToRouterLink(new WordMapper());
+
     this.subscriptions.push(
       this.actionService.sessionStatusChanged.subscribe(() => {
         this.updateSessionStatus();

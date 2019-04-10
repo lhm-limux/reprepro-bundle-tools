@@ -18,6 +18,7 @@
 
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { RouterModule } from "@angular/router";
 import { SelectFilterComponent } from "./select-filter/select-filter.component";
 import { UnpublishedChangesComponent } from "./unpublished-changes/unpublished-changes.component";
 import { FontawsomeToggleButtonComponent } from "./fontawsome-toggle-button/fontawsome-toggle-button.component";
@@ -25,7 +26,7 @@ import { MessagesSpinnersComponent } from "./messages-spinners/messages-spinners
 import { MessagesLogsComponent } from "./messages-logs/messages-logs.component";
 
 @NgModule({
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   declarations: [
     SelectFilterComponent,
     UnpublishedChangesComponent,
