@@ -79,7 +79,7 @@ class BundleStatus(Enum):
     '''}
 
     def __str__(self):
-        return str(self.name).lower()
+        return str(self.name).upper()
 
     def getStage(self):
         # pylint: disable=E1101

@@ -79,24 +79,24 @@ def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
             logger.info("Added {} with status '{}'".format(bundle, bundle.getStatus()))
         elif bundle and not suite:
             if bundle.getStatus() != BundleStatus.DROPPED:
-                logger.warn("Could not find an apt-repos suite for bundle {}. Please check!".format(bundle))
+                logger.warn("Could not find an apt-repos suite for bundle {} - Please check!".format(bundle))
         else:
             bundle.setRepoSuite(suite)
             if bundle.getInfo().get("Target") != bundle.getTarget():
-                logger.warn("Target-fields for {} and it's info-file dont't match ('{}' vs. '{}'). Please solve this manually.".format(bundle, bundle.getTarget(), bundle.getInfo().get("Target")))
+                logger.warn("Target-Fields of {} and it's info file dont't match ('{}' vs. '{}') - Please check!".format(bundle, bundle.getTarget(), bundle.getInfo().get("Target")))
             suiteStatus = BundleStatus.getByTags(suite.getTags())
             if bundle.getStatus() < suiteStatus:
                 if bundle.getStatus().allowsOverride():
                     bundle.setStatus(suiteStatus)
                     logger.info("Updated {} to status '{}'".format(bundle, suiteStatus))
                 else:
-                    logger.warn("Status of {} doesn't match it's apt-repos tag-status ('{}' vs. '{}'). Please solve this manually.".format(bundle, bundle.getStatus(), suiteStatus))
+                    logger.warn("Status of {} doesn't match it's apt-repos tag-status ('{}' vs. '{}') - Please check!".format(bundle, bundle.getStatus(), suiteStatus))
         if tracApi:
             if not bundle.getTrac():
                 if bundle.getStatus() > BundleStatus.STAGING and bundle.getStatus() < BundleStatus.DROPPED:
                     tid = createTracTicketForBundle(tracApi, bundle, workingDir=workingDir)
                     bundle.setTrac(tid)
-                    logger.info("Created Trac-ticket #{} for {}. Don't forget to publish this change!".format(bundle.getTrac(), bundle))
+                    logger.info("Created Trac-Ticket #{} of {} - Don't forget to publish this change!".format(bundle.getTrac(), bundle))
                 else:
                     continue
             ticket = tracApi.getTicketValues(bundle.getTrac())
@@ -106,13 +106,13 @@ def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
                     bundle.setStatus(fetchedTracStatus)
                     logger.info("Updated {} to status '{}'".format(bundle, fetchedTracStatus))
                 else:
-                    logger.warn("Status of {} doesn't match it's Trac-ticket status ('{}' vs. '{}'). Please solve this manually.".format(bundle, bundle.getStatus(), fetchedTracStatus))
+                    logger.warn("Status of {} doesn't match it's Trac-Ticket status ('{}' vs. '{}') - Please check!".format(bundle, bundle.getStatus(), fetchedTracStatus))
                     continue
             pushTracStatus = bundle.getStatus().getTracStatus()
             pushTracResolution = bundle.getStatus().getTracResolution()
             if pushTracStatus and ticket['status'] != pushTracStatus:
                 tracApi.updateTicket(bundle.getTrac(), "Automatically updated by bundle-compose", None, pushTracStatus, pushTracResolution if pushTracResolution else "")
-                logger.info("Updated Trac-Tickets #{} of {} to Status '{}'".format(bundle.getTrac(), bundle, (pushTracStatus + " as " + pushTracResolution) if pushTracResolution else pushTracStatus))
+                logger.info("Updated Trac-Ticket #{} of {} to Status '{}'".format(bundle.getTrac(), bundle, (pushTracStatus + " as " + pushTracResolution) if pushTracResolution else pushTracStatus))
 
     storeBundles(managed_bundles, workingDir=workingDir)
 

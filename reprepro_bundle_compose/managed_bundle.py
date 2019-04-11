@@ -65,7 +65,7 @@ class ManagedBundle:
         '''
         res = dict()
         if not self.__repoSuite:
-            logger.warning("Could not read info file of bundle {} as it's suite could not be found.".format(self.__id))
+            logger.warning("Could not read info file of {} as it's apt-repos suite could not be found.".format(self.__id))
             return res
         url = urljoin(self.__repoSuite.getRepoUrl(), os.path.join('conf', 'info'))
         try:
@@ -79,7 +79,7 @@ class ManagedBundle:
                         res[key] = self.__unescapeMultiline(tagfile.section[key])
                 return res
         except Exception as e:
-            logger.warning("Could not read info file of bundle {}:\n{}".format(self.__id, e))
+            logger.warning("Could not read info file of {}\n{}".format(self.__id, e))
         return res
 
     def __unescapeMultiline(self, value):
