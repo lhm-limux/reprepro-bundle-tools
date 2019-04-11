@@ -3,10 +3,16 @@
     <h2>
       {{ bundle.id }}
       <span
-        class="badge-pill float-right mx-2 badge-dark"
+        class="badge-pill badge-dark float-right mx-2 "
         style="font-size: large;"
       >
         <b>Target: {{ bundle.target | uppercase }}</b>
+      </span>
+      <span
+        class="badge-pill badge-info float-right mx-2"
+        style="font-size: large;"
+      >
+        <b>Status: {{ bundle.status.name | uppercase }}</b>
       </span>
     </h2>
   </div>
@@ -15,40 +21,30 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-2 pl-0">
-          <div>Creator: {{ info.creator }}</div>
           <div>
             Target:
-            <select
-              #targetSelect
-              class="ml-1"
-              (change)="setTarget()"
-            >
+            <select #targetSelect class="ml-1" (change)="setTarget()">
               <option
                 *ngFor="let o of getTargets()"
                 [value]="o.value"
-                [selected]="
-                  bundle.target === o.value ? 'selected' : ''
-                "
+                [selected]="bundle.target === o.value ? 'selected' : ''"
                 >{{ o.description }}</option
               >
             </select>
           </div>
-          <div
-            *ngIf="bundle.ticket && bundle.ticketUrl"
-          >
-            Ticket:
-            <a
-              href="{{ bundle.ticketUrl }}"
-              target="_blank"
-              style="color: inherit; outline: 0;"
-              ><b>#{{ bundle.ticket }}</b></a
-            >
-          </div>
-          <div>Status: {{ bundle.status.name | uppercase }}</div>
-          <div
-            *ngIf="bundle.ticket && !bundle.ticketUrl"
-          >
-            Ticket: <b>#{{ bundle.ticket }}</b>
+          <div *ngIf="bundle.ticket">
+            <div *ngIf="bundle.ticketUrl; else elseBlock">
+              Ticket:
+              <a
+                href="{{ bundle.ticketUrl }}"
+                target="_blank"
+                style="color: inherit; outline: 0;"
+                ><b>#{{ bundle.ticket }}</b></a
+              >
+            </div>
+            <ng-template #elseBlock>
+              Ticket: <b>#{{ bundle.ticket }}</b>
+            </ng-template>
           </div>
         </div>
         <div class="col" style="text-align: right;">
@@ -79,5 +75,6 @@
       </div>
     </div>
   </div>
+  <div class="card-footer">Creator: {{ info.creator }}</div>
   <!-- iframe [src]="bundle.ticketUrl" frameborder="0"></iframe -->
 </div>
