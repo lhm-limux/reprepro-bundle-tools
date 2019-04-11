@@ -35,7 +35,7 @@ registerLocaleData(localeDe, "de");
 class WordMapper extends LoggedWordToRouterLink {
   getRouterLink(word: string) {
     return (
-      this.getBundleRouterLink(word, "/managed-bundle/") ||
+      super.getBundleRouterLink(word, "/managed-bundle/") ||
       super.getRouterLink(word)
     );
   }
