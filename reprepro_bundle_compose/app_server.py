@@ -321,6 +321,9 @@ async def handle_set_target(request):
 
     target = request.rel_url.query['target']
     ids = json.loads(request.rel_url.query['bundles'])
+    ignoreTargetFromInfoFile=request.rel_url.query.get('ignoreTargetFromInfoFile')
+    if ignoreTargetFromInfoFile:
+        ignoreTargetFromInfoFile = (ignoreTargetFromInfoFile.lower() == "true")
     logger.info("mark for target: {} --> {}".format(ids, target))
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
@@ -328,7 +331,7 @@ async def handle_set_target(request):
             repo = git.Repo(workingDir)
             ensure_clean_git_repo(repo)
             bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe, ids, workingDir=workingDir), workingDir=workingDir)
-            markBundlesForTarget(bundles, set(ids), target, workingDir)
+            markBundlesForTarget(bundles, set(ids), target, workingDir, ignoreTargetFromInfoFile)
             msg = "MARKED for target '{}'\n\n - {}".format(target, "\n - ".join(sorted(ids)))
             if len(ids) == 1:
               msg = "MARKED {} for target '{}'".format("".join(ids), target)

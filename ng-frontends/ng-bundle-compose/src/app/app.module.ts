@@ -19,10 +19,11 @@
 import { BrowserModule } from "@angular/platform-browser";
 import { NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
+import { FormsModule } from "@angular/forms";
+import { HttpClientModule } from "@angular/common/http";
 import { APP_ROUTES } from "./app.routes";
 
 import { AppComponent } from "./app.component";
-import { HttpClientModule } from "@angular/common/http";
 import { SharedModule } from "shared";
 import { BundleAuthModule } from "bundle-auth";
 import { WorkflowStatusEditorComponent } from "./workflow-status-editor/workflow-status-editor.component";
@@ -45,6 +46,7 @@ import { SplitPipe } from "./pipes/split.pipe";
   imports: [
     BrowserModule,
     HttpClientModule,
+    FormsModule,
     SharedModule,
     BundleAuthModule,
     RouterModule.forRoot(APP_ROUTES)

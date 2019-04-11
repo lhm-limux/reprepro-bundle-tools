@@ -28,6 +28,8 @@ from urllib.parse import urljoin, urlparse
 
 logger = logging.getLogger(__name__)
 
+IGNORE_TARGET_FROM_INFO_FILE = "TargetFromInfoFile"
+
 
 class ManagedBundle:
     '''
@@ -41,7 +43,7 @@ class ManagedBundle:
         and to modify single aspekts of the TagSection. It also provided methods to access information
         from the corresponding RepoSuite-object.
     '''
-    BUNDLE_KEYS = [ "ID", "Status", "Target", "Trac" ]
+    BUNDLE_KEYS = [ "ID", "Status", "Target", "Trac", "Ignores" ]
 
     def __init__(self, tagSection, repoSuite=None):
         self.__repoSuite = repoSuite
@@ -51,12 +53,14 @@ class ManagedBundle:
             self.__status = BundleStatus.getByName(tagSection['Status'])
             self.__target = tagSection['Target']
             self.__trac = tagSection.get('Trac', None)
+            self.__ignores = str(tagSection.get('Ignores') or "").split(" ")
         elif repoSuite:
             self.__id = repoSuite.getSuiteName()
             self.__tagSection = apt_pkg.TagSection("ID: {}\n".format(self.__id))
             self.__status = BundleStatus.getByTags(repoSuite.getTags())
             self.__target = self.getInfo().get("Target", "unknown")
             self.__trac = None
+            self.__ignores = []
 
     def getInfo(self):
         '''
@@ -138,6 +142,9 @@ class ManagedBundle:
     def getRepoSuite(self):
         return self.__repoSuite
 
+    def getIgnores(self):
+        return self.__ignores
+
     def setRepoSuite(self, repoSuite):
         self.__repoSuite = repoSuite
 
@@ -150,12 +157,26 @@ class ManagedBundle:
     def setTrac(self, tid):
         self.__trac = str(tid)
 
+    def setIgnoreTargetFromInfoFile(self, ignore=True):
+        if ignore:
+            if not self.ignoresTargetFromInfoFile():
+                self.__ignores.append(IGNORE_TARGET_FROM_INFO_FILE)
+        else:
+            self.__ignores.remove(IGNORE_TARGET_FROM_INFO_FILE)
+
+    def ignoresTargetFromInfoFile(self):
+        return IGNORE_TARGET_FROM_INFO_FILE in self.__ignores
+
     def serialize(self):
         changeset = list()
         changeset.append(('Status', str(self.__status)))
         changeset.append(('Target', self.__target))
         if self.__trac:
             changeset.append(('Trac', self.__trac))
+        if len(self.__ignores) >0:
+            changeset.append(('Ignores', " ".join(self.__ignores)))
+        else:
+            changeset.append(('Ignores', None))
         return apt_pkg.rewrite_section(self.__tagSection, self.BUNDLE_KEYS, changeset)
 
     def __str__(self):

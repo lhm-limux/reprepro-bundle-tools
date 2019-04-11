@@ -1,25 +1,30 @@
 /***********************************************************************
-* Copyright (c) 2018 Landeshauptstadt München
-*           (c) 2018 Christoph Lutz (InterFace AG)
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the European Union Public Licence (EUPL),
-* version 1.1 (or any later version).
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* European Union Public Licence for more details.
-*
-* You should have received a copy of the European Union Public Licence
-* along with this program. If not, see
-* https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
-***********************************************************************/
+ * Copyright (c) 2018 Landeshauptstadt München
+ *           (c) 2018 Christoph Lutz (InterFace AG)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the European Union Public Licence (EUPL),
+ * version 1.1 (or any later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * European Union Public Licence for more details.
+ *
+ * You should have received a copy of the European Union Public Licence
+ * along with this program. If not, see
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
+ ***********************************************************************/
 
 import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
-import { WorkflowMetadata, ManagedBundle, ManagedBundleInfo, TargetDescription } from "shared";
+import {
+  WorkflowMetadata,
+  ManagedBundle,
+  ManagedBundleInfo,
+  TargetDescription
+} from "shared";
 import { ManagedBundleService } from "../services/managed-bundle.service";
 import { WorkflowMetadataService } from "../services/workflow-metadata.service";
 import { BundleComposeActionService } from "../services/bundle-compose-action.service";
@@ -34,6 +39,7 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
   bundlename: string;
   bundle: ManagedBundle;
   info: ManagedBundleInfo;
+  ignoreTargetFromInfoFile: boolean;
   private workflow: WorkflowMetadata[] = [];
   private targets: TargetDescription[] = [];
   hoveredStatus: WorkflowMetadata = null;
@@ -75,8 +81,7 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
     this.bundleService.update();
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
@@ -97,7 +102,11 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
   setTarget(): void {
     const sel = this.targetSelect.nativeElement;
     const newTarget = sel.options[sel.selectedIndex].value;
-    this.actionService.setTarget(newTarget, [this.bundle]);
+    this.actionService.setTarget(
+      newTarget,
+      [this.bundle],
+      this.ignoreTargetFromInfoFile
+    );
   }
 
   update(): void {
@@ -105,6 +114,9 @@ export class ManagedBundleEditorComponent implements OnInit, OnDestroy {
     if (b) {
       this.bundle = b.bundle;
       this.info = b.info;
+      this.ignoreTargetFromInfoFile = new Set(b.bundle.ignores).has(
+        "TargetFromInfoFile"
+      );
     }
   }
 }

@@ -1,6 +1,6 @@
-<div class="card border-info">
+<div class="card border-info" *ngIf="bundle; else loadingBundleBlock">
   <div class="card-header">
-    <h2>
+    <h3>
       {{ bundle.id }}
       <span
         class="badge-pill badge-dark float-right mx-2 "
@@ -14,7 +14,7 @@
       >
         <b>Status: {{ bundle.status.name | uppercase }}</b>
       </span>
-    </h2>
+    </h3>
   </div>
   <div class="card-body">
     <h3 class="card-title">{{ info.subject }}</h3>
@@ -32,9 +32,22 @@
               >
             </select>
           </div>
-          <div *ngIf="bundle.ticket">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [(ngModel)]="ignoreTargetFromInfoFile"
+              id="cb1"
+              (change)="setTarget()"
+            />
+            <label class="form-check-label" for="cb1">
+              Ignore Target from info file
+            </label>
+          </div>
+          <div></div>
+          <div *ngIf="bundle.ticket" class="mt-4">
             <div *ngIf="bundle.ticketUrl; else elseBlock">
-              Ticket:
+              Trac-Ticket:
               <a
                 href="{{ bundle.ticketUrl }}"
                 target="_blank"
@@ -43,7 +56,7 @@
               >
             </div>
             <ng-template #elseBlock>
-              Ticket: <b>#{{ bundle.ticket }}</b>
+              Trac-Ticket: <b>#{{ bundle.ticket }}</b>
             </ng-template>
           </div>
         </div>
@@ -76,5 +89,9 @@
     </div>
   </div>
   <div class="card-footer">Creator: {{ info.creator }}</div>
-  <!-- iframe [src]="bundle.ticketUrl" frameborder="0"></iframe -->
 </div>
+<ng-template #loadingBundleBlock>
+  <h3>Loading {{ bundlename }}…</h3>
+</ng-template>
+
+<!--iframe [src]="bundle.ticketUrl" frameborder="0"></iframe-->

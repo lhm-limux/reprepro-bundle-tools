@@ -82,7 +82,7 @@ def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
                 logger.warn("Could not find an apt-repos suite for bundle {} - Please check!".format(bundle))
         else:
             bundle.setRepoSuite(suite)
-            if bundle.getInfo().get("Target") != bundle.getTarget():
+            if not bundle.ignoresTargetFromInfoFile() and bundle.getInfo().get("Target") != bundle.getTarget():
                 logger.warn("Target-Fields of {} and it's info file dont't match ('{}' vs. '{}') - Please check!".format(bundle, bundle.getTarget(), bundle.getInfo().get("Target")))
             suiteStatus = BundleStatus.getByTags(suite.getTags())
             if bundle.getStatus() < suiteStatus:
@@ -297,21 +297,22 @@ async def markBundlesForStatusAsync(executor, bundles, ids, status, force=False,
     await asyncio.wrap_future(executor.submit(markBundlesForStatus, bundles, ids, status, force, checkOwnSuite, workingDir))
 
 
-def markBundlesForTarget(bundles, ids, target, workingDir=PROJECT_DIR):
+def markBundlesForTarget(bundles, ids, target, workingDir=PROJECT_DIR, ignoreTargetFromInfoFile=None):
     changed = False
     for (bid, bundle) in sorted(bundles.items()):
         if not bid in ids:
             continue
-        elif bundle.getTarget() == target:
-            logger.info("{} is already in target '{}'.".format(bid, target))
-            ids.remove(bid)
-            continue
         ids.remove(bid)
-        bundle.setTarget(target)
-        logger.info("marked {} to target '{}'".format(bid, target))
-        changed = True
+        if ignoreTargetFromInfoFile != None and bundle.ignoresTargetFromInfoFile() != ignoreTargetFromInfoFile:
+            bundle.setIgnoreTargetFromInfoFile(ignoreTargetFromInfoFile)
+            logger.info("{}gnoring 'TargetFromInfoFile' for {}".format(("I" if ignoreTargetFromInfoFile else "No longer i"), bundle))
+            changed = True
+        if bundle.getTarget() != target:
+            bundle.setTarget(target)
+            logger.info("Marked {} for target '{}'".format(bid, target))
+            changed = True
     if len(ids) > 0:
-        logger.error("the following bundles are not defined: '{}'".format("', '".join(ids)))
+        logger.error("The following bundles are not defined: '{}'".format("', '".join(ids)))
     if changed:
         storeBundles(bundles, workingDir)
 

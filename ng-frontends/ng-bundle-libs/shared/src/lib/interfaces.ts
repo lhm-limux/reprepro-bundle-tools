@@ -38,6 +38,7 @@ export interface ManagedBundle {
   target: string;
   ticket: string;
   ticketUrl: string;
+  ignores: string[];
 }
 
 export interface ManagedBundleInfo {

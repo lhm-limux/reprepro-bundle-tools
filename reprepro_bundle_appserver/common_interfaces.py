@@ -72,7 +72,8 @@ def ManagedBundle(bundle, tracBaseUrl=None):
         'status': WorkflowMetadata(bundle.getStatus()),
         'target': bundle.getTarget(),
         'ticket': ticket,
-        'ticketUrl': ticketUrl
+        'ticketUrl': ticketUrl,
+        'ignores': bundle.getIgnores()
     }
 
 def ManagedBundleInfo(bundle, tracBaseUrl=None):

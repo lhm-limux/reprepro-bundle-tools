@@ -136,11 +136,16 @@ export class BundleComposeActionService {
       );
   }
 
-  setTarget(target: string, bundles: ManagedBundle[]): void {
+  setTarget(
+    target: string,
+    bundles: ManagedBundle[],
+    ignoreTargetFromInfoFile: boolean
+  ): void {
     const sp = this.messages.addSpinner("Set Target");
     const params = new HttpParams()
       .set("target", target)
-      .set("bundles", JSON.stringify(bundles.map(b => b.id)));
+      .set("bundles", JSON.stringify(bundles.map(b => b.id)))
+      .set("ignoreTargetFromInfoFile", "" + ignoreTargetFromInfoFile);
     this.http
       .get<BackendLogEntry[]>(this.config.getApiUrl("setTarget"), {
         params: params
