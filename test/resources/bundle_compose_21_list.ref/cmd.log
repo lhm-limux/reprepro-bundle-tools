@@ -1,7 +1,7 @@
-Bundles with status 'staging':
+Bundles with status 'STAGING':
 ==============================
 bundle:mybionic/0002 [plus] This is my best test bundle
 
-Bundles with status 'new' (stage 'dev'):
+Bundles with status 'NEW' (stage 'dev'):
 =========================================
 bundle:mybionic/0001 [plus] This is my best test bundle

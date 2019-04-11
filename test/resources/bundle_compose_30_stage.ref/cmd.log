@@ -1,2 +1,2 @@
-INFO[reprepro_bundle_compose]: marked bundle:mybionic/0001 for status 'dropped'
-INFO[reprepro_bundle_compose]: marked bundle:mybionic/0002 for status 'dropped'
+INFO[reprepro_bundle_compose]: marked bundle:mybionic/0001 for status 'DROPPED'
+INFO[reprepro_bundle_compose]: marked bundle:mybionic/0002 for status 'DROPPED'

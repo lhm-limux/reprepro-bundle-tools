@@ -1,1 +1,1 @@
-ERROR[reprepro_bundle_compose]: bundle:mybionic/0001 is not ready for being put into state 'test_cust'!
+ERROR[reprepro_bundle_compose]: bundle:mybionic/0001 is not ready for being put into state 'TEST_CUST'!
