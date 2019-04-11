@@ -169,8 +169,8 @@ class ManagedBundle:
 
     def serialize(self):
         changeset = list()
-        changeset.append(('Status', str(self.__status)))
-        changeset.append(('Target', self.__target))
+        changeset.append(('Status', str(self.__status).lower()))
+        changeset.append(('Target', str(self.__target).lower()))
         if self.__trac:
             changeset.append(('Trac', self.__trac))
         if len(self.__ignores) >0:
