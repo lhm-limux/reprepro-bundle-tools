@@ -3,21 +3,24 @@
     <select-filter
       class="col col-3"
       field="Distribution"
-      [valuesMap]="distMap"
+      [values]="distMap | sortedKeys"
+      [counters]="distMap"
       [(selected)]="selectedDist"
       (selectedChange)="update()"
     ></select-filter>
     <select-filter
       class="col col-3"
       field="Status"
-      [valuesMap]="statusMap"
+      [values]="statusMap | sortedKeys"
+      [counters]="statusMap"
       [(selected)]="selectedStatus"
       (selectedChange)="update()"
     ></select-filter>
     <select-filter
       class="col col-3"
       field="Target"
-      [valuesMap]="targetMap"
+      [values]="targetMap | sortedKeys"
+      [counters]="targetMap"
       [(selected)]="selectedTarget"
       (selectedChange)="update()"
     ></select-filter>
@@ -25,7 +28,8 @@
       *ngIf="showOnlyMap.size > 0"
       class="col col-3"
       field="Show only"
-      [valuesMap]="showOnlyMap"
+      [values]="showOnlyMap | sortedKeys"
+      [counters]="showOnlyMap"
       [(selected)]="selectedShowOnly"
       (selectedChange)="update()"
     ></select-filter>

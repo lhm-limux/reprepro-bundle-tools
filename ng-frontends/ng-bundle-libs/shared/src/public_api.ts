@@ -31,3 +31,4 @@ export * from "./lib/unpublished-changes/unpublished-changes.component";
 export * from "./lib/messages-logs/messages-logs.component";
 export * from "./lib/messages-spinners/messages-spinners.component";
 export * from "./lib/shared.module";
+export * from "./lib/pipes/sorted-keys.pipe";

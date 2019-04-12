@@ -3,14 +3,14 @@
     <div class="card-title text-center">{{ field }}</div>
     <div class="container container-fluid">
       <div class="row">
-        <div *ngFor="let key of valuesMap.keys()" class="col p-1">
+        <div *ngFor="let key of values" class="col p-1">
           <button
             class="btn btn-sm btn-block"
             (click)="toggle(key)"
             [ngClass]="selected.has(key) ? 'btn-success' : 'btn-secondary'"
           >
             {{ key }}
-            <span *ngIf="valuesMap.get(key)">({{ valuesMap.get(key) }}) </span>
+            <span *ngIf="counters.get(key); let count">({{ count }}) </span>
             <i
               class="fa"
               [ngClass]="selected.has(key) ? 'fa-check-square' : 'fa-square'"

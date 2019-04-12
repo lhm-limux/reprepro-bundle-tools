@@ -3,25 +3,29 @@
     <select-filter
       class="col"
       field="Distribution"
-      [valuesMap]="bls.getAvailableDistributions()"
+      [values]="bls.getAvailableDistributions() | sortedKeys"
+      [counters]="bls.getAvailableDistributions()"
       [(selected)]="selectedDistributions"
     ></select-filter>
     <select-filter
       class="col"
       field="Zustand"
-      [valuesMap]="bls.getAvailableStates()"
+      [values]="bls.getAvailableStates() | sortedKeys"
+      [counters]="bls.getAvailableStates()"
       [(selected)]="selectedStates"
     ></select-filter>
     <select-filter
       class="col"
       field="Target"
-      [valuesMap]="bls.getAvailableTargets()"
+      [values]="bls.getAvailableTargets() | sortedKeys"
+      [counters]="bls.getAvailableTargets()"
       [(selected)]="selectedTargets"
     ></select-filter>
     <select-filter
       class="col"
       field="Creator"
-      [valuesMap]="bls.getAvailableUserOrOthers(username)"
+      [values]="bls.getAvailableUserOrOthers(username) | sortedKeys"
+      [counters]="bls.getAvailableUserOrOthers(username)"
       [(selected)]="selectedCreators"
     ></select-filter>
   </div>

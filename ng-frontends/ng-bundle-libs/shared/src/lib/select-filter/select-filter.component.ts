@@ -15,29 +15,30 @@
  * along with this program. If not, see
  * https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
  ***********************************************************************/
-import { Component, OnInit, EventEmitter, Input, Output } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 
 @Component({
   selector: "select-filter",
   templateUrl: "./select-filter.component.html",
   styles: []
 })
-export class SelectFilterComponent implements OnInit {
+export class SelectFilterComponent {
   constructor() {}
 
   @Input()
   field: string;
 
   @Input()
-  valuesMap: Map<string, number>;
+  values: string[];
+
+  @Input()
+  counters: Map<string, number>;
 
   @Input()
   selected: Set<string> = new Set<string>();
 
   @Output()
   selectedChange = new EventEmitter<Set<string>>();
-
-  ngOnInit() {}
 
   toggle(value: string) {
     if (this.selected.has(value)) {
@@ -46,8 +47,9 @@ export class SelectFilterComponent implements OnInit {
       this.selected.add(value);
     }
     // cleanup no more available values
-    const invalid = [...this.selected].filter(v => !this.valuesMap.has(v));
-    invalid.forEach(v => this.selected.delete(v));
+    const invalid = [...this.selected]
+      .filter(v => !this.values.includes(v))
+      .forEach(v => this.selected.delete(v));
 
     this.selectedChange.next(this.selected);
   }

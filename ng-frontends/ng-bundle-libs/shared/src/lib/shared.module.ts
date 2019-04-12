@@ -24,6 +24,7 @@ import { UnpublishedChangesComponent } from "./unpublished-changes/unpublished-c
 import { FontawsomeToggleButtonComponent } from "./fontawsome-toggle-button/fontawsome-toggle-button.component";
 import { MessagesSpinnersComponent } from "./messages-spinners/messages-spinners.component";
 import { MessagesLogsComponent } from "./messages-logs/messages-logs.component";
+import { SortedKeysPipe } from "./pipes/sorted-keys.pipe";
 
 @NgModule({
   imports: [CommonModule, RouterModule],
@@ -32,14 +33,16 @@ import { MessagesLogsComponent } from "./messages-logs/messages-logs.component";
     UnpublishedChangesComponent,
     FontawsomeToggleButtonComponent,
     MessagesSpinnersComponent,
-    MessagesLogsComponent
+    MessagesLogsComponent,
+    SortedKeysPipe
   ],
   exports: [
     SelectFilterComponent,
     UnpublishedChangesComponent,
     FontawsomeToggleButtonComponent,
     MessagesSpinnersComponent,
-    MessagesLogsComponent
+    MessagesLogsComponent,
+    SortedKeysPipe
   ]
 })
 export class SharedModule {}
