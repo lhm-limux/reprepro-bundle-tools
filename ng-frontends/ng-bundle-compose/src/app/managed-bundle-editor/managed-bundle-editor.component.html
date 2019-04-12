@@ -44,14 +44,10 @@
               Ignore Target from info file
             </label>
           </div>
-          <div></div>
           <div *ngIf="bundle.ticket" class="mt-4">
             <div *ngIf="bundle.ticketUrl; else elseBlock">
               Trac-Ticket:
-              <a
-                href="{{ bundle.ticketUrl }}"
-                target="_blank"
-                style="color: inherit; outline: 0;"
+              <a href="{{ bundle.ticketUrl }}" target="_blank"
                 ><b>#{{ bundle.ticket }}</b></a
               >
             </div>
@@ -86,6 +82,35 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="mt-4">
+      <label *ngIf="info.sourcesList" for="sourcesList"
+        >SourcesList-Entry:</label
+      >
+      <a
+        *ngIf="info.repoUrl"
+        class="ml-5"
+        href="{{ info.repoUrl }}"
+        target="_blank"
+        >Apt-Repository</a
+      >
+      <a
+        *ngIf="info.infoFileUrl"
+        class="ml-2"
+        href="{{ info.infoFileUrl }}"
+        target="_blank"
+        >Info-File</a
+      >
+      <textarea
+        *ngIf="info.sourcesList"
+        type="text"
+        id="sourcesList"
+        rows="2"
+        [value]="info.sourcesList"
+        readonly="true"
+        class="form-control"
+        style="resize: none;"
+      ></textarea>
     </div>
   </div>
   <div class="card-footer">Creator: {{ info.creator }}</div>

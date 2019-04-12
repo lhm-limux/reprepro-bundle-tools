@@ -46,6 +46,9 @@ export interface ManagedBundleInfo {
   basedOn: string;
   subject: string;
   creator: string;
+  infoFileUrl?: string;
+  sourcesList?: string;
+  repoUrl?: string;
 }
 
 export interface WorkflowMetadata {

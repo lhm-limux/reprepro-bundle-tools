@@ -78,11 +78,15 @@ def ManagedBundle(bundle, tracBaseUrl=None):
 
 def ManagedBundleInfo(bundle, tracBaseUrl=None):
     info = bundle.getInfo() or dict()
+    suite = bundle.getRepoSuite()
     return {
         'id': bundle.getID(),
         'basedOn': info.get("BasedOn"),
         'subject': info.get("Releasenotes", "--no-subject--").split("\n", 1)[0],
         'creator': info.get("Creator", "unknown"),
+        'infoFileUrl': bundle.getInfoFileUrl(),
+        'sourcesList' : suite.getSourcesList(),
+        'repoUrl' : suite.getRepoUrl()
     }
 
 def WorkflowMetadata(status):

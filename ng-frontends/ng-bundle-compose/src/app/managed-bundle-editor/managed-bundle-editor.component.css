@@ -1,3 +1,8 @@
+a {
+  color: black;
+  outline: 0;
+}
+
 .workflow {
   position: relative;
   font-size: x-large;

@@ -62,6 +62,9 @@ class ManagedBundle:
             self.__trac = None
             self.__ignores = []
 
+    def getInfoFileUrl(self):
+        return urljoin(self.__repoSuite.getRepoUrl(), os.path.join('conf', 'info'))
+
     def getInfo(self):
         '''
             This returns a dict with the content of the bundle's info-file
@@ -71,7 +74,7 @@ class ManagedBundle:
         if not self.__repoSuite:
             logger.warning("Could not read info file of {} as it's apt-repos suite could not be found.".format(self.__id))
             return res
-        url = urljoin(self.__repoSuite.getRepoUrl(), os.path.join('conf', 'info'))
+        url = self.getInfoFileUrl()
         try:
             data = RepositoryScanner.getFromURL(url)
             with tempfile.TemporaryFile() as fp:
