@@ -51,18 +51,6 @@
       <div class="col-sm">
         <h5 class="card-title">{{ status.comment }}</h5>
 
-        <div class="card-columns">
-          <app-managed-bundle-card
-            *ngFor="let b of managedBundles"
-            [bundle]="b.bundle"
-            [info]="b.info"
-            [candidateForStages]="candidateForStages"
-            [dropStatus]="dropStatus"
-            (markedForStage)="doMarkedForStage($event)"
-            (clicked)="doClicked($event)"
-          ></app-managed-bundle-card>
-        </div>
-
         <div *ngIf="candidateForStages.length > 0">
           <div *ngFor="let newStatus of candidateForStages">
             <button class="btn btn-primary" (click)="markForStage(newStatus)">
@@ -77,6 +65,21 @@
       <div class="col-sm-1">
         <div *ngIf="validStage" class="float-right" style="font-size:larger">
           <b>Stage: {{ status.stage | uppercase }}</b>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="card-deck w-100">
+          <app-managed-bundle-card
+            *ngFor="let b of managedBundles"
+            [bundle]="b.bundle"
+            [info]="b.info"
+            [candidateForStages]="candidateForStages"
+            [dropStatus]="dropStatus"
+            (markedForStage)="doMarkedForStage($event)"
+            (clicked)="doClicked($event)"
+          ></app-managed-bundle-card>
         </div>
       </div>
     </div>

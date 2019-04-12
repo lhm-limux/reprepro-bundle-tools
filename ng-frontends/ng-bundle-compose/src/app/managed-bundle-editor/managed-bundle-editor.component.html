@@ -122,7 +122,7 @@
     </div>
   </div>
   <div class="card-footer">
-    Creator: <span *ngIf="info">{{ info.creator }}</span>
+    <div *ngIf="info">Creator: {{ info.creator }}</div>
   </div>
 </div>
 <ng-template #loadingBundleBlock>
