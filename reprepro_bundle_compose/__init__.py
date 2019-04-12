@@ -82,8 +82,10 @@ def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
                 logger.warn("Could not find an apt-repos suite for bundle {} - Please check!".format(bundle))
         else:
             bundle.setRepoSuite(suite)
-            if not bundle.ignoresTargetFromInfoFile() and bundle.getInfo().get("Target") != bundle.getTarget():
-                logger.warn("Target-Fields of {} and it's info file dont't match ('{}' vs. '{}') - Please check!".format(bundle, bundle.getTarget(), bundle.getInfo().get("Target")))
+            if not bundle.ignoresTargetFromInfoFile():
+                info = bundle.getInfo()
+                if info.get("Target") != bundle.getTarget():
+                    logger.warn("Target-Fields of {} and it's info file dont't match ('{}' vs. '{}') - Please check!".format(bundle, bundle.getTarget(), info.get("Target")))
             suiteStatus = BundleStatus.getByTags(suite.getTags())
             if bundle.getStatus() < suiteStatus:
                 if bundle.getStatus().allowsOverride():
@@ -117,7 +119,7 @@ def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
     storeBundles(managed_bundles, workingDir=workingDir)
 
 
-def parseBundles(repoSuites=None, workingDir=PROJECT_DIR):
+def parseBundles(repoSuites=None, selectIds=None, workingDir=PROJECT_DIR):
     '''
         Parses the file BUNDLES_LIST_FILE and returns a dict of ID to ManagedBundle-Objects mappings
     '''
@@ -132,6 +134,8 @@ def parseBundles(repoSuites=None, workingDir=PROJECT_DIR):
         for section in file_bundles:
             try:
                 bundle = ManagedBundle(section)
+                if selectIds and not bundle.getID() in selectIds:
+                    continue
                 if repoSuites and bundle.getID() in repoSuites:
                     bundle.setRepoSuite(repoSuites[bundle.getID()])
                 res[bundle.getID()] = bundle
@@ -142,11 +146,11 @@ def parseBundles(repoSuites=None, workingDir=PROJECT_DIR):
     return res
 
 
-async def parseBundlesAsync(executor, repoSuites=None, workingDir=PROJECT_DIR):
+async def parseBundlesAsync(executor, repoSuites=None, selectIds=None, workingDir=PROJECT_DIR):
     '''
         This method calls parseBundles(repoSuites) asynchronously in the provided ThreadPoolExecutor executor.
     '''
-    return await asyncio.wrap_future(executor.submit(parseBundles, repoSuites, workingDir))
+    return await asyncio.wrap_future(executor.submit(parseBundles, repoSuites, selectIds, workingDir))
 
 
 def storeBundles(bundlesDict, workingDir=PROJECT_DIR):

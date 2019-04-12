@@ -17,19 +17,32 @@
  ***********************************************************************/
 
 import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnInit,
+  OnDestroy
+} from "@angular/core";
+import { Subscription } from "rxjs";
+import {
   WorkflowMetadata,
   ManagedBundleInfo,
   ManagedBundle,
   FontawsomeToggleButtonComponent
 } from "shared";
-import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { ManagedBundleService } from "./../../services/managed-bundle.service";
 
 @Component({
   selector: "app-workflow-status-card",
   templateUrl: "./workflow-status-card.component.html",
   styleUrls: ["./workflow-status-card.component.css"]
 })
-export class WorkflowStatusCardComponent {
+export class WorkflowStatusCardComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription[] = [];
+  private knownBundleSign = "";
+  managedBundles: { bundle: ManagedBundle; info: ManagedBundleInfo }[] = [];
+
   @Input()
   cardFormat: string;
 
@@ -41,9 +54,6 @@ export class WorkflowStatusCardComponent {
 
   @Input()
   showContent: boolean;
-
-  @Input()
-  managedBundles: { bundle: ManagedBundle; info: ManagedBundleInfo }[];
 
   @Input()
   candidateForStages: WorkflowMetadata[];
@@ -62,7 +72,22 @@ export class WorkflowStatusCardComponent {
 
   active = false;
 
-  constructor() {}
+  constructor(private bundlesService: ManagedBundleService) {}
+
+  ngOnInit(): void {
+    this.subscriptions.push(
+      this.bundlesService.cast.subscribe(() => {
+        this.managedBundles = this.bundlesService.getManagedBundlesForStatus(
+          this.status
+        );
+        this.setShowContent(this.showContent);
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe());
+  }
 
   doMarkedForStage(event) {
     this.markedForStage.next(event);
@@ -70,6 +95,25 @@ export class WorkflowStatusCardComponent {
 
   doClicked(event) {
     this.clicked.next(event);
+  }
+
+  setShowContent(show: boolean) {
+    this.showContent = show;
+    if (show) {
+      const newBundleSign = this.getListToString(
+        this.managedBundles.map(b => b.bundle.id)
+      );
+      if (newBundleSign !== this.knownBundleSign) {
+        this.knownBundleSign = newBundleSign;
+        this.bundlesService.updateUnknownManagedBundleInfos([
+          ...this.managedBundles.map(b => b.bundle.id)
+        ]);
+      }
+    }
+  }
+
+  getListToString(values: string[]): string {
+    return [...new Set(values).values()].sort().join(",");
   }
 
   markForStage(newStatus) {

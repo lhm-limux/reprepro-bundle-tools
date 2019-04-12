@@ -11,7 +11,8 @@
       titleOn="Hide Bundles"
       symbolOn="fa-folder-open"
       symbolOff="fa-folder"
-      [(status)]="showContent"
+      [status]="showContent"
+      (statusChange)="setShowContent($event)"
       ><span class="badge-pill badge-light counter mr-3">{{
         managedBundles.length
       }}</span></lib-fontawsome-toggle-button
@@ -28,7 +29,11 @@
         ></b
       ><i
         class="ml-2 fa"
-        [title]="status.override? 'Status could be changed in Trac' : 'Status needs to be changed outside Trac'"
+        [title]="
+          status.override
+            ? 'Status could be changed in Trac'
+            : 'Status needs to be changed outside Trac'
+        "
         [ngClass]="status.override ? 'fa-forward' : 'fa-pause'"
         aria-hidden="true"
       ></i>

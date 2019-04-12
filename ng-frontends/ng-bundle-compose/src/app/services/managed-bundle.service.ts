@@ -26,11 +26,20 @@ import {
 } from "shared";
 import { HttpClient, HttpParams } from "@angular/common/http";
 
+const BUNDLE_INFOS_CHUNK_SIZE = 10;
+
 const DEFAULT_ManagedBundleInfo = {
   id: "",
   basedOn: "",
   creator: "",
   subject: "…loading…"
+};
+
+const MISSING_ManagedBundleInfo = {
+  id: "",
+  basedOn: "",
+  creator: "",
+  subject: "<<NOT AVAILABLE>>"
 };
 
 interface BundleAndInfo {
@@ -43,6 +52,7 @@ interface BundleAndInfo {
 })
 export class ManagedBundleService {
   constructor(private config: ConfigService, private http: HttpClient) {}
+  private firstTime = true;
   private changed = new Subject();
   cast = this.changed.asObservable();
 
@@ -54,14 +64,12 @@ export class ManagedBundleService {
       .subscribe(
         (data: ManagedBundle[]) => {
           const allIds = new Set<string>();
-          const added = new Set<string>();
           for (const b of data) {
             allIds.add(b.id);
             let bi = this.managedBundles.get(b.id);
             if (!bi) {
               bi = { bundle: b, info: DEFAULT_ManagedBundleInfo };
               this.managedBundles.set(b.id, bi);
-              added.add(b.id);
             } else {
               bi.bundle = b;
             }
@@ -72,8 +80,16 @@ export class ManagedBundleService {
             }
           }
           this.changed.next();
-          if (added.size > 0) {
-            this.updateManagedBundleInfos(Array.from(added));
+
+          // The first time start to retrieve unknown BundleInfos in chunks (running in the background)
+          if (this.firstTime) {
+            this.firstTime = false;
+            this.updateUnknownManagedBundleInfos(
+              [...this.managedBundles.values()]
+                .filter(b => b.bundle.status.name !== "DROPPED")
+                .map(b => b.bundle.id),
+              BUNDLE_INFOS_CHUNK_SIZE
+            );
           }
         },
         errResp => {
@@ -82,8 +98,31 @@ export class ManagedBundleService {
       );
   }
 
-  updateManagedBundleInfos(bundles: string[]) {
-    const params = new HttpParams().set("bundles", JSON.stringify(bundles));
+  updateUnknownManagedBundleInfos(
+    bundleIds: string[],
+    chunkSize = BUNDLE_INFOS_CHUNK_SIZE
+  ) {
+    const needUpdateBundles = this.getBundlesWithoutInfo(bundleIds);
+    if (needUpdateBundles.length > 0) {
+      this.updateManagedBundleInfos([...needUpdateBundles], chunkSize);
+    }
+  }
+
+  private getBundlesWithoutInfo(bundleIds: string[]) {
+    return bundleIds.filter(
+      bid =>
+        this.managedBundles.has(bid) &&
+        this.managedBundles.get(bid).info === DEFAULT_ManagedBundleInfo
+    );
+  }
+
+  private updateManagedBundleInfos(bundles: string[], chunkSize = 0) {
+    console.log(bundles);
+    if (bundles.length === 0) {
+      return;
+    }
+    const chunk = chunkSize > 0 ? bundles.slice(0, chunkSize) : bundles;
+    const params = new HttpParams().set("bundles", JSON.stringify(chunk));
     this.http
       .get<ManagedBundleInfo[]>(this.config.getApiUrl("managedBundleInfos"), {
         params: params
@@ -96,7 +135,16 @@ export class ManagedBundleService {
               managed.info = b;
             }
           }
+          // set MISSING_ManagedBundleInfo for expected but not delivered bundles
+          this.getBundlesWithoutInfo(chunk).forEach(
+            bid =>
+              (this.managedBundles.get(bid).info = MISSING_ManagedBundleInfo)
+          );
           this.changed.next();
+          // load next chunk
+          if (chunkSize > 0) {
+            this.updateManagedBundleInfos(bundles.slice(chunkSize), chunkSize);
+          }
         },
         errResp => {
           console.error("Error loading managed bundle infos", errResp);

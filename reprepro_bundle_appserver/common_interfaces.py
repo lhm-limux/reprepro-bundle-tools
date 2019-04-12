@@ -41,7 +41,7 @@ def Bundle(bundle):
     return {
         'name': bundle.bundleName,
         'distribution': bundle.bundleName.split("/", 1)[0],
-        'target': info.get("Target", "no-target"),
+        'target': info.get("Target", "unknown"),
         'subject': info.get("Releasenotes", "--no-subject--").split("\n", 1)[0],
         'readonly': not bundle.isEditable(),
         'creator': info.get("Creator", "unknown")
@@ -78,15 +78,19 @@ def ManagedBundle(bundle, tracBaseUrl=None):
 
 def ManagedBundleInfo(bundle, tracBaseUrl=None):
     info = bundle.getInfo() or dict()
-    suite = bundle.getRepoSuite()
+    repoInfo = dict()
+    if bundle.getRepoSuite():
+        repoInfo = {
+            'infoFileUrl': bundle.getInfoFileUrl(),
+            'sourcesList' : bundle.getRepoSuite().getSourcesList(),
+            'repoUrl' : bundle.getRepoSuite().getRepoUrl()
+        }
     return {
         'id': bundle.getID(),
         'basedOn': info.get("BasedOn"),
         'subject': info.get("Releasenotes", "--no-subject--").split("\n", 1)[0],
         'creator': info.get("Creator", "unknown"),
-        'infoFileUrl': bundle.getInfoFileUrl(),
-        'sourcesList' : suite.getSourcesList(),
-        'repoUrl' : suite.getRepoUrl()
+        **repoInfo
     }
 
 def WorkflowMetadata(status):
