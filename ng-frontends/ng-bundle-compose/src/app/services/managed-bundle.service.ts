@@ -117,7 +117,6 @@ export class ManagedBundleService {
   }
 
   private updateManagedBundleInfos(bundles: string[], chunkSize = 0) {
-    console.log(bundles);
     if (bundles.length === 0) {
       return;
     }
