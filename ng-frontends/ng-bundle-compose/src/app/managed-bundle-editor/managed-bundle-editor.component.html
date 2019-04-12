@@ -17,7 +17,15 @@
     </h3>
   </div>
   <div class="card-body">
-    <h3 class="card-title">{{ info.subject }}</h3>
+    <h3 class="card-title">
+      <span *ngIf="info">{{ info.subject }}</span>
+      <span *ngIf="info === undefined">…loading…</span>
+      <span *ngIf="info === null"
+        ><span class="badge badge-warning"
+          >Apt-Repos Suite not available!</span
+        ></span
+      >
+    </h3>
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-2 pl-0">
@@ -84,25 +92,25 @@
       </div>
     </div>
     <div class="mt-4">
-      <label *ngIf="info.sourcesList" for="sourcesList"
+      <label *ngIf="info && info.sourcesList" for="sourcesList"
         >SourcesList-Entry:</label
       >
       <a
-        *ngIf="info.repoUrl"
+        *ngIf="info && info.repoUrl"
         class="ml-5"
         href="{{ info.repoUrl }}"
         target="_blank"
         >Apt-Repository</a
       >
       <a
-        *ngIf="info.infoFileUrl"
+        *ngIf="info && info.infoFileUrl"
         class="ml-2"
         href="{{ info.infoFileUrl }}"
         target="_blank"
         >Info-File</a
       >
       <textarea
-        *ngIf="info.sourcesList"
+        *ngIf="info && info.sourcesList"
         type="text"
         id="sourcesList"
         rows="2"
@@ -113,7 +121,9 @@
       ></textarea>
     </div>
   </div>
-  <div class="card-footer">Creator: {{ info.creator }}</div>
+  <div class="card-footer">
+    Creator: <span *ngIf="info">{{ info.creator }}</span>
+  </div>
 </div>
 <ng-template #loadingBundleBlock>
   <h3>Loading {{ bundlename }}…</h3>

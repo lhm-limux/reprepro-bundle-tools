@@ -415,7 +415,8 @@ async def handle_get_managed_bundle_infos(request):
     # slower (as it needs to resolve info files)
     logger.debug("handle_get_managed_bundle_infos called")
     ids = common_interfaces.BundleIDs_validate(json.loads(request.rel_url.query['bundles']))
-    bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe, ids, workingDir=workingDir), selectIds=ids, workingDir=workingDir)
+    repoSuites = await getBundleRepoSuitesAsync(tpe, ids, workingDir=workingDir)
+    bundles = await parseBundlesAsync(tpe, repoSuites, selectIds=[str(s) for s in repoSuites], workingDir=workingDir)
     tracUrl = getTracConfig(workingDir=workingDir).get('TracUrl')
     futures = [ asyncio.wrap_future(tpe.submit(common_interfaces.ManagedBundleInfo, bundle, tracBaseUrl = tracUrl))
                 for bundle in bundles.values() ]

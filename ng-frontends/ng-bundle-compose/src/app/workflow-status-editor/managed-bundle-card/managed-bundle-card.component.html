@@ -11,7 +11,15 @@
     </div>
   </div>
   <div class="card-body">
-    <h5 class="card-title">{{ info.subject }}</h5>
+    <h5 class="card-title">
+      <span *ngIf="info">{{ info.subject }}</span>
+      <span *ngIf="info === undefined">…loading…</span>
+      <span *ngIf="info === null"
+        ><span class="badge badge-warning"
+          >Apt-Repos Suite not available!</span
+        ></span
+      >
+    </h5>
     <div *ngIf="bundle.ticket && bundle.ticketUrl">
       Ticket:
       <a
@@ -24,7 +32,7 @@
     <div *ngIf="bundle.ticket && !bundle.ticketUrl">
       Ticket: <b>#{{ bundle.ticket }}</b>
     </div>
-    <div>Creator: {{ info.creator }}</div>
+    <div *ngIf="info">Creator: {{ info.creator }}</div>
     <div class="row mt-2">
       <div class="col" *ngIf="dropStatus || candidateForStages.length > 0">
         <button

@@ -28,20 +28,6 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 
 const BUNDLE_INFOS_CHUNK_SIZE = 10;
 
-const DEFAULT_ManagedBundleInfo = {
-  id: "",
-  basedOn: "",
-  creator: "",
-  subject: "…loading…"
-};
-
-const MISSING_ManagedBundleInfo = {
-  id: "",
-  basedOn: "",
-  creator: "",
-  subject: "<<NOT AVAILABLE>>"
-};
-
 interface BundleAndInfo {
   bundle: ManagedBundle;
   info: ManagedBundleInfo;
@@ -68,7 +54,7 @@ export class ManagedBundleService {
             allIds.add(b.id);
             let bi = this.managedBundles.get(b.id);
             if (!bi) {
-              bi = { bundle: b, info: DEFAULT_ManagedBundleInfo };
+              bi = { bundle: b, info: undefined };
               this.managedBundles.set(b.id, bi);
             } else {
               bi.bundle = b;
@@ -112,7 +98,7 @@ export class ManagedBundleService {
     return bundleIds.filter(
       bid =>
         this.managedBundles.has(bid) &&
-        this.managedBundles.get(bid).info === DEFAULT_ManagedBundleInfo
+        this.managedBundles.get(bid).info === undefined
     );
   }
 
@@ -136,8 +122,7 @@ export class ManagedBundleService {
           }
           // set MISSING_ManagedBundleInfo for expected but not delivered bundles
           this.getBundlesWithoutInfo(chunk).forEach(
-            bid =>
-              (this.managedBundles.get(bid).info = MISSING_ManagedBundleInfo)
+            bid => (this.managedBundles.get(bid).info = null)
           );
           this.changed.next();
           // load next chunk
@@ -157,7 +142,7 @@ export class ManagedBundleService {
 
   getManagedBundle(bundlename: string): BundleAndInfo {
     const bi = this.managedBundles.get(bundlename);
-    if (bi && bi.info === DEFAULT_ManagedBundleInfo) {
+    if (bi && bi.info === undefined) {
       this.updateManagedBundleInfos([bundlename]);
     }
     return bi;
