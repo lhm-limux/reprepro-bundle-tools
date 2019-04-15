@@ -43,6 +43,7 @@
   *ngFor="let status of getWorkflow()"
   [status]="status"
   [cardFormat]="getCardFormat(status)"
+  [managedBundles]="getManagedBundlesForStatus(status)"
   [validStage]="isValidStage(status)"
   [candidateForStages]="getCandidateForStages(status)"
   [dropStatus]="getDropStatus(status)"

@@ -21,16 +21,10 @@ import {
   Input,
   Output,
   EventEmitter,
-  OnInit,
-  OnDestroy
+  OnChanges
 } from "@angular/core";
 import { Subscription } from "rxjs";
-import {
-  WorkflowMetadata,
-  ManagedBundleInfo,
-  ManagedBundle,
-  FontawsomeToggleButtonComponent
-} from "shared";
+import { WorkflowMetadata, ManagedBundleInfo, ManagedBundle } from "shared";
 import { ManagedBundleService } from "./../../services/managed-bundle.service";
 
 @Component({
@@ -38,16 +32,18 @@ import { ManagedBundleService } from "./../../services/managed-bundle.service";
   templateUrl: "./workflow-status-card.component.html",
   styleUrls: ["./workflow-status-card.component.css"]
 })
-export class WorkflowStatusCardComponent implements OnInit, OnDestroy {
+export class WorkflowStatusCardComponent implements OnChanges {
   private subscriptions: Subscription[] = [];
   private knownBundleSign = "";
-  managedBundles: { bundle: ManagedBundle; info: ManagedBundleInfo }[] = [];
 
   @Input()
   cardFormat: string;
 
   @Input()
   status: WorkflowMetadata;
+
+  @Input()
+  managedBundles: { bundle: ManagedBundle; info: ManagedBundleInfo }[];
 
   @Input()
   validStage: boolean;
@@ -74,26 +70,15 @@ export class WorkflowStatusCardComponent implements OnInit, OnDestroy {
 
   constructor(private bundlesService: ManagedBundleService) {}
 
-  ngOnInit(): void {
-    this.subscriptions.push(
-      this.bundlesService.cast.subscribe(() => {
-        this.managedBundles = this.bundlesService.getManagedBundlesForStatus(
-          this.status
-        );
-        this.setShowContent(this.showContent);
-      })
-    );
+  ngOnChanges(): void {
+    this.setShowContent(this.showContent);
   }
 
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
-  }
-
-  doMarkedForStage(event) {
+  doMarkedForStage(event: any) {
     this.markedForStage.next(event);
   }
 
-  doClicked(event) {
+  doClicked(event: any) {
     this.clicked.next(event);
   }
 
