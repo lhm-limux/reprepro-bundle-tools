@@ -1,8 +1,9 @@
 import { BackendLogEntry } from "./interfaces";
 import { Injectable } from "@angular/core";
-import { Subject, BehaviorSubject, of } from "rxjs";
-import { delay, count } from "rxjs/operators";
+import { BehaviorSubject, of } from "rxjs";
+import { delay } from "rxjs/operators";
 import { HttpErrorResponse } from "@angular/common/http";
+import { parseBundleId } from "./bundle-utils";
 
 export class LoggedWordToRouterLink {
   getRouterLink(word: string) {
@@ -14,20 +15,9 @@ export class LoggedWordToRouterLink {
   }
 
   getBundleRouterLink(word: string, urlpart: string) {
-    const bid = this.parseBundleId(word);
+    const bid = parseBundleId(word);
     if (bid) {
       return [urlpart, bid.dist, bid.num];
-    }
-    return undefined;
-  }
-
-  parseBundleId(bid: string): { dist: string; num: string } {
-    const parts = bid.split(":");
-    if (parts.length === 2 && parts[0] === "bundle") {
-      const p2 = parts[1].split("/");
-      if (p2.length === 2 && Number.parseInt(p2[1], 10)) {
-        return { dist: p2[0], num: p2[1] };
-      }
     }
     return undefined;
   }

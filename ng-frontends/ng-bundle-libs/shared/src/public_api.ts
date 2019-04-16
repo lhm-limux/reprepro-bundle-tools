@@ -21,6 +21,7 @@
  */
 
 export * from "./lib/interfaces";
+export * from "./lib/bundle-utils";
 export * from "./lib/backend-register.service";
 export * from "./lib/versioned-changes.service";
 export * from "./lib/messages.service";
