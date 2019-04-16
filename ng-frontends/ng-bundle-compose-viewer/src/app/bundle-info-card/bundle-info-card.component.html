@@ -1,9 +1,17 @@
 <div
   class="card text-dark border-secondary"
-  style="width: 35rem; max-width: 100%;"
+  style="width: 35rem; max-width: 100%; height: 95%"
 >
   <div class="card-header">
-    <b>{{ bundle.id }}</b>
+    <b
+      >{{ bundle.id }}
+      <a
+        [routerLink]="['./']"
+        [queryParams]="{ bid: bundle.id }"
+        style="color: inherit; outline: 0;"
+        ><i class="fa fa-link ml-2" style="font-size: larger;"></i
+      ></a>
+    </b>
     <div class="badge-pill badge-dark float-right mx-2 mt-2">
       <b>Target: {{ bundle.target | uppercase }}</b>
     </div>
