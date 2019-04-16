@@ -253,6 +253,7 @@ def createTracTicketForBundle(trac, bundle, workingDir=PROJECT_DIR):
         'type': 'Betriebsuebernahme',
         'deliveryrepo': bundle.getID(),
         'bereitstellung': bundle.getTarget(),
+        'parent': info.get('ParentTicket'),
         'milestone': milestone
     })
 

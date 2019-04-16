@@ -74,7 +74,7 @@ class TracApi:
         if state:
             args['status'] = str(state)
         if description:
-            args['description'] = description
-        #if resolution:
-        args['resolution'] = resolution
+            args['description'] = str(description)
+        if resolution:
+            args['resolution'] = str(resolution)
         return self.server.ticket.update(int(id), comment, args)
