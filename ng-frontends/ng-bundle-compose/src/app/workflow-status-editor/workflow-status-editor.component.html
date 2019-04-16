@@ -3,11 +3,6 @@
     class="row mt-2
 "
   >
-    <div class="col mb-1">
-      <button class="btn btn-primary mt-3" (click)="synchronizeBundles()">
-        <b>Synchronize Bundle-Status</b>
-      </button>
-    </div>
     <select-filter
       class="col mb-1"
       field="Show Workflow Steps"
@@ -30,6 +25,19 @@
       [(selected)]="selectedTargets"
     ></select-filter>
     <div class="col mb-1">
+      <button class="btn btn-primary w-100" (click)="synchronizeBundles()">
+        <b>Synchronize Bundle-Status</b>
+      </button>
+      <input
+        #search
+        type="text"
+        class="form-control form-control-lg mt-3"
+        placeholder="Bundle- or Ticket-Number"
+        (change)="handleSearch(search.value)"
+        (keyup)="handleSearch(search.value)"
+      />
+    </div>
+    <div class="col mb-1">
       <lib-unpublished-changes
         [changes]="changesService.getVersionedChanges()"
         (undoLastChange)="actionService.undoLastChange()"
@@ -38,6 +46,7 @@
     </div>
   </div>
 </div>
+
 <app-workflow-status-card
   class="row m-1"
   *ngFor="let status of getWorkflow()"

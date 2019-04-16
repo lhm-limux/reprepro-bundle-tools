@@ -22,7 +22,8 @@ import {
   ManagedBundle,
   MessagesService,
   VersionedChangesService,
-  AuthRef
+  AuthRef,
+  parseBundleId
 } from "shared";
 import { AuthenticationService } from "bundle-auth";
 import { WorkflowMetadataService } from "../services/workflow-metadata.service";
@@ -42,6 +43,7 @@ const OTHERS = "Others";
 export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private needInit = true;
+  private searchStr = "";
 
   workflowMetadata: WorkflowMetadata[] = [];
   configuredStages: string[] = [];
@@ -121,10 +123,22 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   }
 
   getManagedBundlesForStatus(status: WorkflowMetadata) {
+    const search = this.searchStr.split(" ").filter(s => s.length > 0);
     return this.managedBundleService
       .getManagedBundlesForStatus(status)
       .filter(b => this.selectedDistributions.has(b.bundle.distribution))
-      .filter(b => this.selectedTargets.has(b.bundle.target));
+      .filter(b => this.selectedTargets.has(b.bundle.target))
+      .filter(b => {
+        const bid = parseBundleId(b.bundle.id);
+        return (
+          search.length === 0 ||
+          search.every(
+            s =>
+              Number.parseInt(bid.num, 10) === Number.parseInt(s, 10) ||
+              Number.parseInt(b.bundle.ticket, 10) === Number.parseInt(s, 10)
+          )
+        );
+      });
   }
 
   getCardFormat(status: WorkflowMetadata) {
@@ -176,7 +190,15 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   }
 
   getShowContent(status: WorkflowMetadata) {
-    return !["DROPPED", "STAGING", "NEW", "PRODUCTION"].includes(status.name);
+    return (
+      !["DROPPED", "STAGING", "NEW", "PRODUCTION"].includes(status.name) ||
+      (this.searchStr.length > 0 &&
+        this.getManagedBundlesForStatus(status).length > 0)
+    );
+  }
+
+  handleSearch(searchString: string = "") {
+    this.searchStr = searchString;
   }
 
   markForStage(event: { stage: WorkflowMetadata; bundles: string[] }) {
