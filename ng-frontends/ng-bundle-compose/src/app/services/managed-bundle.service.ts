@@ -28,7 +28,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 
 const BUNDLE_INFOS_CHUNK_SIZE = 10;
 
-interface BundleAndInfo {
+export interface BundleAndInfo {
   bundle: ManagedBundle;
   info: ManagedBundleInfo;
 }
@@ -148,9 +148,10 @@ export class ManagedBundleService {
     return bi;
   }
 
-  getManagedBundlesForStatus(status: WorkflowMetadata): BundleAndInfo[] {
-    const bundles = Array.from(this.managedBundles.values());
-    return bundles.filter(bi => bi.bundle.status.name === status.name);
+  getManagedBundles(status: WorkflowMetadata = null): BundleAndInfo[] {
+    return [...this.managedBundles.values()].filter(
+      bi => status === null || status.name === bi.bundle.status.name
+    );
   }
 
   getAvailableDistributions(): Map<string, number> {

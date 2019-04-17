@@ -24,8 +24,8 @@ import {
   OnChanges
 } from "@angular/core";
 import { Subscription } from "rxjs";
-import { WorkflowMetadata, ManagedBundleInfo, ManagedBundle } from "shared";
-import { ManagedBundleService } from "./../../services/managed-bundle.service";
+import { WorkflowMetadata, ManagedBundle } from "shared";
+import { ManagedBundleService, BundleAndInfo } from "./../../services/managed-bundle.service";
 
 @Component({
   selector: "app-workflow-status-card",
@@ -43,7 +43,7 @@ export class WorkflowStatusCardComponent implements OnChanges {
   status: WorkflowMetadata;
 
   @Input()
-  managedBundles: { bundle: ManagedBundle; info: ManagedBundleInfo }[];
+  managedBundles: BundleAndInfo[];
 
   @Input()
   validStage: boolean;
@@ -101,7 +101,7 @@ export class WorkflowStatusCardComponent implements OnChanges {
     return [...new Set(values).values()].sort().join(",");
   }
 
-  markForStage(newStatus) {
+  markForStage(newStatus: WorkflowMetadata) {
     this.markedForStage.next({
       stage: newStatus,
       bundles: this.managedBundles.map(i => i.bundle.id)

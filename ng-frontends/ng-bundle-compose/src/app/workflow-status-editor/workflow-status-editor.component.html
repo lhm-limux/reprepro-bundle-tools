@@ -3,13 +3,15 @@
     class="row mt-2
 "
   >
-    <select-filter
-      class="col mb-1"
-      field="Show Workflow Steps"
-      [values]="availableWorkflow | sortedKeys"
-      [counters]="availableWorkflow"
-      [(selected)]="selectedWorkflow"
-    ></select-filter>
+    <div class="col mb-1">
+      <select-filter
+        *ngIf="searchResult === null"
+        field="Show Workflow Steps"
+        [values]="availableWorkflow | sortedKeys"
+        [counters]="availableWorkflow"
+        [(selected)]="selectedWorkflow"
+      ></select-filter>
+    </div>
     <select-filter
       class="col mb-1"
       field="Distributions"
@@ -32,7 +34,7 @@
         #search
         type="text"
         class="form-control form-control-lg mt-3"
-        placeholder="Bundle- or Ticket-Number"
+        placeholder="Bundle-/Ticket-Number(s)"
         (change)="handleSearch(search.value)"
         (keyup)="handleSearch(search.value)"
       />
@@ -46,6 +48,19 @@
     </div>
   </div>
 </div>
+
+<h4 *ngIf="searchResult !== null" class="mt-3 text-center alert alert-primary">
+  Search Results
+  <button
+    type="button"
+    class="close"
+    data-dismiss="alert"
+    aria-label="Close"
+    (click)="handleSearch('')"
+  >
+    <span aria-hidden="true">&times;</span>
+  </button>
+</h4>
 
 <app-workflow-status-card
   class="row m-1"

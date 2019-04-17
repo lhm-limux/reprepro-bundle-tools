@@ -28,9 +28,13 @@ import {
 import { AuthenticationService } from "bundle-auth";
 import { WorkflowMetadataService } from "../services/workflow-metadata.service";
 import { Router } from "@angular/router";
-import { ManagedBundleService } from "../services/managed-bundle.service";
+import {
+  ManagedBundleService,
+  BundleAndInfo
+} from "../services/managed-bundle.service";
 import { Subscription } from "rxjs";
 import { BundleComposeActionService } from "../services/bundle-compose-action.service";
+import { HashLocationStrategy } from "@angular/common";
 
 const STAGES_AND_CANDIDATES = "Stages And Candidates";
 const OTHERS = "Others";
@@ -43,7 +47,6 @@ const OTHERS = "Others";
 export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private needInit = true;
-  private searchStr = "";
 
   workflowMetadata: WorkflowMetadata[] = [];
   configuredStages: string[] = [];
@@ -53,6 +56,7 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
 
   selectedDistributions = new Set<string>();
   selectedTargets = new Set<string>();
+  searchResult: BundleAndInfo[] = null;
 
   constructor(
     private workflowMetadataService: WorkflowMetadataService,
@@ -111,34 +115,30 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   }
 
   getWorkflow() {
-    return this.workflowMetadata
-      .filter(st => st.name !== "UNKNOWN")
-      .filter(
+    const workflow = this.workflowMetadata.filter(st => st.name !== "UNKNOWN");
+    if (this.searchResult === null) {
+      return workflow.filter(
         st =>
           (this.selectedWorkflow.has(STAGES_AND_CANDIDATES) &&
             (this.isValidStage(st) ||
               this.getCandidateForStages(st).length > 0)) ||
           this.selectedWorkflow.has(OTHERS)
       );
+    } else {
+      return workflow.filter(
+        st => this.getSearchResultsForStatus(st).length > 0
+      );
+    }
   }
 
   getManagedBundlesForStatus(status: WorkflowMetadata) {
-    const search = this.searchStr.split(" ").filter(s => s.length > 0);
-    return this.managedBundleService
-      .getManagedBundlesForStatus(status)
+    const bundles =
+      this.searchResult === null
+        ? this.managedBundleService.getManagedBundles(status)
+        : this.getSearchResultsForStatus(status);
+    return bundles
       .filter(b => this.selectedDistributions.has(b.bundle.distribution))
-      .filter(b => this.selectedTargets.has(b.bundle.target))
-      .filter(b => {
-        const bid = parseBundleId(b.bundle.id);
-        return (
-          search.length === 0 ||
-          search.every(
-            s =>
-              Number.parseInt(bid.num, 10) === Number.parseInt(s, 10) ||
-              Number.parseInt(b.bundle.ticket, 10) === Number.parseInt(s, 10)
-          )
-        );
-      });
+      .filter(b => this.selectedTargets.has(b.bundle.target));
   }
 
   getCardFormat(status: WorkflowMetadata) {
@@ -190,15 +190,31 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   }
 
   getShowContent(status: WorkflowMetadata) {
-    return (
-      !["DROPPED", "STAGING", "NEW", "PRODUCTION"].includes(status.name) ||
-      (this.searchStr.length > 0 &&
-        this.getManagedBundlesForStatus(status).length > 0)
-    );
+    if (this.searchResult === null) {
+      return !["DROPPED", "STAGING", "NEW", "PRODUCTION"].includes(status.name);
+    }
+    return this.getSearchResultsForStatus(status).length > 0;
   }
 
   handleSearch(searchString: string = "") {
-    this.searchStr = searchString;
+    const search = searchString.split(" ").filter(s => s.length > 0);
+    this.searchResult =
+      search.length === 0
+        ? null
+        : this.managedBundleService.getManagedBundles().filter(bi => {
+            const bid = parseBundleId(bi.bundle.id);
+            return search.some(
+              s =>
+                Number.parseInt(bid.num, 10) === Number.parseInt(s, 10) ||
+                Number.parseInt(bi.bundle.ticket, 10) === Number.parseInt(s, 10)
+            );
+          });
+  }
+
+  private getSearchResultsForStatus(status: WorkflowMetadata) {
+    return this.searchResult === null
+      ? []
+      : this.searchResult.filter(bi => bi.bundle.status.name === status.name);
   }
 
   markForStage(event: { stage: WorkflowMetadata; bundles: string[] }) {
