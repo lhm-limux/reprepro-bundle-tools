@@ -134,7 +134,7 @@ def parseBundles(repoSuites=None, selectIds=None, workingDir=PROJECT_DIR):
         for section in file_bundles:
             try:
                 bundle = ManagedBundle(section)
-                if selectIds and not bundle.getID() in selectIds:
+                if selectIds != None and not bundle.getID() in selectIds:
                     continue
                 if repoSuites and bundle.getID() in repoSuites:
                     bundle.setRepoSuite(repoSuites[bundle.getID()])
@@ -253,7 +253,7 @@ def createTracTicketForBundle(trac, bundle, workingDir=PROJECT_DIR):
         'type': 'Betriebsuebernahme',
         'deliveryrepo': bundle.getID(),
         'bereitstellung': bundle.getTarget(),
-        'parent': info.get('ParentTicket'),
+        'parent': info.get('ParentTicket') or "",
         'milestone': milestone
     })
 
