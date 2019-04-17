@@ -73,6 +73,7 @@
         <div class="card-deck w-100">
           <app-managed-bundle-card
             *ngFor="let b of managedBundles"
+            class="mt-3"
             [bundle]="b.bundle"
             [info]="b.info"
             [candidateForStages]="candidateForStages"
