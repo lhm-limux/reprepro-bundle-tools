@@ -258,7 +258,7 @@ def createTargetRepreproConfigs(bundles):
         updatesDir = os.path.join(repoConfDir, 'updates')
         if os.path.isfile(updatesDir):
             # allows to migrate from versions in which this was a file
-            os.rename(distributionsDir, os.path.join(updatesDir, 'updates.bak'))
+            os.rename(updatesDir, os.path.join(repoConfDir, 'updates.bak'))
         if not os.path.isdir(updatesDir):
             os.mkdir(updatesDir)
 
