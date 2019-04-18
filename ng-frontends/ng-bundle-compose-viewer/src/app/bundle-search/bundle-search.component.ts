@@ -54,7 +54,7 @@ export class BundleSearchComponent implements OnInit, OnDestroy {
         this.selectedStatus = new Set(this.statusMap.keys());
         this.selectedTarget = new Set(this.targetMap.keys());
         this.selectedDist = new Set(this.distMap.keys());
-        this.selectedStatus.delete("dropped");
+        this.selectedStatus.delete("DROPPED");
 
         this.update();
       })
