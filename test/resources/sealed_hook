@@ -1,3 +1,5 @@
 #!/bin/bash
 echo $0 called for $@
-apt-repos/bin/apt-repos -b .apt-repos ls -s bundle:$1 -r .
+APT_REPOS=apt-repos
+which apt-repos >/dev/null 2>&1 || APT_REPOS="apt-repos/bin/apt-repos"
+$APT_REPOS -b .apt-repos ls -s bundle:$1 -r .
