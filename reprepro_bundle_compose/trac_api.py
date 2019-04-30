@@ -69,12 +69,5 @@ class TracApi:
         values = self.getTicketValues(id)
         return values['summary']
 
-    def updateTicket(self, id, comment="", description=None, state=None, resolution=None):
-        args = dict()
-        if state:
-            args['status'] = str(state)
-        if description:
-            args['description'] = str(description)
-        if resolution:
-            args['resolution'] = str(resolution)
+    def updateTicket(self, id, comment="", args=dict()):
         return self.server.ticket.update(int(id), comment, args)

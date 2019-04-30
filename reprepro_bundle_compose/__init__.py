@@ -113,8 +113,17 @@ def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
             pushTracStatus = bundle.getStatus().getTracStatus()
             pushTracResolution = bundle.getStatus().getTracResolution()
             if pushTracStatus and ticket['status'] != pushTracStatus:
-                tracApi.updateTicket(bundle.getTrac(), "Automatically updated by bundle-compose", None, pushTracStatus, pushTracResolution if pushTracResolution else "")
+                tracApi.updateTicket(bundle.getTrac(), "Automatically updated by bundle-compose", {
+                    'status': pushTracStatus,
+                    'resolution': pushTracResolution if pushTracResolution else "",
+                })
                 logger.info("Updated Trac-Ticket #{} of {} to Status '{}'".format(bundle.getTrac(), bundle, (pushTracStatus + " as " + pushTracResolution) if pushTracResolution else pushTracStatus))
+            pushTarget = bundle.getTarget()
+            if pushTarget and ticket['bereitstellung'] != pushTarget:
+                tracApi.updateTicket(bundle.getTrac(), "Automatically updated by bundle-compose", {
+                    'bereitstellung': pushTarget
+                })
+                logger.info("Updated Trac-Ticket #{} of {} to Target '{}'".format(bundle.getTrac(), bundle, pushTarget))
 
     storeBundles(managed_bundles, workingDir=workingDir)
 
