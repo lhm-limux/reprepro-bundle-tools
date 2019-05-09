@@ -454,7 +454,8 @@ async def handle_get_configured_targets(request):
     # TODO: read this config from some config files
     res = [
         common_interfaces.TargetDescription('standard', 'Standard (PLUS)'),
-        common_interfaces.TargetDescription('unattended', 'Unattended Security')
+        common_interfaces.TargetDescription('unattended', 'Unattended Security (Vortest)'),
+        common_interfaces.TargetDescription('unattended-applied', 'Unattended Security (aktiv)')
     ]
     return web.json_response(res)
 
