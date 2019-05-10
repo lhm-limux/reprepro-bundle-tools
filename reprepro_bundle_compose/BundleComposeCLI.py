@@ -30,6 +30,7 @@ import subprocess
 import json
 import apt_pkg
 import apt_repos
+from apt_repos import PackageField
 import reprepro_bundle_compose
 from reprepro_bundle_compose import PROJECT_DIR, BUNDLES_LIST_FILE, progname, parseBundles, updateBundles, markBundlesForStatus, getBundleRepoSuites, getTargetRepoSuites, trac_api, getTracConfig
 from reprepro_bundle_compose.bundle_status import BundleStatus
@@ -87,18 +88,20 @@ def main():
     parse_list     = subparsers.add_parser("list", help=cmd_list.__doc__, description=cmd_list.__doc__, aliases=['ls', 'lsb'])
     parse_apply    = subparsers.add_parser("apply", help=cmd_apply.__doc__, description=cmd_apply.__doc__)
     parse_jsondump = subparsers.add_parser("jsondump", help=cmd_jsondump.__doc__, description=cmd_jsondump.__doc__)
+    parse_jsondeps = subparsers.add_parser("jsondeps", help=cmd_jsondeps.__doc__, description=cmd_jsondeps.__doc__)
 
     parse_ub.set_defaults(sub_function=cmd_update_bundles, sub_parser=parse_ub)
     parse_stage.set_defaults(sub_function=cmd_stage, sub_parser=parse_stage)
     parse_list.set_defaults(sub_function=cmd_list, sub_parser=parse_list)
     parse_apply.set_defaults(sub_function=cmd_apply, sub_parser=parse_apply)
     parse_jsondump.set_defaults(sub_function=cmd_jsondump, sub_parser=parse_jsondump)
+    parse_jsondeps.set_defaults(sub_function=cmd_jsondeps, sub_parser=parse_jsondeps)
 
     for p in [parse_ub]:
         p.add_argument("--no-trac", action="store_true", help="""
                         Don't sync against trac.""")
 
-    for p in [parse_jsondump]:
+    for p in [parse_jsondump, parse_jsondeps]:
         p.add_argument('outputFilename', nargs=1, help="""
                         Name of the ouptFile for the json-dump.""")
 
@@ -206,6 +209,47 @@ def cmd_jsondump(args):
             bundleInfos.append(__extractBundleInfos(bundle, tracUrl))
         print(json.dumps(bundleInfos, sort_keys=True, indent=4), file=jsonFile)
     logger.info("Bundles-Infos SUCCESSFULLY dumped to file '{}'".format(args.outputFilename[0]))
+
+
+def cmd_jsondeps(args):
+    '''
+        Dump information about dependent bundles (sharing same binary packages with
+        different versions) into a json file.
+    '''
+    with apt_repos.suppress_unwanted_apt_pkg_messages() as forked:
+        if forked:
+            logger.info("Scanning Bundles")
+            bundles = parseBundles(getBundleRepoSuites())
+            logger.info("Extracting Bundle-Dependencies")
+
+            packages = list()
+            for bid, bundle in sorted(bundles.items()):
+                suite = bundle.getRepoSuite()
+                if suite and bundle.getStatus() > BundleStatus.STAGING and bundle.getStatus() < BundleStatus.PRODUCTION:
+                    logger.debug("Querying Packages for {} [{}]".format(bid, bundle.getStatus()))
+                    suite.scan(True)
+                    res = suite.queryPackages(".", True, None, None, [ PackageField.BINARY_PACKAGE_NAME, PackageField.VERSION, PackageField.SUITE ])
+                    packages.extend(res)
+
+            bundleDeps = list()
+            packageDeps = list()
+            knownRelations = set()
+            last = None
+            for p in sorted(packages):
+                (package, unused_version, suite) = p.getData()
+                if package != last:
+                    last = package
+                    packageDeps.clear()
+                for dep in packageDeps:
+                    rel = "{}:{}".format(suite, dep)
+                    if not rel in knownRelations:
+                        knownRelations.add(rel)
+                        bundleDeps.append([ str(suite), str(dep) ])
+                packageDeps.append(suite)
+
+            with open(args.outputFilename[0], "w", encoding="utf-8") as jsonFile:
+                print(json.dumps(sorted(bundleDeps, reverse=True), sort_keys=True, indent=4), file=jsonFile)
+            logger.info("Bundle-Dependencies SUCCESSFULLY dumped to file '{}'".format(args.outputFilename[0]))
 
 
 def cmd_apply(args):

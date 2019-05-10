@@ -1,4 +1,4 @@
 usage: bundle-compose [-h] [-d]
-                      {update-bundles,ub,mark-for-stage,stage,mark,list,ls,lsb,apply,jsondump}
+                      {update-bundles,ub,mark-for-stage,stage,mark,list,ls,lsb,apply,jsondump,jsondeps}
                       ...
-bundle-compose: error: invalid choice: 'invalid-cmd' (choose from 'update-bundles', 'ub', 'mark-for-stage', 'stage', 'mark', 'list', 'ls', 'lsb', 'apply', 'jsondump')
+bundle-compose: error: invalid choice: 'invalid-cmd' (choose from 'update-bundles', 'ub', 'mark-for-stage', 'stage', 'mark', 'list', 'ls', 'lsb', 'apply', 'jsondump', 'jsondeps')

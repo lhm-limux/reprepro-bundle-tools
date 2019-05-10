@@ -1,12 +1,12 @@
 usage: bundle-compose [-h] [-d]
-                      {update-bundles,ub,mark-for-stage,stage,mark,list,ls,lsb,apply,jsondump}
+                      {update-bundles,ub,mark-for-stage,stage,mark,list,ls,lsb,apply,jsondump,jsondeps}
                       ...
 
 Tool to merge bundles into result repositories depending on their delivery
 status.
 
 positional arguments:
-  {update-bundles,ub,mark-for-stage,stage,mark,list,ls,lsb,apply,jsondump}
+  {update-bundles,ub,mark-for-stage,stage,mark,list,ls,lsb,apply,jsondump,jsondeps}
                         choose one of these subcommands
     update-bundles (ub)
                         Updates the file `bundles` against the currently
@@ -19,6 +19,9 @@ positional arguments:
     apply               Applies the bundles list to the reprepro configuration
                         for all target suites.
     jsondump            Dump bundle-infos to a json file.
+    jsondeps            Dump information about dependent bundles (sharing same
+                        binary packages with different versions) into a json
+                        file.
 
 optional arguments:
   -h, --help            Show a (subcommand specific) help message
