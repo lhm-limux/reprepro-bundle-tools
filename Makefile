@@ -39,7 +39,7 @@ debian-build-in-buildenv:
 clean:
 	make -C ng-frontends/ng-bundle clean
 	make -C ng-frontends/ng-bundle-compose clean
-	rm -Rf .npm .config \
+	rm -Rf .npm .npm-packages .config \
 		docker-buildenv/.buildenv.built \
 		docker-buildenv/.buildenv-debian.built \
 		docker-buildenv/*apt-repos*.deb \

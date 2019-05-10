@@ -5,9 +5,8 @@
 /.pybuild
 /.vscode
 /.npm
+/.npm-packages
 /.config
-/node_modules
-/package-lock.json
 /docker-buildenv/.buildenv.built
 /docker-buildenv/.buildenv-debian.built
 /docker-buildenv/debian_control
