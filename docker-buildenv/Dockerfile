@@ -9,7 +9,7 @@ RUN apt update && apt install -y \
 
 RUN /usr/bin/npm install -g npm@6.9.0 && \
     rm /usr/bin/npm && \
-    /usr/local/bin/npm install -g @angular/cli@6.2.5 && \
+    /usr/local/bin/npm install -g @angular/cli@6.2.9 && \
     mkdir /build
 
 VOLUME /build
