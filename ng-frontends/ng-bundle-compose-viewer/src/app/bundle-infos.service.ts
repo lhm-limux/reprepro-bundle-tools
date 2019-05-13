@@ -31,7 +31,8 @@ export interface BundleInfo {
   ticketUrl: string;
 }
 
-export const INDEPENDENT_ONES = "Independent Bundles";
+export const DEP_TYPE_INDEPENDENT_BUNDLES = "Independent Bundles";
+export const DEP_TYPE_LATEST_REPLACEMENTS = "Latest Replacements";
 
 @Injectable({
   providedIn: "root"
@@ -46,7 +47,7 @@ export class BundleInfosService {
   public statusMap = new Map<string, number>();
   public targetMap = new Map<string, number>();
   public distMap = new Map<string, number>();
-  public independentOnesMap = new Map<string, number>();
+  public dependencyTypeCounterMap = new Map<string, number>();
 
   constructor(private http: HttpClient, private messages: MessagesService) {}
 
@@ -69,7 +70,7 @@ export class BundleInfosService {
             this.distMap.set(info.dist, this.distMap.get(info.dist) + 1 || 1);
           }
         });
-        this.updateIndependentOnesMap();
+        this.updateDependencyTypeCounterMap();
         this.changed.next();
       },
       (errResp: HttpErrorResponse) => {
@@ -92,7 +93,7 @@ export class BundleInfosService {
             }
           }
         }
-        this.updateIndependentOnesMap();
+        this.updateDependencyTypeCounterMap();
         this.changed.next();
       },
       (errResp: HttpErrorResponse) => {
@@ -103,19 +104,38 @@ export class BundleInfosService {
     );
   }
 
-  private updateIndependentOnesMap() {
-    this.independentOnesMap.clear();
+  private updateDependencyTypeCounterMap() {
+    this.dependencyTypeCounterMap.clear();
     if (this.bundleDeps.size === 0) {
       return;
     }
+    const latestReplacements = this.getLatestReplacementBundleIds();
     for (const b of this.bundleInfos.values()) {
       if (!this.bundleDeps.get(b.id)) {
-        this.independentOnesMap.set(
-          INDEPENDENT_ONES,
-          this.independentOnesMap.get(INDEPENDENT_ONES) + 1 || 1
+        this.dependencyTypeCounterMap.set(
+          DEP_TYPE_INDEPENDENT_BUNDLES,
+          this.dependencyTypeCounterMap.get(DEP_TYPE_INDEPENDENT_BUNDLES) + 1 ||
+            1
+        );
+      }
+      if (latestReplacements.has(b.id)) {
+        this.dependencyTypeCounterMap.set(
+          DEP_TYPE_LATEST_REPLACEMENTS,
+          this.dependencyTypeCounterMap.get(DEP_TYPE_LATEST_REPLACEMENTS) + 1 ||
+            1
         );
       }
     }
+  }
+
+  /* Returns a set of all Bundles not mentioned in any "Replaces packages of"-List.
+   */
+  public getLatestReplacementBundleIds(): Set<string> {
+    const bIds = new Set(this.bundleInfos.keys());
+    for (const deps of this.bundleDeps.values()) {
+      deps.forEach(d => bIds.delete(d.id));
+    }
+    return bIds;
   }
 
   public parseBundleId(bid: string): { dist: string; num: number } {

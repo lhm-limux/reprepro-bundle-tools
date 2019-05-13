@@ -4,7 +4,8 @@ import { Subscription } from "rxjs";
 import {
   BundleInfo,
   BundleInfosService,
-  INDEPENDENT_ONES
+  DEP_TYPE_INDEPENDENT_BUNDLES,
+  DEP_TYPE_LATEST_REPLACEMENTS
 } from "../bundle-infos.service";
 
 @Component({
@@ -28,6 +29,7 @@ export class BundleSearchComponent implements OnInit, OnDestroy {
   selectedTarget = new Set<string>();
   selectedDist = new Set<string>();
   selectedShowOnly = new Set<string>();
+  latestReplacements = new Set<string>();
   searchStr = "";
 
   constructor(
@@ -48,12 +50,16 @@ export class BundleSearchComponent implements OnInit, OnDestroy {
         this.targetMap = new Map(this.infos.targetMap);
         this.distMap = new Map(this.infos.distMap);
         this.bundleDeps = new Map(this.infos.bundleDeps);
-        this.showOnlyMap = new Map(this.infos.independentOnesMap);
+        this.showOnlyMap = new Map(this.infos.dependencyTypeCounterMap);
 
+        this.latestReplacements = new Set(
+          this.infos.getLatestReplacementBundleIds()
+        );
         this.selectedStatus = new Set(this.statusMap.keys());
         this.selectedTarget = new Set(this.targetMap.keys());
         this.selectedDist = new Set(this.distMap.keys());
         this.selectedStatus.delete("DROPPED");
+        this.selectedStatus.delete("PRODUCTION");
 
         this.update();
       })
@@ -80,8 +86,11 @@ export class BundleSearchComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const selectOnlyIndependentOnes = this.selectedShowOnly.has(
-      INDEPENDENT_ONES
+    const selectOnlyIndependentBundles = this.selectedShowOnly.has(
+      DEP_TYPE_INDEPENDENT_BUNDLES
+    );
+    const selectOnlyLatestReplacements = this.selectedShowOnly.has(
+      DEP_TYPE_LATEST_REPLACEMENTS
     );
 
     const preFiltered = [...this.infos.bundleInfos.values()].filter(b => {
@@ -90,7 +99,8 @@ export class BundleSearchComponent implements OnInit, OnDestroy {
         this.selectedStatus.has(b.status) &&
         this.selectedTarget.has(b.target) &&
         this.selectedDist.has(dist) &&
-        (!selectOnlyIndependentOnes || !this.bundleDeps.get(b.id))
+        !(selectOnlyIndependentBundles && this.bundleDeps.get(b.id)) &&
+        !(selectOnlyLatestReplacements && !this.latestReplacements.has(b.id))
       );
     });
 
