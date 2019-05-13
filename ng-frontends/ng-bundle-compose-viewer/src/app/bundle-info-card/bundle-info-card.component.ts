@@ -12,7 +12,7 @@ export class BundleInfoCardComponent implements OnInit {
   bundle: BundleInfo;
 
   @Input()
-  deps: string[];
+  deps: BundleInfo[];
 
   constructor(private router: Router) {}
 

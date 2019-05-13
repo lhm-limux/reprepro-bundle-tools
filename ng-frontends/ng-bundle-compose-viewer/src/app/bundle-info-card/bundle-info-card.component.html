@@ -22,26 +22,36 @@
   <div class="card-body">
     <h5 class="card-title">{{ bundle.subject }}</h5>
     <div *ngIf="bundle.ticket && bundle.ticketUrl">
-      Ticket:
+      Delivery-Ticket:
       <a
+        *ngIf="bundle.ticketUrl; else no_ticket_url"
         href="{{ bundle.ticketUrl }}"
         target="_blank"
         style="color: inherit; outline: 0;"
         ><b>#{{ bundle.ticket }}</b></a
+      ><ng-template #no_ticket_url
+        ><b>#{{ bundle.ticket }}</b></ng-template
       >
     </div>
-    <div *ngIf="bundle.ticket && !bundle.ticketUrl">
-      Ticket: <b>#{{ bundle.ticket }}</b>
-    </div>
-    <div *ngIf="deps">
-      Abhängig von:
-      <a
-        *ngFor="let d of deps; let last = last"
-        [routerLink]="['./']"
-        [queryParams]="{ bid: d }"
-        style="color: inherit; outline: 0;"
-        >{{ d }}<span *ngIf="!last">, </span></a
-      >
+    <div *ngIf="deps" class="mt-2">
+      Replaces packages of:
+      <ul>
+        <li *ngFor="let d of deps; let last = last">
+          <a
+            [routerLink]="['./']"
+            [queryParams]="{ bid: d.id }"
+            style="color: inherit; outline: 0;"
+            >{{ d.id }}</a
+          >
+          [{{ d.status | uppercase }}]
+          <span *ngIf="d.ticket"
+            >,
+            <a href="{{ d.ticketUrl }}" style="color: inherit; outline: 0;"
+              >#{{ d.ticket }}</a
+            >
+          </span>
+        </li>
+      </ul>
     </div>
   </div>
   <div class="card-footer">Creator: {{ bundle.creator }}</div>

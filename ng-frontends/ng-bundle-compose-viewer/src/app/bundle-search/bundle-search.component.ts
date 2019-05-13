@@ -18,7 +18,7 @@ export class BundleSearchComponent implements OnInit, OnDestroy {
   selectedBundle: string = null;
 
   bundleInfos: BundleInfo[] = [];
-  bundleDeps = new Map<string, string[]>();
+  bundleDeps = new Map<string, BundleInfo[]>();
   statusMap = new Map<string, number>();
   targetMap = new Map<string, number>();
   distMap = new Map<string, number>();
@@ -38,7 +38,6 @@ export class BundleSearchComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions.push(
       this.route.queryParams.subscribe(p => {
-        console.log("da bin i" + JSON.stringify(p));
         this.selectedBundle = p["bid"];
         this.update();
       })

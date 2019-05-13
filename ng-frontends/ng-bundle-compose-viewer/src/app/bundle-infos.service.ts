@@ -41,7 +41,7 @@ export class BundleInfosService {
   cast = this.changed.asObservable();
 
   public bundleInfos = new Map<string, BundleInfo>();
-  public bundleDeps = new Map<string, string[]>();
+  public bundleDeps = new Map<string, BundleInfo[]>();
 
   public statusMap = new Map<string, number>();
   public targetMap = new Map<string, number>();
@@ -85,8 +85,11 @@ export class BundleInfosService {
             const from = edge[0].replace("bundle/", "bundle:");
             const to = edge[1].replace("bundle/", "bundle:");
             const deps = this.bundleDeps.get(from) || [];
-            deps.push(to);
-            this.bundleDeps.set(from, deps);
+            const toInfo = this.bundleInfos.get(to);
+            if (toInfo) {
+              deps.push(this.bundleInfos.get(to));
+              this.bundleDeps.set(from, deps);
+            }
           }
         }
         this.updateIndependentOnesMap();
