@@ -26,6 +26,7 @@ import logging
 import subprocess
 import apt_pkg
 import git
+import re
 import git.exc
 from git.exc import GitCommandError
 import asyncio
@@ -262,7 +263,7 @@ def createTracTicketForBundle(trac, bundle, workingDir=PROJECT_DIR):
         'type': 'Betriebsuebernahme',
         'deliveryrepo': bundle.getID(),
         'bereitstellung': bundle.getTarget(),
-        'parent': info.get('ParentTicket') or "",
+        'umgesetzte_tickets': " ".join([ "#{}".format(t) for t in re.sub(r'[\s]+', ' ', re.sub(r'[^0-9]', " ", (info.get('UmgesetzteTickets') or ""))).strip().split()]),
         'milestone': milestone
     })
 
