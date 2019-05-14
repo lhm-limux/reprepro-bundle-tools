@@ -185,8 +185,7 @@ ifeq (yes,$(shell $(IS_GIT_TREE) && echo yes))
   returncodes:
 	make main IS_GIT_TREE=false
 else
-  returncodes:
-	@echo "Skipping returncodes as this is not a git tree"
+  returncodes: main
 endif
 
 
