@@ -1,3 +1,134 @@
+reprepro-bundle-tools (0.6.0) bionic; urgency=medium
+
+  [ Christoph Lutz ]
+  * fixed and clarified from where to get bundle-compose config files
+  * debian-build: do the more restrictive 'make -C test returncodes'
+  * bundle: using branch 'master' as default branch
+  * bundle: explicitely set workingDir instead of usind chdir()
+    this also fixes a bug with cmd_init in which repos-config was
+    created for the wrong workingDir (and e.g. with an not updated git repo
+    state)
+    this also fixes a bug with cmd_clone in which not all configuration
+    files were created - leading to a dirty git after './bundle apply' apply
+    on the server.
+  * renamed trac ticket type 'Betriebsübernahme' to 'Betriebsuebernahme'
+  * bundle-compose-app: styling-improvements and UX
+    - clarified meaning of the symbol shown with the trac-status
+    - nicer display of the branch-name
+    - show cloned GIT-Repository as link if the repo-url starts with 'http'
+  * ng new ng-bundle-compose-viewer
+  * added Makefile, gitignores and projects.symlink
+  * 'make clean install' changed package-lock.json
+  * ng generate library managed-bundle-lib; make clean install
+  * fixed vulnerability: npm install --save-dev @angular/compiler-cli@7.2.10; make clean install
+  * fixed vulnerability: npm install --save-dev karma@4.0.1; make clean install
+  * npm install --dev typescript@'>=3.1.1 <3.3'; make clean install
+  * Building angular for local usage with 'ng build --base-href ./'
+  * npm install --save bootstrap jquery popper.js; make clean install
+  * npm install --save font-awesome; make clean install
+  * added symlinks for bootstrap and fontawesome and imported them to index.html
+  * using 'npm ci' instead of 'npm install' is more what we intend to do
+  * bundle-compose: added subcommand 'jsondump'
+  * tmp
+  * viewer: started with the search feature
+  * jsondump also contains field 'ticket' now
+  * styling fixes and counter
+  * Visibility-Control for status, dist and target
+  * added select-filter
+  * updated example data
+  * Revert "ng generate library managed-bundle-lib; make clean install"
+    This reverts commit 306bfc2c905a0d054e8b8ab6e146c2f26af652ea.
+  * added 'make prod' and removed unwanted console.log() line
+  * added README.txt which hints to the sources
+  * let 'make prod' create the bundle-compose-viewer.tgz file
+  * projects symlink no longer needed for ng-bundle-compose-viewer
+  * added icons for ng-bundle-compose-viewer
+  * added 'make prod' for building all production artefacts at once and using 'npm ci' everywhere
+  * using --prod --aot=false --build-optimizer=false for production build for ng-bundle and ng-bundle-compose.
+    This is required because ExtraAuthModalComponent is dynamically loaded
+    and can't be correctly resolved with aot-builds.
+  * switched shared lib to use ngx-simple-modal instead of the badly maintained ng2-bootstrap-modal
+  * npm updates and fixes for ng-bundle and ng-bundle-compose
+    - bundle-compose: npm install @angular-devkit/build-ng-packagr
+      (required for shared module)
+    - both: replaced ng2-bootstrap-modal by ngx-simple-modal
+    - both: ng-bundle-compose: npm update; npm audit fix
+  * Ask for username interactively if not provided in config
+  * correct quoting of several url parts (and user credentials)
+  * ng generate library bundle-auth
+  * moved auth parts to new library bundle-auth
+  * integrated bundle-dialog.service into authentication.service and other refactoring fixes
+  * referring new lib bundle-auth from ng-bundle-compose
+  * ng-bundle can be built with full optimizations in --prod now since bundle-auth & dynamic modal dialogs are moved to unused lib bundle-auth
+  * added shared project to ng-bundle-compose-viewer
+  * replaced shared select-filter by better select-filter from ng-bundle-compose-viewer
+  * ng-bundle-compose-viewer: using new shared select-filter now
+  * ng-bundle: using new shared select-filter now
+  * ng-bundle-compose: added missing build dependency for 'make prod'
+  * ng-bundle-compose: using new shared select-filter now
+  * select-filter: only show number of selected elements if there's a number
+  * select-filter: added space before checkbox field
+  * moved new components messages-logs and messages-spinners from ng-bundle-compose into shared module
+  * ng-bundle-compose-viewer: prepared for adding bundleDeps to bundle-infos.service
+  * bundle-compose-viewer: now also reading bundle-deps.json
+  * bundle-compose-viewerer: select bundle using internal state
+  * bundle-compose-viewer: added Routing, QueryParams-Evaluation for 'bid' and corresponding routerLink
+  * bundle-compose-viewer: just warn in case bundle-deps.json is not there
+  * bundle-compose-viewer: added 'show only independent bundles' select filter
+  * bundle-compose: more messages during updateBundles and unified output language to (what I think it could be) English
+  * bundle-compose-app: create routerLinks for bundles mentioned in logging messages
+  * bundle-compose-app: improved log messages and ensured that bundle-ids are single words in log messages
+  * using super instead of this - just looks nicer
+  * unified Status-Badges between bundle-info-card (ng-bundle-compose-viewer) and managed-bundle-editor (ng-bundle-compose)
+  * bundle-compose-app: implemented new 'Ignores: TargetFromInfoFile' flag in the backend and the frontend
+  * fixed tests for Uppercase Statuses now
+  * keep and ensure lowercase letters in bundle-compose.status
+  * bundle-compose-app: provide more bundle infos - SourcesList, RepoUrl and InfoFileUrl
+  * bundle-compose-app: load bundleInfos more lazy and in background chunks
+  * ng-frontends: fixed 'Epression has changed after it was checked' messages due to illegal 'ngFor with maps' in select-filter component
+  * removed unwanted console.log line
+  * ng-bundle-compose: using 'undefined' and 'null' instead of ManagedBundleInfo constants and marked bundles without apt-repos suite
+  * bundle-compose-app: using card-deck instead of card-column
+  * bundle-compose-app: fixed broken selections for distributions and targets
+  * ng-bundle-libs: moved 'parseBundleId to new file bundle-utils.ts
+  * bundle-compose-app: added search bar for bundle- and ticket numbers
+  * bundle-compose: passing ParentTicket field from the info-file to the created Ticket
+  * bundle-compose-vierer: unique height of bundle-cards and permalink-feature
+  * bundle-compose-app: bugfixes for Trac-Ticket creation with no ParentTicket and get_managed_bundle_infos with empty results
+  * bundle-compose-app: fixed and bundle search and inmproved representation of search result
+  * ng-frontends: better solution for fixed equal height cards in a card-decks
+  * bundle-compose: reworked creation of repo/target config files
+    - renamed generated 'dynamic_distributions' file to 'distributions/bundle-compose_dynamic.conf'
+    - renamed generated 'updates' file to 'updates/bundle-compose_dynamic.conf'
+    - added processing of .once-files
+    - recursively copy other template files to the repo/target config
+  * adjustes tests for the new reworked config file creation
+  * bundle-compose: fixed wrong path
+  * bundle-compose-viewer: fixed wrong default selection for DROPPED state
+  * bundle-compose: also synchronize Target field to trac during updateBundles
+  * Added value for Target 'unattended-applied' to bundle-compose-app
+  * handling npm vulnerabilities
+    ... did the following things in all ng-* projects:
+    make clean
+    rm package-lock.json
+    npm i
+    npm audit fix
+    npm audit fix --force
+    npm audit
+    npm install typescript@">=3.1.1 <3.3"
+  * using lts version of @angular/cli (@6.2.9) in docker-buildenv and debian/rules
+  * install basic npm packages globally - for debian/rules as well
+  * added package-lock(s) required for normal build
+  * bundle-compose: implemented subcommand jsondeps
+  * bundle-compose-viewer: show dependencies with more details and as a list
+  * bundle-compose-viewer: added 'Show only latest Replacements' feature
+  * bundle-compose: more complex example of trac.api usage (parent -> umgesetzte_tickets)
+
+  [ Patrick von Haller ]
+  * universal sealed_hook recognizing local apt-repos if available
+
+ -- Christoph Lutz <christoph.lutz@interface-ag.de>  Tue, 14 May 2019 15:09:08 +0200
+
 reprepro-bundle-tools (0.5.0) bionic; urgency=medium
 
   Bundle-Compose-App:
