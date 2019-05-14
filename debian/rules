@@ -20,7 +20,7 @@ override_dh_gencontrol:
 override_dh_auto_build:
 	HOME=$(CURDIR) npm install -g npm@6.9.0
 	HOME=$(CURDIR) npm install -g @angular/cli@6.2.9
-	export PATH=$(CURDIR)/node_modules/.bin:$$PATH && \
+	export PATH=$(CURDIR)/.npm-packages/bin:$$PATH && \
 		export HOME=$(CURDIR) && \
 		make -C ng-frontends/ng-bundle prod && \
 		make -C ng-frontends/ng-bundle-compose prod
