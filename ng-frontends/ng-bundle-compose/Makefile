@@ -4,16 +4,19 @@ build: src/favicon.ico dist/ng-bundle-compose
 
 install: .symlinks-created .installed
 
-prod: clean install src/favicon.ico dist/shared dist/bundle-auth
+prod: clean install src/favicon.ico dist/shared dist/bundle-auth dist/apt-repos-search
 	ng build --prod --aot=false --build-optimizer=false
 
 dist/shared: $(shell find ../ng-bundle-libs/shared -type f)
 	ng build --project="shared"
 
+dist/apt-repos-search: $(shell find ../ng-bundle-libs/apt-repos-search -type f)
+	ng build --project="apt-repos-search"
+
 dist/bundle-auth: $(shell find ../ng-bundle-libs/bundle-auth -type f)
 	ng build --project="bundle-auth"
 
-dist/ng-bundle-compose: dist/shared dist/bundle-auth $(shell find src -type f)
+dist/ng-bundle-compose: dist/shared dist/bundle-auth dist/apt-repos-search $(shell find src -type f)
 	ng build
 
 src/favicon.ico: src/assets/icon.png
@@ -32,5 +35,5 @@ src/favicon.ico: src/assets/icon.png
 	touch .symlinks-created
 
 clean:
-	rm -Rf dist/shared dist/bundle-auth dist/ng-bundle-compose node_modules .symlinks-created .installed
+	rm -Rf dist/shared dist/bundle-auth dist/apt-repos-search dist/ng-bundle-compose node_modules .symlinks-created .installed
 
