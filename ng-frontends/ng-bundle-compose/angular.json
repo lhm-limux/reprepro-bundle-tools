@@ -195,6 +195,41 @@
           }
         }
       }
+    },
+    "apt-repos-search": {
+      "root": "projects/apt-repos-search",
+      "sourceRoot": "projects/apt-repos-search/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/apt-repos-search/tsconfig.lib.json",
+            "project": "projects/apt-repos-search/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/apt-repos-search/src/test.ts",
+            "tsConfig": "projects/apt-repos-search/tsconfig.spec.json",
+            "karmaConfig": "projects/apt-repos-search/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/apt-repos-search/tsconfig.lib.json",
+              "projects/apt-repos-search/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "ng-bundle-compose"

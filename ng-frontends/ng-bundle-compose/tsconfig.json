@@ -30,6 +30,12 @@
       ],
       "bundle-auth/*": [
         "dist/bundle-auth/*"
+      ],
+      "apt-repos-search": [
+        "dist/apt-repos-search"
+      ],
+      "apt-repos-search/*": [
+        "dist/apt-repos-search/*"
       ]
     }
   }
