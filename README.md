@@ -106,6 +106,13 @@ following steps:
 
 * apply the settings: **create reprepro config files** for the different target suites and stages
 
+### reprepro_bundle_appserver
+
+A python3 module containing common classes for an application-server serving the backend for the web-apps
+of the reprepro-bundle-tools. At the moment the appserver is meant to run locally on the same
+host that runs the frontend part. Being able to run the server part on a dedicated webserver is
+subject of later activities.
+
 ### test
 
 The test folder contains a concrete example setup of config files and templates to demonstrate
@@ -115,6 +122,19 @@ to get inspired and as a first startup.
 It also contains a Makefile doing an automatic (integration-)test of the reprepro-bundle-tools
 using this example setup. Note: the example setup doesn't show all possible features at the moment.
 I'm still working on improving the test suite.
+
+### ng-frontends
+
+This folder contains angular 6 frontend code for the following frontent-projects:
+
+* ng-bundle: The web-app counterpart of the command line tool ./bundle (see reprepro_bundle)
+
+* ng-bundle-compose: The web-app counterpart of the command line tools ./bundle-compose (see reprepro_bundle_compose)
+
+* ng-bundle-compose-viewer: a server less frontend displaying general bundle information - needs no login and
+                            allows just read only access.
+
+* ng-bundle-libs: common angular libraries used by any of the previously mentioned projects.
 
 
 Setup
