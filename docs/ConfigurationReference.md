@@ -39,27 +39,27 @@ basic control structures and much more. Please have a look at the
 The following variables are automatically set by the `bundle` tool and can be used
 within a template:
 
-* `creator`:        This is the unix user name of the person running the `bundle` tool
-                    as returned by the python call `getpass.getuser()`.
-* `release`:        This is the name of the (target) release this bundle is created for.
-                    In contrast to `bundleName` this contains just the release name
-                    e.g. `mybionic` and not the bundle number.
-* `readOnly`:       This variable by default contains "No". Only if a bundle is sealed,
-                    This variable is put to "Yes"
-* `bundleName`:     This variable contains the bundle name consisting of
-                    `<release>/<bundle-number>`.
-* `baseBundleName`: This variable contains the name of the bundle this bundle is
-                    cloned of or "NEW" if the bundle is not cloned from another bundle.
-* `updateRules`:    This variable contains the names of the update-Rules created in
-                    the updates template. This value is typically meant to be used
-                    within the `Update:`-rule of a `distributions` file.
+* ***creator***:  This is the unix user name of the person running the `bundle` tool
+                  as returned by the python call `getpass.getuser()`.
+* ***release***:  This is the name of the (target) release this bundle is created for.
+                  In contrast to `bundleName` this contains just the release name
+                  e.g. `mybionic` and not the bundle number.
+* ***readOnly***: This variable by default contains "No". Only if a bundle is sealed,
+                  This variable is put to "Yes"
+* ***bundleName***: This variable contains the bundle name consisting of
+                  `<release>/<bundle-number>`.
+* ***baseBundleName***: This variable contains the name of the bundle this bundle is
+                  cloned of or "NEW" if the bundle is not cloned from another bundle.
+* ***updateRules***: This variable contains the names of the update-Rules created in
+                  the updates template. This value is typically meant to be used
+                  within the `Update:`-rule of a `distributions` file.
 
 The template engine also distinguishes the following different suffixes of template file names:
 
-* `<name>.once`: The resulting target file `<name>` is only created if it is not already
+* ***<name>.once***: The resulting target file `<name>` is only created if it is not already
                  existing. This is usefull to mark a template file to not override
                  an existing file in the target directory.
-* `<name>.skel`: This template defines a snippet of lines (a section) that is
+* ***<name>.skel***: This template defines a snippet of lines (a section) that is
                  typically repeated within the resulting target file `<name>`.
 
 ### distributions
@@ -123,30 +123,30 @@ apt-repos specific keywords in
 `bundle edit` supplies the
 following additional variables to the `updates.skel` file:
 
-* `ruleName`:   The name of the update rule as referred in the variable `updateRules`
+* ***ruleName***: The name of the update rule as referred in the variable `updateRules`
                 (see above).
-* `repoUrl`:    This supplier suite specific information (pointing to the
+* ***repoUrl***: This supplier suite specific information (pointing to the
                 apt-repository) of the supplier suite is read from the apt-repos
                 configuration.
-* `suiteName`:  The `suiteName` of the supplier suite as it is defined
+* ***suiteName***: The `suiteName` of the supplier suite as it is defined
                 in the apt-repos configuration. If the corresponding apt-repos
                 config uses `"scan": true`, the suite name could be autodetected by
                 apt-repos. Note, that the suite name of the supplier suite typically
                 differs from the `release` name of our own distribution.
-* `(udeb)Components`: The list of components of the supplier suites as defined in the
+* ***(udeb)Components***: The list of components of the supplier suites as defined in the
                 apt-repos config. Components could also be autodetected using
                 `"scan": true` in the apt-repos config.
-* `architectures`: The list of architectures supported by the supplier suite. These
+* ***architectures***: The list of architectures supported by the supplier suite. These
                 values could also be autodetected if `"scan": true` is set in the
                 apt-repos config.
-* `publicKeys`: The bundle tool is able to create a list of valid keys, reflecting
+* ***publicKeys***: The bundle tool is able to create a list of valid keys, reflecting
                 all gpg key id's found in the `"TrustedGPG"` file configured for the
                 apt-repos suite. These keys are delivered in a form useful for the
                 `VerifyRelease` keyword in the update rule.
-* `filterListFile`: For each supplier suite, a FilterListFile is generated that
+* ***filterListFile***: For each supplier suite, a FilterListFile is generated that
                 defines the (source) packages `reprepro` should receive from the
                 supplier suite. This variable contains the uniq name of the list file.
-* `blacklistFile`: If `bundle blacklist` is used, a blacklist file in generated and
+* ***blacklistFile***: If `bundle blacklist` is used, a blacklist file in generated and
                 it's name is put into this variable.
 
 Putting all this information together, an example for the updates.skel is:
