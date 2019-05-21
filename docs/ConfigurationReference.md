@@ -34,7 +34,7 @@ Each template files from this folder is processed by the `bundle` tool using the
 jinja2 template engine. This way it is possible to provide great flexibility
 for customizations. The jinja2 template language allows to use variables, expressions,
 basic control structures and much more. Please have a look at the
-(Jinja Template Designer Documentation)[http://jinja.pocoo.org/docs/2.10/templates/] for more details.
+[Jinja Template Designer Documentation](http://jinja.pocoo.org/docs/2.10/templates/) for more details.
 
 The following variables are automatically set by the `bundle` tool and can be used
 within a template:
@@ -118,7 +118,7 @@ Packages we want to use from that supplier suite. The supplier suite specific
 information is read from the apt-repos configuration of the supplier-suite
 defined in the `.apt-repos` folder (see below). If needed, please find a reference of
 apt-repos specific keywords in
-(the apt-repos Condiguration.md document)[https://github.com/lhm-limux/apt-repos/blob/master/docs/Configuration.md].
+[the apt-repos Condiguration.md document](https://github.com/lhm-limux/apt-repos/blob/master/docs/Configuration.md).
 
 `bundle edit` supplies the
 following additional variables to the `updates.skel` file:

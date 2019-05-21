@@ -309,7 +309,7 @@ The reprepro-bundle-tools are in it's core just helpers to dynamically create
 reprepro configuration files. As already mentioned in the previous chapters,
 single aspects of the resulting reprepro config files can be modified using
 `templates` and `apt-repos` configuration files. These means are described in more
-detail in the [Configuration Reference](docs/ConfigurationReference.md).
+detail in the [docs/ConfigurationReference.md](docs/ConfigurationReference.md).
 
 
 Comparison with other Open Source solutions
