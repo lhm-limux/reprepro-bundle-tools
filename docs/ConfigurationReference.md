@@ -21,7 +21,7 @@ Templates for the `bundle`-tool
 -------------------------------
 
 The folder `templates/bundle/<distribution>` contains templates needed
-for the `bundle`-tool to run and to create config files for the target folders
+for the `bundle`-tool to run and to create config files for the bundle's config-folders
 `repo/bundle/<distribution>/<bundle-number>/conf` (where `<distribution>` is
 your distribution and `<bundle-number>` is the 5 digit number of a bundle
 created with the `bundle`-tool; If you are managing multiple distributions, you would probarbly need more than `<distribution>` folder there).
@@ -56,11 +56,11 @@ within a template:
 
 The template engine also distinguishes the following different suffixes of template file names:
 
-* ***<name>.once***: The resulting target file `<name>` is only created if it is not already
+* ***<name>.once***: The resulting file `<name>` is only created if it is not already
                  existing. This is usefull to mark a template file to not override
-                 an existing file in the target directory.
+                 an existing file in the bundle's conf directory.
 * ***<name>.skel***: This template defines a snippet of lines (a section) that is
-                 typically repeated within the resulting target file `<name>`.
+                 typically repeated within the resulting file `<name>`.
 
 ### distributions
 
@@ -118,13 +118,13 @@ Packages we want to use from that supplier suite. The supplier suite specific
 information is read from the apt-repos configuration of the supplier-suite
 defined in the `.apt-repos` folder (see below). If needed, please find a reference of
 apt-repos specific keywords in
-[the apt-repos Condiguration.md document](https://github.com/lhm-limux/apt-repos/blob/master/docs/Configuration.md).
+[the apt-repos Configuration.md document](https://github.com/lhm-limux/apt-repos/blob/master/docs/Configuration.md).
 
 `bundle edit` supplies the
 following additional variables to the `updates.skel` file:
 
-* ***ruleName***: The name of the update rule as referred in the variable `updateRules`
-                (see above).
+* ***ruleName***: The reprepro identifier of the update rule as also referred
+                  in the above variable `updateRules`.
 * ***repoUrl***: This supplier suite specific information (pointing to the
                 apt-repository) of the supplier suite is read from the apt-repos
                 configuration.
@@ -164,3 +164,117 @@ Putting all this information together, an example for the updates.skel is:
     FilterList: install {{ blacklistFile }}
     {%- endif %}
     DownloadListsAs: .gz
+
+Templates for the `bundle-compose`-tool
+---------------------------------------
+
+The folder `templates/bundle_compose/` contains templates that are evaluated by
+`bundle-compose apply` for the creation of a reprepro configuration describing the
+*target* repository. All generated configuration files for the target
+repository can be found in `repo/target/conf`. The apt-repositoy itself is initially
+empty. Using the command `reprepro -b repo/target update` causes reprepro to
+read the configuration from `repo/target/conf` and to create an apt-repository
+containing all our target-suites and their content.
+
+Please refer to `man reprepro` for a detailled description of the configuration
+files for reprepro. This knowledge is required in order to understand the details
+of these config settings.
+
+In order to create the *reprepro*-configuration, `bundle-compose apply` recursively
+copies all files contained in `templates/bundle_compose/` into the target folder
+`repo/target/conf` respecting the following rules for different suffixes:
+
+* ***<name>.once***: The resulting file `<name>` is only created if it is not already
+                 existing. This is usefull to mark a template file to not override
+                 an existing file in the target's conf directory.
+* ***<name>.symlink***: In the target's conf directory a symlink named `<name>` will
+                 be created, pointing to the corresponding <name>.symlink file in
+                 the templates dir. This means that the resulting file is not a
+                 copy of the origin file but just a symlink to the origin file.
+                 This could be usefull to avoid copies of redundant files. We used
+                 this feature e.g. to define a common (and big) blacklist file.
+* ****.skel***:  This template defines a snippet of lines (a section) that is
+                 typically repeated within some other result file. `*.skel`-files are
+                 not copied 1:1 to the target's conf directory but processed in
+                 a special way described in the following sections:
+
+### target_distributions.skel --> *distributions/bundle-compose_dynamic.conf*
+
+This file contains the skeleton of a section in the (dynamic) result file
+`repo/target/conf/distributions/bundle-compose_dynamic.conf` - for each target suite,
+one section is added to the result file. Again, we are using the jinja2 template engine
+to evaluate the skeleton (please see the
+[Jinja Template Designer Documentation](http://jinja.pocoo.org/docs/2.10/templates/) for more details).
+
+The list of available target suites is defined in form of an apt-repos configuration
+in the `.apt-repos` folder (see below). Please note that **target suites necissaily
+have to be defined in form of
+[Self-Contained repo_descriptions](https://github.com/lhm-limux/apt-repos/blob/master/docs/Configuration.md#self-contained-repo_descriptions)!**
+This allows us to configure the parameters for target suites even if the target suites
+don't yet exist physically (this is needed for bootstrapping a target repository from
+scratch).
+
+`bundle-compose apply` reads the target suites from the apt-repos configuration and
+passes these data over to the `target_distributions.skel` in form of the following
+variables created for each suite:
+
+* ***suite***: The suite name of the target suite (as defined in the apt-repos config).
+* ***components***: The components defined for the suite.
+* ***archtectures***: The architectures this suite will hold packages for.
+* ***updates***: A list of reprepro update rule identifier describing the dynamic
+                 content of the target suite (see below for details about the
+                 selection of ted content of a target suite).
+
+This is an example for a `target_distributions.skel` file using these variables:
+
+    Origin: MyOwnDistri
+    Label: {{ suite }}
+    Suite: {{ suite }}
+    Codename: {{ suite }}
+    Description: merge target for {{ suite }}
+    Architectures: {{ architectures }}
+    Components: {{ components }}
+    Contents: .gz .bz2
+    Update: - {{ updates }}
+
+### bundle_updates.skel --> *updates/bundle-compose_dynamic.conf*
+
+The skeleton `bundle_updates.skel` contains the definition of an update
+rule added to the file `repo/target/conf/updates/bundle-compose_dynamic.conf`.
+For each bundle selected for a target suite, one update rule is generated.
+Again, the skeleton is evaluated as a jinja2 template.
+
+The required information about the bundles is read from the apt-repos
+configuration contained in the `.apt-repos` folder (details below).
+
+For each bundle, the following variables are passed to the template engine:
+
+* ***ruleName***: The reprepro identifier of the update rule as referred in the
+                  variable `updates` (see target_distributions.skel)
+* ***repoUrl***:  The repository URL of the bundle (read from the bundle's
+                  apt-repos configuration).
+* ***suite***:    The suite name of the bundle (read from the bundle's apt-repos
+                  configuration). Typically this suitename is the same for all
+                  bundles and has no bundle number.
+* ***components***: The components defined in the bundle - typically autodetected
+                    by apt-repos.
+* ***architectures***: The architectures supported by the bundle - read from the
+                       apt-repos configuration.
+* ***targetDistribution***: The suite name of the target suite the bundle is selected
+                            for without the bundle-number. TODO: the difference between
+                            `suite` and `targetDistribution` needs to be clarified!
+* ***publicKeys***: The public gpg-keys extracted from the TrustedGPG-Files referenced
+                    by the apt-repos configuration of the bundles.
+
+An example skeleton is:
+
+    Name: {{ ruleName }}
+    Method: {{ repoUrl }}
+    Suite: {{ suite }}
+    Components: {{ components }}
+    Architectures: {{ architectures }}
+    DownloadListsAs: .gz
+    GetInRelease: no
+    VerifyRelease: {{ publicKeys }}
+
+
