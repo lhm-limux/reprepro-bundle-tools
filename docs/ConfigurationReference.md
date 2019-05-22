@@ -14,8 +14,10 @@ To run the reprepro-bundle-tools, you always need a project directory that
 contains at least a folder `templates` and a folder `.apt-repos`. Let's have
 a look at these folders:
 
+
 Templates
 =========
+
 
 Templates for the `bundle`-tool
 -------------------------------
@@ -62,6 +64,7 @@ The template engine also distinguishes the following different suffixes of templ
 * ***<name>.skel***: This template defines a snippet of lines (a section) that is
                  typically repeated within the resulting file `<name>`.
 
+
 ### distributions
 
 This is the template for `distributions` file created for each bundle. The
@@ -83,6 +86,7 @@ This is the template for `distributions` file created for each bundle. The
     ReadOnly: {{ readOnly }}
     Update: - {{ updateRules }}
 
+
 ### info.once
 
 This is the template for the `info`-file, a bundle-tool specific file that holds
@@ -102,11 +106,13 @@ latter custom usage. This is an example:
      __DYNAMIC_PACKAGE_LIST__
      .
 
+
 ### sources_control.list.once
 
 This file is just there to ensure that there's a `sources_control.list` file in
 the bundle's conf folder. This list file is also bundle-tool specific and contains
 the list of bundles selected by `bundle edit`. Initially this file is empty.
+
 
 ### updates.skel
 
@@ -165,6 +171,7 @@ Putting all this information together, an example for the updates.skel is:
     {%- endif %}
     DownloadListsAs: .gz
 
+
 Templates for the `bundle-compose`-tool
 ---------------------------------------
 
@@ -198,10 +205,11 @@ copies all files contained in `templates/bundle_compose/` into the target folder
                  not copied 1:1 to the target's conf directory but processed in
                  a special way described in the following sections:
 
+
 ### target_distributions.skel --> *distributions/bundle-compose_dynamic.conf*
 
 This file contains the skeleton of a section in the (dynamic) result file
-`repo/target/conf/distributions/bundle-compose_dynamic.conf` - for each target suite,
+`repo/target/conf/distributions/bundle-compose_dynamic.conf` - *for each target suite*,
 one section is added to the result file. Again, we are using the jinja2 template engine
 to evaluate the skeleton (please see the
 [Jinja Template Designer Documentation](http://jinja.pocoo.org/docs/2.10/templates/) for more details).
@@ -232,16 +240,17 @@ This is an example for a `target_distributions.skel` file using these variables:
     Suite: {{ suite }}
     Codename: {{ suite }}
     Description: merge target for {{ suite }}
-    Architectures: {{ architectures }}
+    Architectures: {{ architectures }} source
     Components: {{ components }}
     Contents: .gz .bz2
     Update: - {{ updates }}
+
 
 ### bundle_updates.skel --> *updates/bundle-compose_dynamic.conf*
 
 The skeleton `bundle_updates.skel` contains the definition of an update
 rule added to the file `repo/target/conf/updates/bundle-compose_dynamic.conf`.
-For each bundle selected for a target suite, one update rule is generated.
+*For each bundle selected* for a target suite, one update rule is generated.
 Again, the skeleton is evaluated as a jinja2 template.
 
 The required information about the bundles is read from the apt-repos
@@ -260,9 +269,6 @@ For each bundle, the following variables are passed to the template engine:
                     by apt-repos.
 * ***architectures***: The architectures supported by the bundle - read from the
                        apt-repos configuration.
-* ***targetDistribution***: The suite name of the target suite the bundle is selected
-                            for without the bundle-number. TODO: the difference between
-                            `suite` and `targetDistribution` needs to be clarified!
 * ***publicKeys***: The public gpg-keys extracted from the TrustedGPG-Files referenced
                     by the apt-repos configuration of the bundles.
 
@@ -272,9 +278,64 @@ An example skeleton is:
     Method: {{ repoUrl }}
     Suite: {{ suite }}
     Components: {{ components }}
-    Architectures: {{ architectures }}
+    Architectures: {{ architectures }} source
     DownloadListsAs: .gz
     GetInRelease: no
     VerifyRelease: {{ publicKeys }}
 
 
+### bundle-base_updates.skel --> *updates/bundle-compose_dynamic.conf*
+
+The skeleton `bundle-base_updates.skel` contains the definition of an update
+rule that is also added to the file `repo/target/conf/updates/bundle-compose_dynamic.conf`.
+In contrast to the previous skeleton, this skeleton ist added *for each base-suite* configured
+for a target suite. A base suite could for example be a frozen version of an old
+repository state - as it is for example used for so called "Point Releases". This
+feature allows us to merge several base-suites together to one big repository.
+Again, the skeleton is evaluated as a jinja2 template.
+
+The list of base-suites for a target suite is read from the apt-repos
+configuration contained in the `.apt-repos` folder (details below).
+
+For each base-suite, the following variables are passed to the template engine:
+
+* ***ruleName***: The reprepro identifier of the update rule as referred in the
+                  variable `updates` (see target_distributions.skel)
+* ***repoUrl***:  The repository URL of the base-suite (read from the apt-repos
+                  configuration).
+* ***suite***:    The suite name of the base-suite (read from the apt-repos
+                  configuration).
+* ***components***: The components defined in the base-suite - typically autodetected
+                    by apt-repos.
+* ***architectures***: The architectures supported by the base-suite - read from the
+                       apt-repos configuration.
+* ***targetDistribution***: The suite name of the target suite the bundle is selected
+                            for. This suite typically differs from `suite`.
+* ***publicKeys***: The public gpg-keys extracted from the TrustedGPG-Files referenced
+                    by the apt-repos configuration of the base-suite.
+
+An example skeleton is:
+
+    Name: {{ ruleName }}
+    Method: {{ repoUrl }}
+    Suite: {{ suite }}
+    Components: {{ components }}
+    Architectures: {{ architectures }} source
+    DownloadListsAs: .gz
+    GetInRelease: no
+    VerifyRelease: {{ publicKeys }}
+
+An example for using the varibale `targetDistribution` could for example be the
+usage of a blacklist of binary packages that should be ignored from the base-suite
+during merge, adding the following line to the skeleton:
+
+    FilterList: install FilterList.purge-from-{{ targetDistribution }}
+
+To run this example, ensure that there's a blacklist file with the name `FilterList.purge-from-<targetDistribution>` with the following content:
+
+    binary-package1 purge
+    binary-package2 purge
+    …
+    binary-packageN purge
+
+where *binary-package* are the names of real binary packages.
