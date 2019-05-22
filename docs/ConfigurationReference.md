@@ -339,3 +339,149 @@ To run this example, ensure that there's a blacklist file with the name `FilterL
     binary-packageN purge
 
 where *binary-package* are the names of real binary packages.
+
+
+The apt-repos configuration in `.apt-repos`
+===========================================
+
+The reprepro-bundle tools expects an apt-repos configuration in the folder
+`.apt-repos` of your *reprepro-managment* project. This way we are able
+to describe all apt-repositories, their suites and other properties
+that are important for managing our own distribution. This includes in particular
+
+* suites from where we receive packages from (so called "supplier-suites"),
+* the apt-repositories (and suites) created for our bundles,
+* the target-repository (and suites) in which we combine sources and binary-packages
+  to our own suite (so called "target-suites"),
+* frozen versions of our distibution (which might e.g. be used as "reference-suites"),
+* versions of our target-repository that contains just binary packages
+* and other suites being used e.g. as mirrors as part of our rollout process.
+
+Details about writing apt-repos configuration files can be found in
+[the apt-repos Configuration.md document](https://github.com/lhm-limux/apt-repos/blob/master/docs/Configuration.md) and studying this document is highly recommended.
+
+apt-repos defines two main ways of writing configuration files:
+
+* Using the low level *.suites-files*
+* Using the mor high level *.repos-files*
+
+In the context of a *reprepro-managment* project it is recommended to describe
+apt-repos suites using the high level form (*.repos-files*) - they provide more
+features, such as autodetection of suites in a repository and their properties.
+
+We use (apt-repos) *Tags* to set custom properties to physical apt-repos suites.
+We for example add the tag "mybionic-supplier" to all suites that should be
+used as "supplier-suites" for our distribution *mybionic*.
+
+We use *Oid*s to share common properties between different suites and to write
+shorter config files. This is in particular done for describing the very dynamic
+bundle suites and their common properties.
+
+Let's look at the details of writing apt-repos config files for the different types
+of usage:
+
+
+Defining default supplier-suites for `bundle edit`
+--------------------------------------------------
+
+Supplier suites can be defined in any *.repos* file within the `.apt-repos` folder
+but it would be a good style to put supplier suites together to a file called
+`.apt-repos/supplier.repos`.
+
+The following example shows how such a configuration could look like for the ubuntu
+upstream repository being used as supplier for the *mybionic* target suite:
+
+[
+    "--------------------------------------------------------",
+    {
+      "Repository" : "Main Ubuntu Repository",
+      "Prefix" : "ubuntu",
+      "Url" : "http://archive.ubuntu.com/ubuntu/",
+      "Suites" : [
+          { "Suite" : "bionic", "Tags" : [ "mybionic-supplier" ] },
+          { "Suite" : "bionic-backports", "Tags" : [] },
+          { "Suite" : "bionic-proposed", "Tags" : [] },
+          { "Suite" : "bionic-security", "Tags" : [ "mybionic-supplier" ] },
+          { "Suite" : "bionic-updates", "Tags" : [ "mybionic-supplier" ] }
+      ],
+      "Architectures" : [ "i386", "amd64" ],
+      "TrustedGPG" : "./gpg/ubuntu.gpg"
+    },
+    "--------------------------------------------------------"
+]
+
+In order for `bundle edit` to use these suites as **default supplier-suites**
+it is recommended to add the tag `{distribution}-supplier` as shown in the
+example. One could always adjust the list of supplier suites on the fly
+using the parameter *--supplier-suites* and this parameter is by default set to
+`{distribution}-supplier:,user-{user}:{distribution}`.
+
+This default value shows that it is also possible to tag a suite with
+`user-{user}:{distribution}`. In this case, `{user}` is replaced by the current
+unix user name (calling `bundle edit`).
+
+
+Defining bundle repositories for `bundle` and `bundle-compose`
+--------------------------------------------------------------
+
+Each bundle is a singular and independen apt-repository with one suite named
+like the target-suite (e.g. `mybionic`).
+
+Even since these bundle are independent, they share some common properties
+and apt-repos allows us to define these common properties in one section inside
+an `.apt-repos/bundle.repos` file. Again, the name doesn't matter but it is the
+recommended one for bundles.
+
+The following example shows how such a definition could look like in `bundle.repos`:
+
+    [
+       {
+        "Repository" : "Bundle-Repositories for mybionic",
+        "Oid" : "bundle-repositories-mybionic",
+        "Prefix" : "bundle",
+        "Tags" : [ "mybionic" ],
+        "Codename" : "mybionic",
+        "Url" : "http://repository-host/repo/bundle/",
+        "Trusted" : true,
+        "Architectures" : [ "i386", "amd64" ]
+       }
+    ]
+
+This section defines the common properties of the bundles but it is not yet complete.
+In order for apt-repos to find a concrete bundle such as *bundle:mybionic/0004*, we
+need another file defining the single bundles itself.
+
+This file also has to be available in `.apt-repos` and needs a name that follows
+`bundle.repos` when sorting lexically. The file name `bundle_list.repos` would meet
+this condition. The `bundle_list.repos` The subcommand `bundle update-repos-config`
+is able to create and manage the content of such a file for us. This file e.g.
+looks like this:
+
+    [
+     {
+        "Oid": "bundle-repositories-mybionic",
+        "Suites":
+        ["--------",
+        { "Suite": "mybionic/0001", "Url": "mybionic/0001", "Tags": [ "sealed" ] },
+        { "Suite": "mybionic/0002", "Url": "mybionic/0002", "Tags": [ "sealed" ] },
+        { "Suite": "mybionic/0003", "Url": "mybionic/0003", "Tags": [ "staging" ] },
+        { "Suite": "mybionic/0004", "Url": "mybionic/0004", "Tags": [ "staging" ] },
+        { "Suite": "mybionic/0005", "Url": "mybionic/0005", "Tags": [ "staging" ] },
+        "---------"]
+     }
+    ]
+
+The subcommand `bundle update-repos-config` writes this file to
+`repo/bundle/bundle.repos`. It is common practice to symlink to that file from the
+`.apt-repos` folder:
+
+    cd .apt-repos
+    ln -s ../repo/bundle/bundle.repos bundle_list.repos
+
+The files *bundle.repos* and *bundle_list.repos* together define all properties
+of the existing bundles. They are linked together via the common *Oid* which
+is of the form `bundle-repositories-{targetSuite}`.
+
+
+
+
