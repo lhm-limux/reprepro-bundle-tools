@@ -22,11 +22,12 @@ Templates
 Templates for the `bundle`-tool
 -------------------------------
 
-The folder `templates/bundle/<distribution>` contains templates needed
+The folder `templates/bundle/{distribution}` contains templates needed
 for the `bundle`-tool to run and to create config files for the bundle's config-folders
-`repo/bundle/<distribution>/<bundle-number>/conf` (where `<distribution>` is
-your distribution and `<bundle-number>` is the 5 digit number of a bundle
-created with the `bundle`-tool; If you are managing multiple distributions, you would probarbly need more than `<distribution>` folder there).
+`repo/bundle/{targetDistribution}/{bundleNumber}/conf` (where `{targetDistribution}` is
+your distribution and `{bundleNumber}` is the 5 digit number of a bundle
+created with the `bundle`-tool; If you are managing multiple distributions, you would probarbly need more than one
+`{targetDistribution}` folder there).
 
 Please refer to `man reprepro` for a detailled description of the configuration
 files for reprepro. This knowledge is required in order to understand the details
@@ -49,7 +50,7 @@ within a template:
 * ***readOnly***: This variable by default contains "No". Only if a bundle is sealed,
                   This variable is put to "Yes"
 * ***bundleName***: This variable contains the bundle name consisting of
-                  `<release>/<bundle-number>`.
+                  `{targetDistribution}/{bundleNumber}`.
 * ***baseBundleName***: This variable contains the name of the bundle this bundle is
                   cloned of or "NEW" if the bundle is not cloned from another bundle.
 * ***updateRules***: This variable contains the names of the update-Rules created in
@@ -58,11 +59,11 @@ within a template:
 
 The template engine also distinguishes the following different suffixes of template file names:
 
-* ***<name>.once***: The resulting file `<name>` is only created if it is not already
+* ***{name}.once***: The resulting file `{name}` is only created if it is not already
                  existing. This is usefull to mark a template file to not override
                  an existing file in the bundle's conf directory.
-* ***<name>.skel***: This template defines a snippet of lines (a section) that is
-                 typically repeated within the resulting file `<name>`.
+* ***{name}.skel***: This template defines a snippet of lines (a section) that is
+                 typically repeated within the resulting file `{name}`.
 
 
 ### distributions
@@ -191,11 +192,11 @@ In order to create the *reprepro*-configuration, `bundle-compose apply` recursiv
 copies all files contained in `templates/bundle_compose/` into the target folder
 `repo/target/conf` respecting the following rules for different suffixes:
 
-* ***<name>.once***: The resulting file `<name>` is only created if it is not already
+* ***{name}.once***: The resulting file `{name}` is only created if it is not already
                  existing. This is usefull to mark a template file to not override
                  an existing file in the target's conf directory.
-* ***<name>.symlink***: In the target's conf directory a symlink named `<name>` will
-                 be created, pointing to the corresponding <name>.symlink file in
+* ***{name}.symlink***: In the target's conf directory a symlink named `{name}` will
+                 be created, pointing to the corresponding `{name}.symlink` file in
                  the templates dir. This means that the resulting file is not a
                  copy of the origin file but just a symlink to the origin file.
                  This could be usefull to avoid copies of redundant files. We used
@@ -263,8 +264,8 @@ For each bundle, the following variables are passed to the template engine:
 * ***repoUrl***:  The repository URL of the bundle (read from the bundle's
                   apt-repos configuration).
 * ***suite***:    The suite name of the bundle (read from the bundle's apt-repos
-                  configuration). Typically this suitename is the same for all
-                  bundles and has no bundle number.
+                  configuration). Typically this suitename is in the form
+                  `{targetDistribution}/XXXX` where XXXX is the bundle number.
 * ***components***: The components defined in the bundle - typically autodetected
                     by apt-repos.
 * ***architectures***: The architectures supported by the bundle - read from the
@@ -331,7 +332,7 @@ during merge, adding the following line to the skeleton:
 
     FilterList: install FilterList.purge-from-{{ targetDistribution }}
 
-To run this example, ensure that there's a blacklist file with the name `FilterList.purge-from-<targetDistribution>` with the following content:
+To run this example, ensure that there's a blacklist file with the name `FilterList.purge-from-{targetDistribution}` with the following content:
 
     binary-package1 purge
     binary-package2 purge
@@ -425,7 +426,7 @@ Defining bundle repositories for `bundle` and `bundle-compose`
 --------------------------------------------------------------
 
 Each bundle is a singular and independen apt-repository with one suite named
-like the target-suite (e.g. `mybionic`).
+like the target-distribuion (e.g. `mybionic`).
 
 Even since these bundle are independent, they share some common properties
 and apt-repos allows us to define these common properties in one section inside
@@ -480,8 +481,127 @@ The subcommand `bundle update-repos-config` writes this file to
 
 The files *bundle.repos* and *bundle_list.repos* together define all properties
 of the existing bundles. They are linked together via the common *Oid* which
-is of the form `bundle-repositories-{targetSuite}`.
+is of the form `bundle-repositories-{targetDistribution}`.
 
 
+Defining bundle-base suites for `bundle-compose` and reference suites for `bundle`
+----------------------------------------------------------------------------------
 
+One of the key features of `bundle-compose` is to merge *bundles* and *bundle-base*
+suites together to a target suite which provides the packages of our own distribution.
+
+To mark an apt-repos suite as **bundle-base**, just add an apt-repos **Tag with the name
+`bundle-base.{targetDistribution}`** to the corresponding suite definition.
+
+As an example, imagine that we already have created a frozen suite named *mybionic/1.0.0*
+containing an old version of our target suite and we would like to use this "freeze"
+as one base for our distribution. In this case the suite definition could look like this
+example:
+
+    [{
+        "Repository" : "Freezes for MyOwnDistri",
+        "Prefix" : "freeze",
+        "Url" : "http://repository-host/repo/target/",
+        "Suites" : [
+            { "Suite" : "mybionic/1.0.0", "Tags" : [
+                  "bundle-base.mybionic",
+                  "mybionic-reference"
+            ]}
+        ],
+        "Scan" : true,
+        "DebSrc" : true,
+        "TrustedGPG" : "gpg/trusted.gpg"
+    }]
+
+Ther's no recommendation in which `*.repos` file to put this definition. Just ensure
+that you have got a definition somewhere in your `.apt-repos` folder.
+
+In this example we mark the apt-repos suite *freeze:mybionic/1.0.0* as a bundle-base
+for the distribution *mybionic*
+
+This example also contains another important definition, the definition of a **reference-suite**.
+The *reference-suite* is used by `bundle edit` to provide information about the packages
+that are already known to our distribution. `bundle edit` compares all packages from
+*supplier-suites* with the versions from the *reference-suites* and informs you in which
+cases the packages are identical or upgradeable. A *reference-suite* is just **an apt-repos
+Tag in the form `{targetDistribution}-reference`**.
+
+
+Defining target suites for `bundle-compose apply`
+-------------------------------------------------
+
+The subcommand `bundle-compose apply` is the generator that generates config files
+for `reprepro`. With this configuration `reprepro` is able to merge *bundles* and
+*bundle-base* suites together to the **target suite**.
+
+The definition of **target suites must be defined in form of
+[Self-Contained repo_descriptions](https://github.com/lhm-limux/apt-repos/blob/master/docs/Configuration.md#self-contained-repo_descriptions)**!
+This allows us to configure the parameters for target suites even if the target suites
+don't yet exist physically. This is needed for bootstrapping a target repository from
+scratch:
+
+* In the first step there is just the self-contained target definition.
+* In the second step ther's a `reprepro` configuration generated with the data from
+  the target definition and
+* in the last step there's a physical representation of the target suites
+  after `reprepro update` was executed on the configuration.
+
+In order to ensure that a target suite is recognized by `bundle-compose`, it
+**must be marked with the apt-repos tag `bundle-compose-target`**. Only if this tag exists,
+*bundle-compose* evaluates further details of the target suite. These details are
+also expected in form of apt-repos tags. The following Tags should be used there:
+
+* **`bundle-dist.{dist}`**: Defines that a target suite is able to recieve
+  bundles created for the targetDistribution `{dist}`
+* **`bundle-stage.{stage}`**: Defines that a target suite only recieves bundles
+  whose bundle-status is mapped to the stage `{stage}`. Have a look at
+  [bundle_status.py](../reprepro_bundle_compose/bundle_status.py) to see
+  the current mapping. Here you can see for example that the *BundleStatus.PRODUCTION*
+  is mapped to the stage *prod*. So if we add the tag `bundle-stage.prod`, we would
+  recieve all bundles that are in *BundleStatus.PRODUCTION*.
+* **`bundle-target.{target}`**: Each Bundle has assigned a Bundle Target in it's
+  bundle metadata (see *info.once* file above). This Target allows us to define
+  different target pools in which we want to put our bundles. Common targets are
+  for example *standard* and *unattended*, but you can define your own targets if
+  you want to. This tag defines, that our target suite should just recieve bundles
+  for the target `{target}`.
+
+All these tags could be repeated within one suite definition multiple times marking
+the suite to accept multiple *dist(s)*, *stag(es)* or *target(s)*.
+
+This is an example of a self-contained target definition using the above mentioned apt-repos tags:
+
+    [{
+        "Repository" : "MyBionic-Target Repository",
+        "Prefix" : "target",
+        "Tags" : [ "bundle-compose-target", "bundle-dist.mybionic" ],
+        "Url" : "http://repository-host/repo/target/",
+        "Suites" : [
+            { "Suite" : "mybionic/dev", "Tags" : [
+                "dev", "mybionic-reference",
+                "bundle-stage.dev", "bundle-stage.smoketest", "bundle-stage.test", "bundle-stage.prod",
+                "bundle-target.standard", "bundle-target.unattended"
+            ]},
+            { "Suite" : "mybionic/test", "Tags" : [
+                "test",
+                "bundle-stage.test", "bundle-stage.prod",
+                "bundle-target.standard", "bundle-target.unattended"
+            ]},
+            { "Suite" : "mybionic", "Tags" : [
+                "prod",
+                "bundle-stage.prod",
+                "bundle-target.standard", "bundle-target.unattended"
+            ]},
+            { "Suite" : "mybionic/unattended", "Tags" : [
+                "prod",
+                "bundle-stage.prod",
+                "bundle-target.unattended"
+            ]}
+        ],
+        "Scan" : false,
+        "Architectures" : [ "i386", "amd64" ],
+        "Components" : [ "main", "restricted", "universe", "multiverse", "partner" ],
+        "DebSrc" : true,
+        "Trusted" : true
+    }]
 
