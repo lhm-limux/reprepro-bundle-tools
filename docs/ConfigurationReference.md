@@ -391,24 +391,24 @@ but it would be a good style to put supplier suites together to a file called
 The following example shows how such a configuration could look like for the ubuntu
 upstream repository being used as supplier for the *mybionic* target suite:
 
-[
-    "--------------------------------------------------------",
-    {
-      "Repository" : "Main Ubuntu Repository",
-      "Prefix" : "ubuntu",
-      "Url" : "http://archive.ubuntu.com/ubuntu/",
-      "Suites" : [
-          { "Suite" : "bionic", "Tags" : [ "mybionic-supplier" ] },
-          { "Suite" : "bionic-backports", "Tags" : [] },
-          { "Suite" : "bionic-proposed", "Tags" : [] },
-          { "Suite" : "bionic-security", "Tags" : [ "mybionic-supplier" ] },
-          { "Suite" : "bionic-updates", "Tags" : [ "mybionic-supplier" ] }
-      ],
-      "Architectures" : [ "i386", "amd64" ],
-      "TrustedGPG" : "./gpg/ubuntu.gpg"
-    },
-    "--------------------------------------------------------"
-]
+    [
+        "--------------------------------------------------------",
+        {
+          "Repository" : "Main Ubuntu Repository",
+          "Prefix" : "ubuntu",
+          "Url" : "http://archive.ubuntu.com/ubuntu/",
+          "Suites" : [
+              { "Suite" : "bionic", "Tags" : [ "mybionic-supplier" ] },
+              { "Suite" : "bionic-backports", "Tags" : [] },
+              { "Suite" : "bionic-proposed", "Tags" : [] },
+              { "Suite" : "bionic-security", "Tags" : [ "mybionic-supplier" ] },
+              { "Suite" : "bionic-updates", "Tags" : [ "mybionic-supplier" ] }
+          ],
+          "Architectures" : [ "i386", "amd64" ],
+          "TrustedGPG" : "./gpg/ubuntu.gpg"
+        },
+        "--------------------------------------------------------"
+    ]
 
 In order for `bundle edit` to use these suites as **default supplier-suites**
 it is recommended to add the tag `{distribution}-supplier` as shown in the
