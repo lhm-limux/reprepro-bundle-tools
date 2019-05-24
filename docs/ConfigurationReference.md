@@ -15,6 +15,7 @@ used:
 * [Project specific "Point"-Files](#project-specific-point-files) for the
   * [`bundle`-tool](#point-files-for-the-bundle-tool)
   * [`bundle-compose`-tool](#point-files-for-the-bundle-compose-tool)
+* [Global Config Files for the `bundle-compose-app`](#global-config-files-for-the-bundle-compose-app)
 
 
 In the chapter [Minimal Setup](../README.md#minimal-setup) we created a basic
@@ -684,4 +685,61 @@ The *bundle-compose*-tool currently only supports the hook:
 
 ### `.bundle-compose.trac.conf`
 
+This file describes settings for a trac ticket system with which we are able
+to synchronize bundles during `bundle-compose update-bundles` or during
+"Synchronize Bundle-Status" called from the `bundle-compose-app`.
+
+An example configuration is:
+
+    TracUrl: http://your-trac.host/your-trac-instance/
+    CredentialType: trac
+    CredentialHint: Add a hint here that is printed in the authentication dialog.
+
+Syncronization with trac is only enabled, if there is such a definition.
+
+If there is a key ***CredentialType*** defined, this causes bundle-compose to ask
+for authentication data. If called from the `bundle-compose-app`, the provided
+authentication data are stored in encrypted form in the running backend process.
+If there are already known authentication data for the *CredentialType "trac"*,
+the credentials will not be asked any more.
+
+The key ***CredentialHint*** is optional and can be used for custom or translated
+messages shown in the authentication dialog.
+
 ### `.bundle-compose.git-repos.conf`
+
+This file describes the git server settings for accessing your *reprepro-managment*
+project. It is read by the `bundle-compose-app` and needed for the "Login".
+When logging in, the *reprepro-managment* project is cloned from the provided
+*RepoUrl* into a temporay directory. Everythin you do in your "Session" is then
+done in that temporary directory.
+
+An example configuration is:
+
+    RepoUrl: https://your-git-server/your-reprepro-management.git
+    CredentialType: git
+    CredentialHint: Add a hint here that is printed in the authentication dialog.
+
+The `bundle-compose-app` only starts if there is such a definition.
+
+the keys ***CredentialType*** and ***CredentialHint*** are treated like described
+for `.bundle-compos.trac.conf`.
+
+
+Global Config Files for the `bundle-compose-app`
+================================================
+
+The project specific configuration above requires you to create a local clone
+of your *reprepro-management* project **before** your are able to use
+`bundle-compose` or the `bundle-compose-app`. In order for the tools to find
+the project specific settings, the current working directory has the root
+of your *reprepro-managment* project.
+
+In order to be able to run the `bundle-compose-app` without any local clone
+or previously prepared context, it is possible to store the settings from the
+above **`.bundle-compose.git-repos.conf`** into a local file in the user's home
+at `$HOME/.config/bundle-compose/git-repo.conf`.
+
+Now the `bundle-compose-app` can be started from everywhere (current working
+directory) and doesn't require you to clone your *reprepro-management* project
+before (it is done during "Login").
