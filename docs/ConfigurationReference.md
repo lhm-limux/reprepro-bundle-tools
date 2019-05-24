@@ -1,8 +1,18 @@
 This page describes the means we have to customize the reprepro-bundle-tools
 and the resulting dynamic reprepro configuration to your own needs.
 
-There are currently two kinds of configuration mechanism's that can be
-used, `templates` and `apt-repos configuration files`.
+There are currently the following kinds of configuration mechanism's that can be
+used:
+
+* [Templates](#templates)
+  * [Templates for the `bundle`-tool](#templates-for-the-bundle-tool)
+  * [Templates_for_the_`bundle-compose`-tool](#templates-for-the-bundle-compose-tool)
+* [The apt-repos configuration in `.apt-repos`](#the-apt-repos-configuration-in-apt-repos)
+  * [Defining default supplier-suites for `bundle edit`](#defining-default-supplier-suites-for-bundle-edit)
+  * [Defining bundle repositories for `bundle` and `bundle-compose`](#defining-bundle-repositories-for-bundle-and-bundle-compose)
+  * [Defining bundle-base suites for `bundle-compose` and reference suites for `bundle`](#defining-bundle-base-suites-for-bundle-compose-and-reference-suites-for-bundle)
+ * [Defining target suites for `bundle-compose apply`](#defining-target-suites-for-bundle-compose-apply)
+
 
 In the chapter [Minimal Setup](../README.md#minimal-setup) we created a basic
 configuration just by copying an existing configuration from the folder
