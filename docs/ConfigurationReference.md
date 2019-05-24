@@ -4,14 +4,17 @@ and the resulting dynamic reprepro configuration to your own needs.
 There are currently the following kinds of configuration mechanism's that can be
 used:
 
-* [Templates](#templates)
-  * [Templates for the `bundle`-tool](#templates-for-the-bundle-tool)
-  * [Templates_for_the_`bundle-compose`-tool](#templates-for-the-bundle-compose-tool)
-* [The apt-repos configuration in `.apt-repos`](#the-apt-repos-configuration-in-apt-repos)
-  * [Defining default supplier-suites for `bundle edit`](#defining-default-supplier-suites-for-bundle-edit)
-  * [Defining bundle repositories for `bundle` and `bundle-compose`](#defining-bundle-repositories-for-bundle-and-bundle-compose)
-  * [Defining bundle-base suites for `bundle-compose` and reference suites for `bundle`](#defining-bundle-base-suites-for-bundle-compose-and-reference-suites-for-bundle)
- * [Defining target suites for `bundle-compose apply`](#defining-target-suites-for-bundle-compose-apply)
+* [Templates](#templates) for the
+  * [`bundle`-tool](#templates-for-the-bundle-tool)
+  * [`bundle-compose`-tool](#templates-for-the-bundle-compose-tool)
+* [The apt-repos configuration in `.apt-repos`](#the-apt-repos-configuration-in-apt-repos) to define
+  * [default supplier-suites for `bundle edit`](#defining-default-supplier-suites-for-bundle-edit)
+  * [bundle repositories for `bundle` and `bundle-compose`](#defining-bundle-repositories-for-bundle-and-bundle-compose)
+  * [bundle-base suites for `bundle-compose` and reference suites for `bundle`](#defining-bundle-base-suites-for-bundle-compose-and-reference-suites-for-bundle)
+  * [target suites for `bundle-compose apply`](#defining-target-suites-for-bundle-compose-apply)
+* [Project specific "Point"-Files](#project-specific-point-files) for the
+  * [`bundle`-tool](#point-files-for-the-bundle-tool)
+  * [`bundle-compose`-tool](#point-files-for-the-bundle-compose-tool)
 
 
 In the chapter [Minimal Setup](../README.md#minimal-setup) we created a basic
@@ -615,3 +618,70 @@ This is an example of a self-contained target definition using the above mention
         "Trusted" : true
     }]
 
+
+Project specific "Point"-Files
+==============================
+
+It is also possible to add some "Point"-Files (Files in the form `.bundle-…` and
+`.bundle-compose-…`) to the root of your *reprepro-management* project folder.
+These files are there to configure some project specific settings for the tools
+and their behaviour.
+
+All these files consist of "key: value" pairs in the typical [syntax of debian
+control files](https://www.debian.org/doc/debian-policy/ch-controlfields.html#syntax-of-control-files).
+
+
+"Point"-Files for the `bundle`-tool
+-----------------------------------
+
+### `.bundle.hooks.conf`
+
+In this file it is possible to define hooks (scripts that are called in a particular
+situation) for the bundle tool. Here's an example:
+
+    bundle_sealed: tools/send-sealed-notification-mail.sh {bundleName} {target} {subject}
+
+These lines are in the following form: `{hook}: {executable-and-args}`, where
+`{hook}` describes the situation (e.g. *bundle_sealed*) and
+`{executable-and-args}` describes the script that is called in that situation
+and their arguments. Each hook might provide variables. To reference a variable
+please just write it's name wrapped in curly braces (as in the example above).
+
+The *bundle*-tool currently only supports the hook:
+
+* ***bundle_sealed***: It is called after a bundle was sealed using `bundle seal`.
+  This hook was primarily introduced to inform the team about the existance
+  of a new sealed bundle. In this hook, the following variables are available:
+
+  * *bundleName*: The name of the bundle in the form `{distribution}/{bundleNumber}`.
+  * *bundleSuiteName*: The name of the apt-repos suite of the bundle as it is defined
+                       in the apt-repos config (above), typically in the form 
+                       `bundle:{distribution}/{bundleNumber}`.
+  * *target*: The value of the "Target:"-field from the bundle's info file.
+  * *subject*: The first line of the (multiline) "Releasenotes:"-field from the
+               bundle's info file.
+
+
+
+"Point"-Files for the `bundle-compose`-tool
+-------------------------------------------
+
+### `.bundle-compose.hooks.conf`
+
+In this file it is possible to define hooks (scripts that are called in a particular
+situation) for the bundle-compose tool. Here's an example:
+
+    pre_update_bundles: make update_bundle.repos
+
+Like in `.bundle.hooks.conf`, these lines are in the following form: `{hook}: {executable-and-args}`. Please find more details above.
+
+The *bundle-compose*-tool currently only supports the hook:
+
+* ***pre_update_bundles***: It is called before `bundle-compose update-bundles` starts
+                            it's main update task to prepare your *reprepro-management*
+                            project for an update. It doesn't provide variables.
+
+
+### `.bundle-compose.trac.conf`
+
+### `.bundle-compose.git-repos.conf`
