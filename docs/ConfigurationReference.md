@@ -736,10 +736,10 @@ the project specific settings, the current working directory has the root
 of your *reprepro-managment* project.
 
 In order to be able to run the `bundle-compose-app` without any local clone
-or previously prepared context, it is possible to store the settings from the
+or previously prepared context, it is possible to copy the content from the
 above **`.bundle-compose.git-repos.conf`** into a local file in the user's home
-at `$HOME/.config/bundle-compose/git-repo.conf`.
+at **`$HOME/.config/bundle-compose/git-repo.conf`**.
 
-Now the `bundle-compose-app` can be started from everywhere (current working
-directory) and doesn't require you to clone your *reprepro-management* project
-before (it is done during "Login").
+Now the `bundle-compose-app` can be started from everywhere (the current working
+directory doesn't matter) and doesn't require you to clone your *reprepro-management*
+project before using it - this is done during "Login".
