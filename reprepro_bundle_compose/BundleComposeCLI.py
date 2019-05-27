@@ -342,11 +342,11 @@ def createTargetRepreproConfigForRepository(bundles, repoTargets, repoConfDir, b
         for target in repoTargets:
             # create update rule for bundle-base suites
             updates = update_line.get(target, "")
-            targetDistribution = getBundleDist(target)
-            if not targetDistribution:
-                logger.warning("Skipping target {} as it has no 'bundle-dist.*' tag!".format(target))
+            baseDist = getBaseDist(target)
+            if not baseDist:
+                logger.warning("Skipping target {} as it has no 'base-dist.*' tag and no 'bundle-dist.*' tag!".format(target))
                 continue
-            for suite in sorted(apt_repos.getSuites(["bundle-base.{}:".format(targetDistribution)])):
+            for suite in sorted(apt_repos.getSuites(["bundle-base.{}:".format(baseDist)])):
                 ruleName = "update-" + suite.getSuiteName()
                 keyIds = sorted(getPublicKeyIDs(suite.getTrustedGPGFile()))
                 updates += '\n ' + ruleName
@@ -356,7 +356,7 @@ def createTargetRepreproConfigForRepository(bundles, repoTargets, repoConfDir, b
                     suite=suite.getAptSuite(),
                     components=" ".join(suite.getComponents()),
                     architectures=" ".join(suite.getArchitectures()),
-                    targetDistribution = targetDistribution,
+                    targetDistribution = baseDist,
                     publicKeys=("!|".join(keyIds)+"!" if len(keyIds) > 0 else ""))
                 update_rules[ruleName] = chunk
 
@@ -402,16 +402,20 @@ def createTargetRepreproConfigForRepository(bundles, repoTargets, repoConfDir, b
                 copyfile(srcPath, targetPath)
 
 
-def getBundleDist(targetRepoSuite):
+def getBaseDist(targetRepoSuite):
     '''
-        Returns the bundle-dist defined as a "bundle-dist.*"-tag within the supplied
-        targetRepoSuite-object or None, if no such tag is available.
-        This defines the suitename of a bundle the targetRepoSuite  is responsible for.
+        Returns the base-dist defined for the supplied targetRepoSuite or None, if there is
+        is no base-dist defined for the target. The base-dist is
+        * either the {value} defined by a "base-dist.{value}"-tag (if defined) or
+        * the {value} defined by a "bundle-dist.{value}"-tag (as fallback).
     '''
+    bundleDist, baseDist = None, None
     for tag in targetRepoSuite.getTags():
+        if tag.startswith("base-dist."):
+            baseDist = tag[len("base-dist."):]
         if tag.startswith("bundle-dist."):
-            return tag[len("bundle-dist."):]
-    return None
+            bundleDist = tag[len("bundle-dist."):]
+    return baseDist if baseDist else bundleDist
 
 
 def filterBundles(bundles, status):
