@@ -695,7 +695,7 @@ An example configuration is:
     CredentialType: trac
     CredentialHint: Add a hint here that is printed in the authentication dialog.
 
-Syncronization with trac is only enabled, if there is such a definition.
+The key ***TracUrl*** describes the URL pointing to your trac instance. The protocol *XML-RPC* needs to be enabled within your trac instance and accessible by your trac user. Syncronization with trac is only enabled, if there is such a definition. Don't define that key if you need no trac synchronization.
 
 If there is a key ***CredentialType*** defined, this causes bundle-compose to ask
 for authentication data. If called from the `bundle-compose-app`, the provided
@@ -704,7 +704,9 @@ If there are already known authentication data for the *CredentialType "trac"*,
 the credentials will not be asked any more.
 
 The key ***CredentialHint*** is optional and can be used for custom or translated
-messages shown in the authentication dialog.
+messages shown in the authentication dialog. In that message it is also possible to
+refer to the variable `{TracUrl}` containing the content of the above's definition.
+
 
 ### `.bundle-compose.git-repos.conf`
 
@@ -720,9 +722,13 @@ An example configuration is:
     CredentialType: git
     CredentialHint: Add a hint here that is printed in the authentication dialog.
 
-The `bundle-compose-app` only starts if there is such a definition.
+The key ***RepoUrl*** descibes the URL to your git server. For the authentication you
+would typically use either *ssh* or *https://*-URLs. Note that with *ssh*-URLs it is
+not possible to ask the users for Credentials at runtime - ssh is just supported with
+a public key already registered at the ssh server. The `bundle-compose-app` only would
+starts if there is a *RepoUrl* defined.
 
-the keys ***CredentialType*** and ***CredentialHint*** are treated like described
+The keys ***CredentialType*** and ***CredentialHint*** are treated like described
 for `.bundle-compos.trac.conf`.
 
 
