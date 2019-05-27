@@ -569,11 +569,12 @@ also expected in form of apt-repos tags. The following Tags should be used there
   bundles created for the targetDistribution `{dist}`. Each target suite
   needs exactly one *bundle-dist* and a target suite without that definition would
   be skipped by `bundle-compose apply`.
-* **`base-dist.{dist}`** (optional): Defines that we want to merge in the content of
-  all *bundle-base* suites (that needs to be tagged with `bundle-base.{dist}`). If the
-  target suite doesn't define the tag `base-dist.{dist}` explicitely, the *base-dist*
-  is read from the tag `bundle-dist.{dist}`.
-  A *base-dist* might differ from *bundle-dist*. This could be useful e.g. to provide
+* **`base-dist.{dist}`** (optional): With this tag it is possible to explicitely define
+  a distribution `{dist}` that should be used as base-distribution. All base-suites
+  tagged with the counterpart tag `bundle-base.{dist}` will then be merged into the
+  target suite. If the target suite doesn't define the tag `base-dist.{dist}` explicitely,
+  the *base-dist* is determined from the tag `bundle-dist.{dist}`.
+  This means the *base-dist* might differ from the *bundle-dist*, e.g. to provide
   different base distributions for *standard*- and for *unattended*-targets.
 * **`bundle-stage.{stage}`**: Defines that a target suite only recieves bundles
   whose bundle-status is mapped to the stage `{stage}`. Have a look at
