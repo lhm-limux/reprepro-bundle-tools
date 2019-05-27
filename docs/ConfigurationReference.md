@@ -570,10 +570,11 @@ also expected in form of apt-repos tags. The following Tags should be used there
   needs exactly one *bundle-dist* and a target suite without that definition would
   be skipped by `bundle-compose apply`.
 * **`base-dist.{dist}`** (optional): Defines that we want to merge in the content of
-  all *bundle-base* suites that are tagged with `bundle-base.{dist}`. If the *bundle-base*
-  tag is not defined explicitely, it defaults to `{dist}` read from `bundle-dist.{dist}`.
+  all *bundle-base* suites (that needs to be tagged with `bundle-base.{dist}`). If the
+  target suite doesn't define the tag `base-dist.{dist}` explicitely, the *base-dist*
+  is read from the tag `bundle-dist.{dist}`.
   A *base-dist* might differ from *bundle-dist*. This could be useful e.g. to provide
-  different distributions for *standard* and for *unattended* bundles.
+  different base distributions for *standard*- and for *unattended*-targets.
 * **`bundle-stage.{stage}`**: Defines that a target suite only recieves bundles
   whose bundle-status is mapped to the stage `{stage}`. Have a look at
   [bundle_status.py](../reprepro_bundle_compose/bundle_status.py) to see
