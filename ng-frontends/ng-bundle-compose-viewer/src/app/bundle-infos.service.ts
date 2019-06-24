@@ -16,7 +16,11 @@
  * https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12
  ***********************************************************************/
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders
+} from "@angular/common/http";
 import { MessagesService } from "shared";
 import { Subscription, Subject } from "rxjs";
 
@@ -52,56 +56,70 @@ export class BundleInfosService {
   constructor(private http: HttpClient, private messages: MessagesService) {}
 
   update() {
-    this.http.get<BundleInfo[]>("./assets/bundles.json").subscribe(
-      (data: BundleInfo[]) => {
-        this.bundleInfos.clear();
-        data.forEach(bundleInfo =>
-          this.bundleInfos.set(bundleInfo.id, bundleInfo)
-        );
+    const no_caching = new HttpHeaders({
+      "Cache-Control":
+        "no-cache, no-store, must-revalidate, post-check=0, pre-check=0",
+      Pragma: "no-cache",
+      Expires: "0"
+    });
 
-        this.statusMap.clear();
-        this.targetMap.clear();
-        this.distMap.clear();
-        this.bundleInfos.forEach(b => {
-          this.statusMap.set(b.status, this.statusMap.get(b.status) + 1 || 1);
-          this.targetMap.set(b.target, this.targetMap.get(b.target) + 1 || 1);
-          const info = this.parseBundleId(b.id);
-          if (info) {
-            this.distMap.set(info.dist, this.distMap.get(info.dist) + 1 || 1);
-          }
-        });
-        this.updateDependencyTypeCounterMap();
-        this.changed.next();
-      },
-      (errResp: HttpErrorResponse) => {
-        this.messages.setErrorResponse("Failed to read bundles.json", errResp);
-      }
-    );
+    this.http
+      .get<BundleInfo[]>("./assets/bundles.json", { headers: no_caching })
+      .subscribe(
+        (data: BundleInfo[]) => {
+          this.bundleInfos.clear();
+          data.forEach(bundleInfo =>
+            this.bundleInfos.set(bundleInfo.id, bundleInfo)
+          );
 
-    this.http.get<string[][]>("./assets/bundle-deps.json").subscribe(
-      (data: string[][]) => {
-        this.bundleDeps.clear();
-        for (const edge of data) {
-          if (edge.length === 2) {
-            const from = edge[0].replace("bundle/", "bundle:");
-            const to = edge[1].replace("bundle/", "bundle:");
-            const deps = this.bundleDeps.get(from) || [];
-            const toInfo = this.bundleInfos.get(to);
-            if (toInfo) {
-              deps.push(this.bundleInfos.get(to));
-              this.bundleDeps.set(from, deps);
+          this.statusMap.clear();
+          this.targetMap.clear();
+          this.distMap.clear();
+          this.bundleInfos.forEach(b => {
+            this.statusMap.set(b.status, this.statusMap.get(b.status) + 1 || 1);
+            this.targetMap.set(b.target, this.targetMap.get(b.target) + 1 || 1);
+            const info = this.parseBundleId(b.id);
+            if (info) {
+              this.distMap.set(info.dist, this.distMap.get(info.dist) + 1 || 1);
+            }
+          });
+          this.updateDependencyTypeCounterMap();
+          this.changed.next();
+        },
+        (errResp: HttpErrorResponse) => {
+          this.messages.setErrorResponse(
+            "Failed to read bundles.json",
+            errResp
+          );
+        }
+      );
+
+    this.http
+      .get<string[][]>("./assets/bundle-deps.json", { headers: no_caching })
+      .subscribe(
+        (data: string[][]) => {
+          this.bundleDeps.clear();
+          for (const edge of data) {
+            if (edge.length === 2) {
+              const from = edge[0].replace("bundle/", "bundle:");
+              const to = edge[1].replace("bundle/", "bundle:");
+              const deps = this.bundleDeps.get(from) || [];
+              const toInfo = this.bundleInfos.get(to);
+              if (toInfo) {
+                deps.push(this.bundleInfos.get(to));
+                this.bundleDeps.set(from, deps);
+              }
             }
           }
+          this.updateDependencyTypeCounterMap();
+          this.changed.next();
+        },
+        (errResp: HttpErrorResponse) => {
+          this.messages.setWarning(
+            "Bundle-Dependencies could not be shown at the moment! (bundle-deps.json missing)"
+          );
         }
-        this.updateDependencyTypeCounterMap();
-        this.changed.next();
-      },
-      (errResp: HttpErrorResponse) => {
-        this.messages.setWarning(
-          "Bundle-Dependencies could not be shown at the moment! (bundle-deps.json missing)"
-        );
-      }
-    );
+      );
   }
 
   private updateDependencyTypeCounterMap() {
