@@ -703,6 +703,7 @@ An example configuration is:
     TracUrl: http://your-trac.host/your-trac-instance/
     CredentialType: trac
     CredentialHint: Add a hint here that is printed in the authentication dialog.
+    UseParentTicketsFromInfoField: CausingTickets
 
 The key ***TracUrl*** describes the URL pointing to your trac instance. The protocol *XML-RPC* needs to be enabled within your trac instance and accessible by your trac user. Syncronization with trac is only enabled, if there is such a definition. Don't define that key if you need no trac synchronization.
 
@@ -715,6 +716,17 @@ the credentials will not be asked any more.
 The key ***CredentialHint*** is optional and can be used for custom or translated
 messages shown in the authentication dialog. In that message it is also possible to
 refer to the variable `{TracUrl}` containing the content of the above's definition.
+
+The key ***UseParentTicketsFromInfoField*** is optional and defines the name of a
+field in the bundle's info file (yes, one could define custom fields in the
+template `templates/bundle/{dist}/info.once`) that contains a space separated list
+of Parent-Tickets referring to tickets in your ticket system.
+A parent Ticket is typically the causing ticket that caused a developer to change
+something on the system and that should be resolved by that bundle.
+The key is evaluated by `bundle-compose update-bundles` if trac-synchronization
+is enabled to synchronize the Parent-Tickets to trac. The key is also evaluated
+by `bundle-compose jsondump` to add a key `parentTickets` for all bundles that
+define the Field named `{UseParentTicketsFromInfoField}` in their bundle info files.
 
 
 ### `.bundle-compose.git-repos.conf`

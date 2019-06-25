@@ -55,7 +55,7 @@ if not os.path.exists(APT_REPOS_CMD):
     APT_REPOS_CMD = "apt-repos"
 
 
-def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
+def updateBundles(tracApi=None, parentTicketsField=None, workingDir=PROJECT_DIR):
     preUpdateHook = getHooksConfig(workingDir=workingDir).get('pre_update_bundles', None)
     if preUpdateHook:
         cmd = preUpdateHook.split()
@@ -97,7 +97,7 @@ def updateBundles(tracApi=None, workingDir=PROJECT_DIR):
         if tracApi:
             if not bundle.getTrac():
                 if bundle.getStatus() > BundleStatus.STAGING and bundle.getStatus() < BundleStatus.DROPPED:
-                    tid = createTracTicketForBundle(tracApi, bundle, workingDir=workingDir)
+                    tid = createTracTicketForBundle(tracApi, bundle, parentTicketsField=parentTicketsField, workingDir=workingDir)
                     bundle.setTrac(tid)
                     logger.info("Created Trac-Ticket #{} of {} - Don't forget to publish this change!".format(bundle.getTrac(), bundle))
                 else:
@@ -253,17 +253,29 @@ def __getConfig(confFiles, confType, required=False):
     return res
 
 
-def createTracTicketForBundle(trac, bundle, workingDir=PROJECT_DIR):
+def getParentTicketsFromBundleInfo(info, parentTicketsField):
+    if not info or not parentTicketsField:
+        return None
+    parentTickets = info.get(parentTicketsField)
+    if not parentTickets:
+        return None
+    return [
+        t for t in re.sub(r'[\s]+', ' ', re.sub(r'[^0-9#]', " ", parentTickets)).strip().split()
+    ]
+
+
+def createTracTicketForBundle(trac, bundle, parentTicketsField=None, workingDir=PROJECT_DIR):
     info = bundle.getInfo()
     milestone = Distribution.getByName(info.get('Distribution', '')).getMilestone()
     (subject, description) = splitReleasenotes(info)
     package_list = subprocess.check_output([APT_REPOS_CMD, "-b .apt-repos", "ls", "-s", str(bundle.getID()), "-col", "CpvaSs", "-r", "." ], cwd=workingDir)
     description = description.replace("__DYNAMIC_PACKAGE_LIST__", package_list.decode("utf-8").rstrip())
+    parentTickets = getParentTicketsFromBundleInfo(info, parentTicketsField) or ""
     return trac.createTicket(subject, description, {
         'type': 'Betriebsuebernahme',
         'deliveryrepo': bundle.getID(),
         'bereitstellung': bundle.getTarget(),
-        'umgesetzte_tickets': " ".join([ "#{}".format(t) for t in re.sub(r'[\s]+', ' ', re.sub(r'[^0-9]', " ", (info.get('UmgesetzteTickets') or ""))).strip().split()]),
+        'umgesetzte_tickets': parentTickets,
         'milestone': milestone
     })
 

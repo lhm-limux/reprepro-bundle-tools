@@ -32,7 +32,7 @@ import apt_pkg
 import apt_repos
 from apt_repos import PackageField
 import reprepro_bundle_compose
-from reprepro_bundle_compose import PROJECT_DIR, BUNDLES_LIST_FILE, progname, parseBundles, updateBundles, markBundlesForStatus, getBundleRepoSuites, getTargetRepoSuites, trac_api, getTracConfig
+from reprepro_bundle_compose import PROJECT_DIR, BUNDLES_LIST_FILE, progname, parseBundles, updateBundles, markBundlesForStatus, getBundleRepoSuites, getTargetRepoSuites, trac_api, getTracConfig, getParentTicketsFromBundleInfo
 from reprepro_bundle_compose.bundle_status import BundleStatus
 from reprepro_bundle_compose.managed_bundle import ManagedBundle
 from reprepro_bundle_compose.distribution import Distribution
@@ -148,16 +148,18 @@ def cmd_update_bundles(args):
         and synchronizes or creates the corresponding trac-Tickets.
     '''
     tracApi = None
+    parentTicketsField = None
     if not args.no_trac:
         try:
             config = getTracConfig()
+            parentTicketsField = config.get('UseParentTicketsFromInfoField')
             tracApi = trac_api.TracApi(config['TracUrl'], config.get('User'), config.get('Password'))
         except KeyError as e:
             logger.warn("Missing Key {} in config file '{}' --> no synchronization with trac will be done!".format(e, config['__file__']))
         except Exception as e:
             logger.warn("Trac will not be synchronized: {}".format(e))
 
-    updateBundles(tracApi)
+    updateBundles(tracApi, parentTicketsField=parentTicketsField)
 
 
 def cmd_stage(args):
@@ -201,12 +203,14 @@ def cmd_jsondump(args):
     with open(args.outputFilename[0], "w", encoding="utf-8") as jsonFile:
         logger.info("Scanning Bundles")
         bundles = parseBundles(getBundleRepoSuites())
-        tracUrl = getTracConfig().get('TracUrl')
+        config = getTracConfig()
+        tracUrl = config.get('TracUrl')
+        parentTicketsField = config.get('UseParentTicketsFromInfoField')
         logger.info("Extracting Bundle-Infos")
         bundleInfos = list()
         for bid, bundle in sorted(bundles.items()):
             logger.debug("Extracting Infos for {}".format(bid))
-            bundleInfos.append(__extractBundleInfos(bundle, tracUrl))
+            bundleInfos.append(__extractBundleInfos(bundle, tracUrl, parentTicketsField))
         print(json.dumps(bundleInfos, sort_keys=True, indent=4), file=jsonFile)
     logger.info("Bundles-Infos SUCCESSFULLY dumped to file '{}'".format(args.outputFilename[0]))
 
@@ -433,14 +437,14 @@ def listBundles(bundles, tracUrl=None):
         print("{} [{}] {}{}".format(bundle.getID(), bundle.getTarget(), infos['subject'], ticketUrl))
 
 
-def __extractBundleInfos(bundle, tracUrl=None):
+def __extractBundleInfos(bundle, tracUrl=None, parentTicketsField=None):
     info = bundle.getInfo()
     ticketUrl = ""
     if tracUrl and bundle.getTrac():
         if not tracUrl.endswith("/"):
             tracUrl += "/"
         ticketUrl = urljoin(tracUrl, "ticket/{}".format(bundle.getTrac()))
-    return {
+    bundleInfo = {
         'id': bundle.getID(),
         'target': bundle.getTarget(),
         'status': str(bundle.getStatus()),
@@ -450,6 +454,10 @@ def __extractBundleInfos(bundle, tracUrl=None):
         'ticket': bundle.getTrac() or "",
         'ticketUrl': ticketUrl
     }
+    parentTickets = getParentTicketsFromBundleInfo(info, parentTicketsField)
+    if parentTickets:
+        bundleInfo['parentTickets'] = parentTickets
+    return bundleInfo
 
 
 def getPublicKeyIDs(gpgFile):

@@ -354,6 +354,7 @@ async def handle_update_bundles(request):
     config = getTracConfig(workingDir=workingDir)
     tracUrl  = config.get("TracUrl")
     credType = config.get("CredentialType", "").upper()
+    parentTicketsField = config.get('UseParentTicketsFromInfoField')
     useAuthentication = len(credType) > 0
     user, password, ssId = "", "", None
     try:
@@ -375,7 +376,7 @@ async def handle_update_bundles(request):
                     common_app_server.invalidate_credentials(ssId)
             except KeyError as e:
                 logger.warn("Missing Key {} in config file '{}' --> no synchronization with trac will be done!".format(e, config['__file__']))
-            updateBundles(tracApi, workingDir=workingDir)
+            updateBundles(tracApi, parentTicketsField=parentTicketsField, workingDir=workingDir)
             git_commit(repo, [BUNDLES_LIST_FILE], "UPDATED {}".format(BUNDLES_LIST_FILE))
         except GitNotCleanException as e:
             logger.error(e)
