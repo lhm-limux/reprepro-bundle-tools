@@ -72,7 +72,8 @@ class ManagedBundle:
         '''
         res = dict()
         if not self.__repoSuite:
-            logger.warning("Could not read info file of {} as it's apt-repos suite could not be found.".format(self.__id))
+            if self.getStatus() != BundleStatus.DROPPED:
+                logger.warning("Could not read info file of {} as it's apt-repos suite could not be found.".format(self.__id))
             return res
         url = self.getInfoFileUrl()
         try:
