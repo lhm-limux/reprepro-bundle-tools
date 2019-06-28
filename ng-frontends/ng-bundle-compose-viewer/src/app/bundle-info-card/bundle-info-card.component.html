@@ -33,24 +33,28 @@
         ><b>#{{ bundle.ticket }}</b></ng-template
       >
     </div>
+    <div *ngIf="bundle.parentTickets">
+      Parent-Tickets:
+      <app-parent-bundle-tree [bundle]="bundle"></app-parent-bundle-tree>
+    </div>
+
     <div *ngIf="deps" class="mt-2">
-      Replaces packages of:
+      Replaces a package of:
       <ul>
-        <li *ngFor="let d of deps; let last = last">
-          <a
-            [routerLink]="['./']"
-            [queryParams]="{ bid: d.id }"
-            style="color: inherit; outline: 0;"
-            >{{ d.id }}</a
-          >
-          [{{ d.status | uppercase }}]
-          <span *ngIf="d.ticket"
-            >,
-            <a href="{{ d.ticketUrl }}" style="color: inherit; outline: 0;"
-              >#{{ d.ticket }}</a
-            >
-          </span>
-        </li>
+        <app-li-bundle-info-ref
+          *ngFor="let b of deps"
+          [bundle]="b"
+          [showParentTree]="true"
+        ></app-li-bundle-info-ref>
+      </ul>
+    </div>
+    <div *ngIf="overriddenby && overriddenby.length > 0" class="mt-2">
+      Overridden by a package of:
+      <ul>
+        <app-li-bundle-info-ref
+          *ngFor="let b of overriddenby"
+          [bundle]="b"
+        ></app-li-bundle-info-ref>
       </ul>
     </div>
   </div>

@@ -58,6 +58,7 @@
     *ngFor="let info of bundleInfos"
     [bundle]="info"
     [deps]="bundleDeps.get(info.id)"
+    [overriddenby]="bundleReverseDeps.get(info.id)"
     class="mt-3"
   ></app-bundle-info-card>
 </div>

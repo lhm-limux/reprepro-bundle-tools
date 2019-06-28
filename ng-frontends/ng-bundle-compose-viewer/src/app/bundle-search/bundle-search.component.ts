@@ -20,6 +20,7 @@ export class BundleSearchComponent implements OnInit, OnDestroy {
 
   bundleInfos: BundleInfo[] = [];
   bundleDeps = new Map<string, BundleInfo[]>();
+  bundleReverseDeps = new Map<string, BundleInfo[]>();
   statusMap = new Map<string, number>();
   targetMap = new Map<string, number>();
   distMap = new Map<string, number>();
@@ -50,6 +51,17 @@ export class BundleSearchComponent implements OnInit, OnDestroy {
         this.targetMap = new Map(this.infos.targetMap);
         this.distMap = new Map(this.infos.distMap);
         this.bundleDeps = new Map(this.infos.bundleDeps);
+        this.bundleReverseDeps = new Map();
+        [...this.bundleDeps].forEach(tuple =>
+          tuple[1].forEach(b => {
+            const l: BundleInfo[] = this.bundleReverseDeps[b.id] || [];
+            const p: BundleInfo = this.infos.bundleInfos.get(tuple[0]);
+            if (p) {
+              l.push(p);
+              this.bundleReverseDeps.set(b.id, l);
+            }
+          })
+        );
         this.showOnlyMap = new Map(this.infos.dependencyTypeCounterMap);
 
         this.latestReplacements = new Set(

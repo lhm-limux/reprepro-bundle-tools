@@ -14,6 +14,9 @@ export class BundleInfoCardComponent implements OnInit {
   @Input()
   deps: BundleInfo[];
 
+  @Input()
+  overriddenby: BundleInfo[];
+
   constructor(private router: Router) {}
 
   ngOnInit() {}

@@ -1,0 +1,13 @@
+<div *ngIf="bundle.parentTickets">
+  <ul>
+    <li *ngFor="let p of getParents()">
+      <span *ngIf="!p.isDirect">Indirect </span>Parent {{ p.parent }}
+      <ul *ngIf="p.bundles.length > 0">
+        <app-li-bundle-info-ref
+          *ngFor="let b of p.bundles"
+          [bundle]="b"
+        ></app-li-bundle-info-ref>
+      </ul>
+    </li>
+  </ul>
+</div>

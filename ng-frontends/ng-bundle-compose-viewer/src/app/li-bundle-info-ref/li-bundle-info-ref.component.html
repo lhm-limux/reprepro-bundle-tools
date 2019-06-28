@@ -1,0 +1,22 @@
+<li>
+  <a
+    [routerLink]="['./']"
+    [queryParams]="{ bid: bundle.id }"
+    style="color: inherit; outline: 0;"
+    >{{ bundle.id }}</a
+  >
+  [{{ bundle.status | uppercase }}]
+  <span *ngIf="bundle.ticket"
+    >,
+    <a href="{{ bundle.ticketUrl }}" style="color: inherit; outline: 0;"
+      >#{{ bundle.ticket }}</a
+    >
+  </span>
+  <div *ngIf="showParentTree">
+    <app-parent-bundle-tree [bundle]="bundle"></app-parent-bundle-tree>
+  </div>
+  <!--
+    <div *ngIf="b !== bundle; else selfref">
+      <ng-template #selfref>{{ d.id }}</ng-template>
+  !-->
+</li>

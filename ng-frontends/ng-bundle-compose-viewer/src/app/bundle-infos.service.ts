@@ -33,10 +33,18 @@ export interface BundleInfo {
   creator: string;
   ticket: string;
   ticketUrl: string;
+  parentTickets?: string[];
 }
 
 export const DEP_TYPE_INDEPENDENT_BUNDLES = "Independent Bundles";
 export const DEP_TYPE_LATEST_REPLACEMENTS = "Latest Replacements";
+
+const NO_CACHING = new HttpHeaders({
+  "Cache-Control":
+    "no-cache, no-store, must-revalidate, post-check=0, pre-check=0",
+  Pragma: "no-cache",
+  Expires: "0"
+});
 
 @Injectable({
   providedIn: "root"
@@ -47,6 +55,7 @@ export class BundleInfosService {
 
   public bundleInfos = new Map<string, BundleInfo>();
   public bundleDeps = new Map<string, BundleInfo[]>();
+  public parentToBundle = new Map<string, BundleInfo[]>();
 
   public statusMap = new Map<string, number>();
   public targetMap = new Map<string, number>();
@@ -56,21 +65,22 @@ export class BundleInfosService {
   constructor(private http: HttpClient, private messages: MessagesService) {}
 
   update() {
-    const no_caching = new HttpHeaders({
-      "Cache-Control":
-        "no-cache, no-store, must-revalidate, post-check=0, pre-check=0",
-      Pragma: "no-cache",
-      Expires: "0"
-    });
-
     this.http
-      .get<BundleInfo[]>("./assets/bundles.json", { headers: no_caching })
+      .get<BundleInfo[]>("./assets/bundles.json", { headers: NO_CACHING })
       .subscribe(
         (data: BundleInfo[]) => {
           this.bundleInfos.clear();
-          data.forEach(bundleInfo =>
-            this.bundleInfos.set(bundleInfo.id, bundleInfo)
-          );
+          this.parentToBundle.clear();
+          data.forEach(bundleInfo => {
+            this.bundleInfos.set(bundleInfo.id, bundleInfo);
+            if (bundleInfo.parentTickets) {
+              bundleInfo.parentTickets.forEach((parent: string) => {
+                const l = this.parentToBundle.get(parent) || [];
+                l.push(bundleInfo);
+                this.parentToBundle.set(parent, l);
+              });
+            }
+          });
 
           this.statusMap.clear();
           this.targetMap.clear();
@@ -83,7 +93,7 @@ export class BundleInfosService {
               this.distMap.set(info.dist, this.distMap.get(info.dist) + 1 || 1);
             }
           });
-          this.updateDependencyTypeCounterMap();
+          this.updateDependencies();
           this.changed.next();
         },
         (errResp: HttpErrorResponse) => {
@@ -93,9 +103,11 @@ export class BundleInfosService {
           );
         }
       );
+  }
 
+  private updateDependencies() {
     this.http
-      .get<string[][]>("./assets/bundle-deps.json", { headers: no_caching })
+      .get<string[][]>("./assets/bundle-deps.json", { headers: NO_CACHING })
       .subscribe(
         (data: string[][]) => {
           this.bundleDeps.clear();
