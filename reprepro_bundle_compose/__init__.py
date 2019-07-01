@@ -259,9 +259,10 @@ def getParentTicketsFromBundleInfo(info, parentTicketsField):
     parentTickets = info.get(parentTicketsField)
     if not parentTickets:
         return None
-    return [
-        t for t in re.sub(r'[\s]+', ' ', re.sub(r'[^0-9#]', " ", parentTickets)).strip().split()
-    ]
+    parentTickets = re.sub(r'[\s]+', ' ', re.sub(r'[^0-9]', " ", parentTickets)).strip()
+    if len(parentTickets) > 0:
+        return parentTickets.split()
+    return None
 
 
 def createTracTicketForBundle(trac, bundle, parentTicketsField=None, workingDir=PROJECT_DIR):
@@ -270,12 +271,14 @@ def createTracTicketForBundle(trac, bundle, parentTicketsField=None, workingDir=
     (subject, description) = splitReleasenotes(info)
     package_list = subprocess.check_output([APT_REPOS_CMD, "-b .apt-repos", "ls", "-s", str(bundle.getID()), "-col", "CpvaSs", "-r", "." ], cwd=workingDir)
     description = description.replace("__DYNAMIC_PACKAGE_LIST__", package_list.decode("utf-8").rstrip())
-    parentTickets = getParentTicketsFromBundleInfo(info, parentTicketsField) or ""
+    parentTickets = getParentTicketsFromBundleInfo(info, parentTicketsField)
+    if parentTickets:
+        parentTickets = [ "#{}".format(t) for t in parentTickets ]
     return trac.createTicket(subject, description, {
         'type': 'Betriebsuebernahme',
         'deliveryrepo': bundle.getID(),
         'bereitstellung': bundle.getTarget(),
-        'umgesetzte_tickets': parentTickets,
+        'umgesetzte_tickets': parentTickets or "",
         'milestone': milestone
     })
 

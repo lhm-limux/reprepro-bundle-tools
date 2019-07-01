@@ -433,27 +433,30 @@ def filterBundles(bundles, status):
 def listBundles(bundles, tracUrl=None):
     for bundle in sorted(bundles):
         infos = __extractBundleInfos(bundle, tracUrl)
-        ticketUrl = " --> " + infos['ticketUrl'] if len(infos['ticketUrl']) > 0 else ""
+        ticketUrl = ""
+        if tracUrl and infos.get('ticket'):
+            if not tracUrl.endswith("/"):
+                tracUrl += "/"
+            ticketUrl = " --> {}ticket/{}".format(tracUrl, infos.get('ticket'))
         print("{} [{}] {}{}".format(bundle.getID(), bundle.getTarget(), infos['subject'], ticketUrl))
 
 
 def __extractBundleInfos(bundle, tracUrl=None, parentTicketsField=None):
     info = bundle.getInfo()
-    ticketUrl = ""
-    if tracUrl and bundle.getTrac():
-        if not tracUrl.endswith("/"):
-            tracUrl += "/"
-        ticketUrl = urljoin(tracUrl, "ticket/{}".format(bundle.getTrac()))
     bundleInfo = {
         'id': bundle.getID(),
         'target': bundle.getTarget(),
         'status': str(bundle.getStatus()),
         'basedOn': info.get("BasedOn") or "NEW",
         'subject': info.get("Releasenotes", "--no-subject--").split("\n", 1)[0],
-        'creator': info.get("Creator", "unknown"),
-        'ticket': bundle.getTrac() or "",
-        'ticketUrl': ticketUrl
+        'creator': info.get("Creator", "unknown")
     }
+    if bundle.getTrac():
+        bundleInfo['ticket'] = bundle.getTrac()
+    if tracUrl:
+        if not tracUrl.endswith("/"):
+            tracUrl += "/"
+        bundleInfo['tracUrl'] = tracUrl
     parentTickets = getParentTicketsFromBundleInfo(info, parentTicketsField)
     if parentTickets:
         bundleInfo['parentTickets'] = parentTickets
