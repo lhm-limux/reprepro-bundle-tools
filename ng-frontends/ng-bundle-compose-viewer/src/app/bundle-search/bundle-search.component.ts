@@ -54,7 +54,7 @@ export class BundleSearchComponent implements OnInit, OnDestroy {
         this.bundleReverseDeps = new Map();
         [...this.bundleDeps].forEach(tuple =>
           tuple[1].forEach(b => {
-            const l: BundleInfo[] = this.bundleReverseDeps[b.id] || [];
+            const l: BundleInfo[] = this.bundleReverseDeps.get(b.id) || [];
             const p: BundleInfo = this.infos.bundleInfos.get(tuple[0]);
             if (p) {
               l.push(p);
