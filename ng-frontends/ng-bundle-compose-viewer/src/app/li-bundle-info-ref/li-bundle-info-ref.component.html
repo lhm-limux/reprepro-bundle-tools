@@ -8,9 +8,10 @@
   [{{ bundle.status | uppercase }}]
   <span *ngIf="bundle.ticket"
     >,
-    <a href="{{ bundle.ticketUrl }}" style="color: inherit; outline: 0;"
+    <a *ngIf="bundle.tracUrl" href="{{ bundle.tracUrl }}ticket/{{ bundle.ticket }}" style="color: inherit; outline: 0;"
       >#{{ bundle.ticket }}</a
     >
+    <span *ngIf="!bundle.tracUrl">#{{ bundle.ticket }}</span>
   </span>
   <div *ngIf="showParentTree">
     <app-parent-bundle-tree [bundle]="bundle"></app-parent-bundle-tree>

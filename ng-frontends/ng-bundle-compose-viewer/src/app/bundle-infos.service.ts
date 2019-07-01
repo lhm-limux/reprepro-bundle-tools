@@ -31,8 +31,8 @@ export interface BundleInfo {
   basedOn: string;
   subject: string;
   creator: string;
-  ticket: string;
-  ticketUrl: string;
+  ticket?: string;
+  tracUrl?: string;
   parentTickets?: string[];
 }
 
