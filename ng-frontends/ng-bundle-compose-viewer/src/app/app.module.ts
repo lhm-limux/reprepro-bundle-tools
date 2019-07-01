@@ -10,9 +10,10 @@ import { BundleInfoCardComponent } from "./bundle-info-card/bundle-info-card.com
 import { BundleSearchComponent } from './bundle-search/bundle-search.component';
 import { ParentBundleTreeComponent } from './parent-bundle-tree/parent-bundle-tree.component';
 import { LiBundleInfoRefComponent } from './li-bundle-info-ref/li-bundle-info-ref.component';
+import { TicketReferenceComponent } from './ticket-reference/ticket-reference.component';
 
 @NgModule({
-  declarations: [AppComponent, BundleInfoCardComponent, BundleSearchComponent, ParentBundleTreeComponent, LiBundleInfoRefComponent],
+  declarations: [AppComponent, BundleInfoCardComponent, BundleSearchComponent, ParentBundleTreeComponent, LiBundleInfoRefComponent, TicketReferenceComponent],
   imports: [
     BrowserModule,
     HttpClientModule,

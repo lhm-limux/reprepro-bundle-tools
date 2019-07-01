@@ -7,7 +7,7 @@
     "subject": "An Example Bundle A",
     "target": "standard",
     "ticket": "12345",
-    "ticketUrl": "http://myTicketSystem/ticket/12345"
+    "tracUrl": "http://myTicketSystem/"
   },
   {
     "basedOn": "NEW",
@@ -17,7 +17,7 @@
     "subject": "My favourite Bundle B",
     "target": "standard",
     "ticket": "12346",
-    "ticketUrl": "http://myTicketSystem/ticket/12346"
+    "tracUrl": "http://myTicketSystem/"
   },
   {
     "basedOn": "NEW",
@@ -26,8 +26,7 @@
     "status": "new",
     "subject": "A very good feature Bundle C",
     "target": "standard",
-    "ticket": "12347",
-    "ticketUrl": "http://myTicketSystem/ticket/12347"
+    "ticket": "12347"
   },
   {
     "basedOn": "NEW",
@@ -36,7 +35,6 @@
     "status": "new",
     "subject": "A glorious Bundle D",
     "target": "standard",
-    "ticket": "12348",
-    "ticketUrl": "http://myTicketSystem/ticket/12348"
+    "ticket": "12348"
   }
 ]

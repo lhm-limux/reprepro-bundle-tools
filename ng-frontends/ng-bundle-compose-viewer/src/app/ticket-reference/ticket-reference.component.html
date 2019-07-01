@@ -1,0 +1,7 @@
+<a
+  *ngIf="tracUrl"
+  href="{{ tracUrl }}ticket/{{ ticket }}"
+  style="color: inherit; outline: 0;"
+  >#{{ ticket }}</a
+>
+<span *ngIf="!tracUrl">#{{ ticket }}</span>

@@ -2,13 +2,10 @@
   <ul>
     <li *ngFor="let p of getParents()">
       <span *ngIf="!p.isDirect">Indirect </span>Parent
-      <a
-        *ngIf="bundle.tracUrl"
-        href="{{ bundle.tracUrl }}ticket/{{ p.parent }}"
-        style="color: inherit; outline: 0;"
-        >#{{ p.parent }}</a
-      >
-      <span *ngIf="!bundle.tracUrl">#{{ p.parent }}</span>
+      <app-ticket-reference
+        [ticket]="p.parent"
+        [tracUrl]="bundle.tracUrl"
+      ></app-ticket-reference>
       <ul *ngIf="p.bundles.length > 0">
         <app-li-bundle-info-ref
           *ngFor="let b of p.bundles"

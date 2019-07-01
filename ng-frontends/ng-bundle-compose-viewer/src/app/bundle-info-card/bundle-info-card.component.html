@@ -21,17 +21,14 @@
   </div>
   <div class="card-body">
     <h5 class="card-title">{{ bundle.subject }}</h5>
-    <div *ngIf="bundle.ticket && bundle.ticketUrl">
+    <div *ngIf="bundle.ticket">
       Delivery-Ticket:
-      <a
-        *ngIf="bundle.ticketUrl; else no_ticket_url"
-        href="{{ bundle.ticketUrl }}"
-        target="_blank"
-        style="color: inherit; outline: 0;"
-        ><b>#{{ bundle.ticket }}</b></a
-      ><ng-template #no_ticket_url
-        ><b>#{{ bundle.ticket }}</b></ng-template
-      >
+      <b>
+        <app-ticket-reference
+          [ticket]="bundle.ticket"
+          [tracUrl]="bundle.tracUrl"
+        ></app-ticket-reference>
+      </b>
     </div>
     <div *ngIf="bundle.parentTickets">
       Parent-Tickets:

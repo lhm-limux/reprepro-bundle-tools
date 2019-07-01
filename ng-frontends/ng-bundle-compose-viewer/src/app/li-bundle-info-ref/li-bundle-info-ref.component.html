@@ -5,14 +5,11 @@
     style="color: inherit; outline: 0;"
     >{{ bundle.id }}</a
   >
-  [{{ bundle.status | uppercase }}]
-  <span *ngIf="bundle.ticket"
-    >,
-    <a *ngIf="bundle.tracUrl" href="{{ bundle.tracUrl }}ticket/{{ bundle.ticket }}" style="color: inherit; outline: 0;"
-      >#{{ bundle.ticket }}</a
-    >
-    <span *ngIf="!bundle.tracUrl">#{{ bundle.ticket }}</span>
-  </span>
+  [{{ bundle.status | uppercase }}],
+  <app-ticket-reference
+    [ticket]="bundle.ticket"
+    [tracUrl]="bundle.tracUrl"
+  ></app-ticket-reference>
   <div *ngIf="showParentTree">
     <app-parent-bundle-tree [bundle]="bundle"></app-parent-bundle-tree>
   </div>
