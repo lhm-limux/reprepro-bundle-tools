@@ -421,7 +421,9 @@ def cmd_bundles(args):
             target = "[{}]".format(info.get("Target", "no-target"))
             creator = "({})".format(info.get("Creator", "unknown-creator"))
             subject = info.get("Releasenotes", "--no-subject--").split("\n")[0]
-            print(" ".join((bundle.bundleName, editable, target, subject, creator)))
+            basedOn = info.get("BasedOn", "NEW")
+            basedOn = "<BasedOn:{}>".format(basedOn) if not basedOn == 'NEW' else ''
+            print(" ".join((bundle.bundleName, editable, target, subject, creator, basedOn)).rstrip())
 
 
 def scanBundles(cwd=PROJECT_DIR):
