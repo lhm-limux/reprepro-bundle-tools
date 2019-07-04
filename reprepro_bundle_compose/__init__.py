@@ -133,12 +133,19 @@ def parseBundles(repoSuites=None, selectIds=None, workingDir=PROJECT_DIR):
     '''
         Parses the file BUNDLES_LIST_FILE and returns a dict of ID to ManagedBundle-Objects mappings
     '''
+    bundlesListFile = os.path.join(workingDir, BUNDLES_LIST_FILE)
+    return parseBundlesListFile(bundlesListFile, repoSuites, selectIds)
+
+
+def parseBundlesListFile(bundlesListFile, repoSuites=None, selectIds=None):
+    '''
+        Parses the file bundlesListsFile and returns a dict of ID to ManagedBundle-Objects mappings
+    '''
     res = dict()
-    bundles = os.path.join(workingDir, BUNDLES_LIST_FILE)
-    if not os.path.isfile(bundles):
-        logger.warning("File {} not found.".format(bundles))
+    if not os.path.isfile(bundlesListFile):
+        logger.warning("File {} not found.".format(bundlesListFile))
         return res
-    file_bundles = apt_pkg.TagFile(bundles)
+    file_bundles = apt_pkg.TagFile(bundlesListFile)
     try:
         file_bundles.jump(0)
         for section in file_bundles:
