@@ -704,6 +704,8 @@ An example configuration is:
     CredentialType: trac
     CredentialHint: Add a hint here that is printed in the authentication dialog.
     UseParentTicketsFromInfoField: CausingTickets
+    User: tracuser
+    Password: tracuser's_Password
 
 The key ***TracUrl*** describes the URL pointing to your trac instance. The protocol *XML-RPC* needs to be enabled within your trac instance and accessible by your trac user. Syncronization with trac is only enabled, if there is such a definition. Don't define that key if you need no trac synchronization.
 
@@ -727,6 +729,17 @@ The key is evaluated by `bundle-compose update-bundles` if trac-synchronization
 is enabled to synchronize the Parent-Tickets to trac. The key is also evaluated
 by `bundle-compose jsondump` to add a key `parentTickets` for all bundles that
 define the Field named `{UseParentTicketsFromInfoField}` in their bundle info files.
+
+The key ***User*** is optional and only evaluated by the `./bundle-compose` command
+line client (in the webfrontend we expect the user to interactively type in the
+trac credentials). If `User` is provided, the command line client will use this
+user name and not ask for it iteractively.
+
+The key ***Password*** is optional and only evaluated by the `./bundle-compose` command
+line client, too. You would typically not define this keyword on project level
+(in the `.bundle-compose.trac.conf`) but in your user-private
+`~/.config/bundle-compose/trac.conf` file. If this key is provided, this password
+will be used and not be asked interactively.
 
 
 ### `.bundle-compose.git-repos.conf`
@@ -756,13 +769,26 @@ for `.bundle-compos.trac.conf`.
 Global Config Files for the `bundle-compose-app`
 ================================================
 
+The following above mentioned point files can also be defined on global, user (private)
+level outside of the project folder:
+
+* .bundle-compose.git-repos.conf at **`$HOME/.config/bundle-compose/git-repo.conf`**
+* .bundle-compose.trac.conf at **`$HOME/.config/bundle-compose/trac.conf`**
+
+The content of these files will be merged together in a way that the settings
+on user level override or enriches project specific settings. This could be
+of use in the following scenarios:
+
+To use the bundle-compose-app standalone
+----------------------------------------
+
 The project specific configuration above requires you to create a local clone
 of your *reprepro-management* project **before** your are able to use
 `bundle-compose` or the `bundle-compose-app`. In order for the tools to find
-the project specific settings, the current working directory has the root
+the project specific settings, the current working directory has to be the root
 of your *reprepro-managment* project.
 
-In order to be able to run the `bundle-compose-app` without any local clone
+If you would like to run the `bundle-compose-app` without any local clone
 or previously prepared context, it is possible to copy the content from the
 above **`.bundle-compose.git-repos.conf`** into a local file in the user's home
 at **`$HOME/.config/bundle-compose/git-repo.conf`**.
@@ -770,3 +796,11 @@ at **`$HOME/.config/bundle-compose/git-repo.conf`**.
 Now the `bundle-compose-app` can be started from everywhere (the current working
 directory doesn't matter) and doesn't require you to clone your *reprepro-management*
 project before using it - this is done during "Login".
+
+To hide infos from your project
+-------------------------------
+
+Another use case for a global config file could be to override project specific
+configuration settings or to add information that you don't want to store in
+the project's git repository, e.g. the credential data for the trac user.
+
