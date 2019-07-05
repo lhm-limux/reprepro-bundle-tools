@@ -217,15 +217,16 @@ def getTargetRepoSuites(stage=None, workingDir=PROJECT_DIR):
 
 def getGitRepoConfig(required=False, workingDir=PROJECT_DIR):
     gitRepoConfFiles = [
-        os.path.join(os.path.expanduser("~"), ".config", progname, "git-repo.conf"),
-        os.path.join(workingDir, ".bundle-compose.git-repo.conf")
+        os.path.join(workingDir, ".bundle-compose.git-repo.conf"),
+        os.path.join(os.path.expanduser("~"), ".config", progname, "git-repo.conf")
     ]
     return __getConfig(gitRepoConfFiles, confType="git-repo", required=required)
 
 
 def getTracConfig(required=False, workingDir=PROJECT_DIR):
     tracConfFiles = [
-        os.path.join(workingDir, ".bundle-compose.trac.conf")
+        os.path.join(workingDir, ".bundle-compose.trac.conf"),
+        os.path.join(os.path.expanduser("~"), ".config", progname, "trac.conf")
     ]
     return __getConfig(tracConfFiles, confType="trac", required=required)
 
@@ -239,24 +240,17 @@ def getHooksConfig(required=False, workingDir=PROJECT_DIR):
 
 def __getConfig(confFiles, confType, required=False):
     res = dict()
-    res['__file__'] = None
-    found = None
     for confFile in confFiles:
         if os.path.isfile(confFile):
-            found = confFile
-            break
-    if not found:
-        if required:
-            msg = "No {} configuration file found at {}".format(confType, ", ".join(confFiles))
-            logger.warning(msg)
-            raise Exception(msg)
-        return res
-    with apt_pkg.TagFile(found) as tagFile:
-        res['__file__'] = found
-        tagFile.jump(0)
-        for section in tagFile:
-            for key in section.keys():
-                res[key] = section[key]
+            with apt_pkg.TagFile(found) as tagFile:
+                tagFile.jump(0)
+                for section in tagFile:
+                    for key in section.keys():
+                        res[key] = section[key]
+    if required and len(res) == 0:
+        msg = "No {} configuration file found at {}".format(confType, ", ".join(confFiles))
+        logger.warning(msg)
+        raise Exception(msg)
     return res
 
 
