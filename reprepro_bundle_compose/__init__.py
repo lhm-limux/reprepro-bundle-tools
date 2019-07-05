@@ -242,7 +242,7 @@ def __getConfig(confFiles, confType, required=False):
     res = dict()
     for confFile in confFiles:
         if os.path.isfile(confFile):
-            with apt_pkg.TagFile(found) as tagFile:
+            with apt_pkg.TagFile(confFile) as tagFile:
                 tagFile.jump(0)
                 for section in tagFile:
                     for key in section.keys():
