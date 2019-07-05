@@ -280,7 +280,7 @@ def createTracTicketForBundle(trac, bundle, parentTicketsField=None, workingDir=
     description = description.replace("__DYNAMIC_PACKAGE_LIST__", package_list.decode("utf-8").rstrip())
     parentTickets = getParentTicketsFromBundleInfo(info, parentTicketsField)
     if parentTickets:
-        parentTickets = [ "#{}".format(t) for t in parentTickets ]
+        parentTickets = " ".join([ "#{}".format(t) for t in parentTickets ])
     return trac.createTicket(subject, description, {
         'type': 'Betriebsuebernahme',
         'deliveryrepo': bundle.getID(),
