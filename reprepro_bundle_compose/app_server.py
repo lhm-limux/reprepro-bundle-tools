@@ -88,6 +88,18 @@ async def handle_required_auth(request):
                 "TracUrl",
                 "Please enter your {CredentialType} authentication data to sync with Trac!"
             ))
+        elif "gitPullRebase" == req['actionId']:
+            workingDir = None
+            try:
+                unused_session, workingDir = validateSession(request)
+            except Exception as e:
+                return web.Response(text="Invalid Session: {}".format(e), status=401)
+            res.extend(getRequiredAuthForConfig(
+                availableRefs,
+                getGitRepoConfig(workingDir=workingDir),
+                "RepoUrl",
+                "Please enter your {CredentialType} authentication data to pull changes from the Git-Server!"
+            ))
         elif "publishChanges" == req['actionId']:
             try:
                 unused_session, workingDir = validateSession(request)
@@ -343,6 +355,47 @@ async def handle_set_target(request):
     return web.json_response(res)
 
 
+async def handle_git_pull_rebase(request):
+    workingDir = None
+    try:
+        unused_session, workingDir = validateSession(request)
+    except Exception as e:
+        return web.Response(text="Invalid Session: {}".format(e), status=401)
+
+    logger.info("handling 'Git Pull/Rebase'")
+
+    repoUrl, credType, useAuthentication = None, None, None
+    try:
+        config = getGitRepoConfig(required=True, workingDir=workingDir)
+        repoUrl = config["RepoUrl"]
+        credType = config.get("CredentialType", "").upper()
+        useAuthentication = len(credType) > 0
+    except Exception as e:
+        return web.Response(text="Invalid Configuration: {}".format(e), status=500)
+
+    user, password, ssId = "", "", None
+    try:
+        if useAuthentication:
+            (user, password, ssId) = common_app_server.get_credentials(request, credType)
+    except Exception as e:
+        return web.Response(text="Illegal Arguments Provided: {}".format(e), status=400)
+
+    res = []
+    with common_app_server.logging_redirect_for_webapp() as logs:
+        try:
+            repo = git.Repo(workingDir)
+            if useAuthentication:
+                configureGitCredentialHelper(repo, repoUrl, user, password)
+            repo.git.pull()
+            repo.git.rebase()
+            logger.info("Successfully pulled Changes and rebased your repository")
+        except (Exception, GitCommandError) as e:
+            logger.error("Git Pull/Rebase failed:\n{}".format(e))
+            common_app_server.invalidate_credentials(ssId)
+        res = logs.toBackendLogEntryList()
+    return web.json_response(res)
+
+
 async def handle_update_bundles(request):
     workingDir = None
     try:
@@ -543,6 +596,7 @@ def registerRoutes(args, app):
         web.get('/api/configuredTargets', handle_get_configured_targets),
         web.get('/api/managedBundles', handle_get_managed_bundles),
         web.get('/api/managedBundleInfos', handle_get_managed_bundle_infos),
+        web.get('/api/gitPullRebase', handle_git_pull_rebase),
         web.get('/api/updateBundles', handle_update_bundles),
         web.get('/api/markForStatus', handle_mark_for_status),
         web.get('/api/setTarget', handle_set_target),
