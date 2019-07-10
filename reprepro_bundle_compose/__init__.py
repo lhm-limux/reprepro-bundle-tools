@@ -61,9 +61,9 @@ def updateBundles(tracApi=None, parentTicketsField=None, workingDir=PROJECT_DIR)
         cmd = preUpdateHook.split()
         logger.info("Calling pre_update_bundles hook '{}'".format(" ".join(cmd)))
         try:
-            subprocess.check_call(cmd, cwd=workingDir)
-        except Exception as e:
-            logger.warning("Hook execution failed: {}".format(e))
+            subprocess.check_output(cmd, cwd=workingDir, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            logger.warning("Hook execution failed with return code {}:\n{}".format(e.returncode, e.output.decode('utf-8')))
 
     # TODO: apt_repos.setAptReposBaseDir() - Achtung wir sind hier nicht threadsafe, verwenden aber potentiell Threads!
     repo_suites = getBundleRepoSuites(workingDir=workingDir)
