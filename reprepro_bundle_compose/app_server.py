@@ -364,7 +364,7 @@ async def handle_git_pull_rebase(request):
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
-    logger.info("handling 'Git Pull/Rebase'")
+    logger.info("Updating git-repository from the git-server")
 
     repoUrl, credType, useAuthentication = None, None, None
     try:
@@ -388,11 +388,15 @@ async def handle_git_pull_rebase(request):
             repo = git.Repo(workingDir)
             if useAuthentication:
                 configureGitCredentialHelper(repo, repoUrl, user, password)
-            repo.git.pull()
-            repo.git.rebase()
-            logger.info("Successfully pulled Changes and rebased your repository")
+            repo.git.fetch()
+            try:
+                repo.git.rebase()
+            except GitCommandError as e:
+                repo.git.rebase("--abort")
+                return web.Response(text="Rebase is not possible due to merge-conflicts! Please UNDO your local changes and try again!", status=409)
+            logger.info("Successfully pulled changes and rebased your repository")
         except (Exception, GitCommandError) as e:
-            logger.error("Git Pull/Rebase failed:\n{}".format(e))
+            logger.error("Updating git-repository from the git-server failed:\n{}".format(e))
             common_app_server.invalidate_credentials(ssId)
         res = logs.toBackendLogEntryList()
     return web.json_response(res)
