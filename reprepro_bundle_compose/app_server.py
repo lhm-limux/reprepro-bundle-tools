@@ -129,7 +129,7 @@ def getRequiredAuthForConfig(availableRefs, config, urlKey, defaultHint):
 
 
 async def handle_login(request):
-    logger.info("handling 'login'")
+    logger.info("Handling 'login'")
 
     config, repoUrl, branch, credType, useAuthentication = None, None, None, None, None
     try:
@@ -241,7 +241,7 @@ async def handle_undo_last_change(request):
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
-    logger.info("handling 'Undo last Change'")
+    logger.info("Handling 'Undo last Change'")
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
@@ -265,7 +265,7 @@ async def handle_publish_changes(request):
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
-    logger.info("handling 'Publish Changes'")
+    logger.info("Handling 'Publish Changes'")
 
     repoUrl, credType, useAuthentication = None, None, None
     try:
@@ -307,7 +307,7 @@ async def handle_mark_for_status(request):
 
     status = BundleStatus.getByName(request.rel_url.query['status'])
     ids = json.loads(request.rel_url.query['bundles'])
-    logger.info("mark for status: {} --> {}".format(ids, status))
+    logger.info("Mark for status: {} --> {}".format(ids, status))
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
@@ -338,7 +338,7 @@ async def handle_set_target(request):
     ignoreTargetFromInfoFile=request.rel_url.query.get('ignoreTargetFromInfoFile')
     if ignoreTargetFromInfoFile:
         ignoreTargetFromInfoFile = (ignoreTargetFromInfoFile.lower() == "true")
-    logger.info("mark for target: {} --> {}".format(ids, target))
+    logger.info("Mark for target: {} --> {}".format(ids, target))
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
@@ -409,7 +409,7 @@ async def handle_update_bundles(request):
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
-    logger.info("handling 'Update Bundles'")
+    logger.info("Handling 'Update Bundles'")
     config = getTracConfig(workingDir=workingDir)
     tracUrl  = config.get("TracUrl")
     credType = config.get("CredentialType", "").upper()
