@@ -1,3 +1,2 @@
 INFO[reprepro_bundle_compose]: Calling pre_update_bundles hook 'echo update-Hook called'
-update-Hook called
 INFO[reprepro_bundle_compose]: Updated bundle:mybionic/0002 to status 'NEW'
