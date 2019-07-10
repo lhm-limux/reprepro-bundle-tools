@@ -231,9 +231,14 @@ export class WorkflowStatusEditorComponent implements OnInit, OnDestroy {
   synchronizeBundles() {
     console.log("synchronizeBundles called");
     this.authenticationService.callWithRequiredAuthentications(
-      "bundleSync",
+      "gitPullRebase",
       (refs: AuthRef[]) => {
-        this.actionService.updateBundles(refs);
+        this.authenticationService.callWithRequiredAuthentications(
+          "bundleSync",
+          (updateRefs: AuthRef[]) => {
+            this.actionService.updateGitAndBundles(refs, updateRefs);
+          }
+        );
       }
     );
   }

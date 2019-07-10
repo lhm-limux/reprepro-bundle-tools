@@ -94,6 +94,27 @@ export class BundleComposeActionService {
     );
   }
 
+  updateGitAndBundles(refs: AuthRef[], updateRefs: AuthRef[]): void {
+    const sp = this.messages.addSpinner("Git Pull / Rebase");
+    const params = new HttpParams().set("refs", JSON.stringify(refs));
+    this.http
+      .get<BackendLogEntry[]>(this.config.getApiUrl("gitPullRebase"), {
+        params: params
+      })
+      .subscribe(
+        (data: BackendLogEntry[]) => {
+          this.messages.unsetSpinner(sp);
+          this.messages.setMessages(data);
+          this.successfullAction.next(data);
+          this.updateBundles(updateRefs);
+        },
+        (errResp: HttpErrorResponse) => {
+          this.messages.unsetSpinner(sp);
+          this.messages.setErrorResponse("Git Pull / Rebase failed", errResp);
+        }
+      );
+  }
+
   updateBundles(refs: AuthRef[]): void {
     const sp = this.messages.addSpinner("Updating Bundles");
     const params = new HttpParams().set("refs", JSON.stringify(refs));
