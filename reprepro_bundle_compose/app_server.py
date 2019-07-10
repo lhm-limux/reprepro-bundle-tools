@@ -69,14 +69,16 @@ async def handle_required_auth(request):
         for authRef in req['refs']:
             if common_app_server.is_valid_authRef(authRef):
                 availableRefs.add(authRef['authId'])
-        if "login" == req['actionId']:
+        actionId = req['actionId']
+        logger.debug("handle_required_auth for actionId '{}'".format(actionId))
+        if actionId == "login":
             res.extend(getRequiredAuthForConfig(
                 availableRefs,
                 getGitRepoConfig(),
                 "RepoUrl",
                 "Please enter your {CredentialType} authentication data in order to clone the GIT Reposiory!"
             ))
-        elif "bundleSync" == req['actionId']:
+        elif actionId == "bundleSync":
             workingDir = None
             try:
                 unused_session, workingDir = validateSession(request)
@@ -88,7 +90,7 @@ async def handle_required_auth(request):
                 "TracUrl",
                 "Please enter your {CredentialType} authentication data to sync with Trac!"
             ))
-        elif "gitPullRebase" == req['actionId']:
+        elif actionId == "gitPullRebase":
             workingDir = None
             try:
                 unused_session, workingDir = validateSession(request)
@@ -100,7 +102,7 @@ async def handle_required_auth(request):
                 "RepoUrl",
                 "Please enter your {CredentialType} authentication data to pull changes from the Git-Server!"
             ))
-        elif "publishChanges" == req['actionId']:
+        elif actionId == "publishChanges":
             try:
                 unused_session, workingDir = validateSession(request)
             except Exception as e:
