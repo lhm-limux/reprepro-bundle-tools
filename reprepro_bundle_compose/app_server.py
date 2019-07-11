@@ -54,12 +54,26 @@ APP_DIST = './ng-bundle-compose/'
 if not os.path.exists(APP_DIST):
     APP_DIST = "/usr/lib/reprepro-bundle-apps/ng-bundle-compose/"
 
+PROJECT_DIR = os.getcwd()
+local_apt_repos = os.path.join(PROJECT_DIR, "apt-repos")
+if os.path.isdir(local_apt_repos):
+    sys.path.insert(0, local_apt_repos)
+import apt_repos
+
 MAX_GIT_LIST_CHANGES = 200
 publishedCommitsCache = set()
 publishedCommitsLastHead = None
 
 ppe = None # ProcessPoolExecutor set in main
 
+
+async def handle_get_all_suites(request):
+    res = []
+    workingDir=PROJECT_DIR
+    apt_repos.setAptReposBaseDir(os.path.join(str(workingDir), ".apt-repos"))
+    for suite in sorted(apt_repos.getSuites([":"])):
+        res.append(common_interfaces.Suite(suite))
+    return web.json_response(res)
 
 async def handle_required_auth(request):
     res = list()
@@ -655,6 +669,7 @@ def sessionExpired(session):
 def registerRoutes(args, app):
     app.router.add_routes([
         # api routes
+        web.get('/api/getAllSuites', handle_get_all_suites),
         web.get('/api/workflowMetadata', handle_get_workflow_metadata),
         web.get('/api/configuredStages', handle_get_configured_stages),
         web.get('/api/configuredTargets', handle_get_configured_targets),

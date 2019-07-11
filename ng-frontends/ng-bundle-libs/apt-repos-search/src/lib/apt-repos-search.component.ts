@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Suite, Content } from './Suite';
+import { Suite } from './Suite';
+import { ConfigService } from "./config.service";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: 'lib-apt-repos-search',
@@ -8,44 +10,35 @@ import { Suite, Content } from './Suite';
 })
 export class AptReposSearchComponent implements OnInit {
 
-  suites: Array<Suite>;
+  activeSuites: Boolean[];
+  suites: Suite[] = [];
 
-   constructor() {
-    this.suites = []; 
-    let suite = new Suite();
-    let suite2 = new Suite();
-    let content = new Content();
-    let content2 = new Content();
-    let content3 = new Content();
-    let content4 = new Content();
-    let content5 = new Content();
+   constructor(private config: ConfigService, private http: HttpClient) { }
 
-    suite.name = "Suite 1"
-    suite2.name = "Suite 2"
-    content.name = "Content 1"
-    content2.name = "Content 2"
-    content3.name = "Content 3"
-    content4.name = "Content 4"
-    content5.name = "Content 5"
-    let contents1 = new Array<Content>();
-    let contents2 = new Array<Content>();
-    contents1.push(content)
-    contents1.push(content2)
-    contents1.push(content3)
-    contents2.push(content4)
-    contents2.push(content5)
+   ngOnInit() {
+    this.http
+      .get<Suite[]>(this.config.getApiUrl("getAllSuites"))
+      .subscribe(
+        (data: Suite[]) => {
+          const last = this.suites;
+          this.suites = data;
+          this.activeSuites = new Array(this.suites.length);
+          for (let activeSuite of this.activeSuites) {
+              activeSuite = false;
+          }
+        },
+        errResp => {
+          console.error("Error loading suites list", errResp);
+        }
+      );
+  }
 
-    suite.content = contents1
-    suite2.content = contents2
-
-    
-    this.suites.push(suite);
-    this.suites.push(suite2);
-   }
-
-   
-
-  ngOnInit() {
+  display(i) {
+    if(this.activeSuites[i] == false){
+      this.activeSuites[i] = true;
+    } else {
+      this.activeSuites[i] = false;
+    }
   }
 
 }

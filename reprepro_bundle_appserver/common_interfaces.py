@@ -116,6 +116,21 @@ def ManagedBundleInfo(bundle, tracBaseUrl=None):
         **repoInfo
     }
 
+def Suite(suite):
+    return {
+        'name': suite.getSuiteName(), #str
+        'tags': suite.getTags(), #list
+        'architectures': suite.getArchitectures(), #list
+        'components': suite.getComponents(), #list
+        'aptSuite': suite.getAptSuite(), #str
+        'distsUrl': suite.getDistsUrl(), #str
+        'repoUrl': suite.getRepoUrl(), #str
+        'hasSources': suite.hasSources(), #bool
+        'trustedGPG': str(suite.getTrustedGPG()), #str
+        'aptConf': suite.getAptConf(), #str
+        'sourcesList': suite.getSourcesList() #str
+    }
+
 def WorkflowMetadata(status):
     return {
         'ord': status.value.get('ord'),

@@ -5,25 +5,21 @@
           <h3>Suites</h3>
       </div>
 
-      <div *ngFor="let suite of suites">
-        <button (click)="suite.activate()" type="button" class="suiteButton">{{suite.name}}</button>
+      <div *ngFor="let s of suites; let i = index" data-index="i">
+        <button (click)="display(i)" type="button" class="suiteButton">{{s.name}}</button>
       </div>
   </nav>
 
   <div id="content" class="content">
     <div class="sidebar-header">
-        <h3>Contents</h3>
+        <h3>Components</h3>
     </div>
 
-    <div *ngFor="let suite of suites">
-      <div *ngIf="suite.isActive" class="suiteBorder">
-        <label class="contentElement suiteLabel">{{suite.name}}</label>
-        <div *ngFor="let content of suite.content" class="contentElement">
-            <label class="switch">
-                <input type="checkbox">
-                <span class="slider round"></span>
-            </label>
-            <label class="contentName">{{content.name}}</label>
+    <div *ngFor="let s of suites; let i = index" data-index="i">
+      <div *ngIf="activeSuites[i]" class="suiteBorder">
+        <label class="contentElement suiteLabel">{{s.name}}</label>
+        <div *ngFor="let c of s.components" class="contentElement">
+            <label class="contentName">{{c}}</label>
         </div>
       </div>
     </div>
