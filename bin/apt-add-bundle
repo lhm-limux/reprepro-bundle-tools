@@ -58,7 +58,7 @@ def setup_logging(loglevel):
     }
     logging.basicConfig(**kwargs)
     logging.getLogger("urllib3").setLevel(logging.ERROR)
-    logging.getLogger("apt_repos").setLevel(logging.WARN)
+    logging.getLogger("apt_repos").setLevel(logging.ERROR)
 
 
 def get_dynamic_bundle_list(mainUrl, outDir):
@@ -68,7 +68,7 @@ def get_dynamic_bundle_list(mainUrl, outDir):
         req = http.request('GET', dynamic_bundles_url)
         bundles = json.loads(req.data)
     except json.decoder.JSONDecodeError as e:
-        print("Failed to parse bundle.repos from URL '{}': {}".format(dynamic_bundles_url, e))
+        logger.warn("Failed to parse bundle.repos from URL '{}': {}".format(dynamic_bundles_url, e))
         sys.exit(1)
 
     for dist in bundles:
@@ -80,7 +80,7 @@ def get_dynamic_bundle_list(mainUrl, outDir):
 
     with open(os.path.join(outDir, "bundle_dyn.repos"), "w") as out:
         print(json.dumps(bundles, indent=4, sort_keys=True), file=out)
-        print("created bundle.repos with {} bundles tagged as 'rollout'".format(len(rollout_bundles)))
+        logger.info("Received bundle.repos with {} bundles tagged as 'rollout'".format(len(rollout_bundles)))
 
 
 def get_bundle_repos_main_urls():
@@ -94,26 +94,45 @@ def get_bundle_repos_main_urls():
     return res
 
 
+def get_bundle_suites_from_server(baseUrl):
+    tmpDir = tempfile.mkdtemp()
+    logger.debug("temporary Directory: {}".format(tmpDir))
+    shutil.copyfile(BUNDLE_REPOS, os.path.join(tmpDir, "bundle.repos"))
+    get_dynamic_bundle_list(baseUrl, tmpDir)
+    apt_repos.setAptReposBaseDir(tmpDir)
+    res = set(apt_repos.getSuites(":"))
+    shutil.rmtree(tmpDir)
+    return res
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, prog=PROGNAME, add_help=True)
+    parser.add_argument("-d", "--debug", action="store_true", help="""
+                        Show debug messages""")
     parser.add_argument("-r", "--remove", action="store_true", help="""
                         Remove the named bundle(s) from the list (instead of adding them)""")
     parser.add_argument("-l", "--list", action="store_true", help="""
                         (Finally) List all bundles that are currently added""")
+    parser.add_argument("-a", "--available", action="store_true", help="""
+                        List all bundles available on the configured remote server""")
     parser.add_argument("bundleName", nargs="*", help="""
                         Names of bundles to add / remove either in the form 'bundle:<distribution>/<NUMBER>' or just '<distribution>/<NUMBER>'""")
     args = parser.parse_args()
     
-    setup_logging(logging.INFO)
+    setup_logging(logging.INFO if not args.debug else logging.DEBUG)
+
+    bundle_suites = set()
     for baseUrl in sorted(get_bundle_repos_main_urls()):
-        tmpDir = tempfile.mkdtemp()
-        print(tmpDir)
-        shutil.copyfile(BUNDLE_REPOS, os.path.join(tmpDir, "bundle.repos"))
-        get_dynamic_bundle_list(baseUrl, tmpDir)
-        apt_repos.setAptReposBaseDir(tmpDir)
-        print("\n".join([str(s) for s in sorted(apt_repos.getSuites(":"))]))
-    sys.exit(0)
-    apt_repos.setAptReposBaseDir(".apt-repos")
+        logger.info("Getting bundles from server {} …".format(baseUrl))
+        res = get_bundle_suites_from_server(baseUrl)
+        logger.info("Got {} bundles".format(len(res)))
+        bundle_suites = bundle_suites.union(res)
+
+    if args.available:
+        for suite in sorted(bundle_suites):
+            print(suite)
+        return
+
     bundles = get_added_bundles()
     update = False
     for name in args.bundleName:
