@@ -18,6 +18,59 @@ logger = logging.getLogger(PROGNAME)
 BUNDLE_REPOS = "/etc/apt-repos/bundle.repos"
 SOURCES_LIST_FILE = "/etc/apt/sources.list.d/apt-add-bundle.list"
 
+def setup_logging(loglevel):
+    '''
+       Initializing logging and set log-level
+    '''
+    kwargs = {
+        'format': '%(levelname)s[%(name)s]: %(message)s',
+        'level': loglevel,
+        'stream': sys.stderr
+    }
+    logging.basicConfig(**kwargs)
+    logging.getLogger("urllib3").setLevel(logging.ERROR)
+    logging.getLogger("apt_repos").setLevel(logging.ERROR)
+
+
+def create_apt_repos_config(tmpDir):
+    shutil.copyfile(BUNDLE_REPOS, os.path.join(tmpDir, "bundle.repos"))
+    for idx, baseUrl in enumerate(sorted(get_bundle_repos_main_urls())):
+        get_dynamic_bundle_list(baseUrl, tmpDir, idx)
+
+
+def get_bundle_repos_main_urls():
+    res = set()
+    with open(BUNDLE_REPOS) as repos:
+        conf = json.load(repos)
+        for dist in conf:
+            url = dist.get("Url")
+            if url:
+                res.add(url)
+    return res
+
+
+def get_dynamic_bundle_list(mainUrl, outDir, idx):
+    dynamic_bundles_url = urljoin(mainUrl, "bundle.repos")
+    logger.info("Getting {}…".format(dynamic_bundles_url))
+    http = urllib3.PoolManager()
+    try:
+        req = http.request('GET', dynamic_bundles_url)
+        bundles = json.loads(req.data)
+    except json.decoder.JSONDecodeError as e:
+        raise Exception("Failed to parse bundle.repos from URL '{}': {}".format(dynamic_bundles_url, e))
+
+    for dist in bundles:
+        rollout_bundles = []
+        for bundle in dist.get('Suites', []):
+            if isinstance(bundle, dict) and "rollout" in bundle.get('Tags', []):
+                rollout_bundles.append(bundle)
+                dist['Suites'] = rollout_bundles
+
+    with open(os.path.join(outDir, "bundle_dyn{}.repos".format(idx)), "w") as out:
+        print(json.dumps(bundles, indent=4, sort_keys=True), file=out)
+        logger.info("Received bundle.repos with {} bundles tagged as 'rollout'".format(len(rollout_bundles)))
+
+
 def get_added_bundles():
     res = set()
     try:
@@ -34,6 +87,7 @@ def get_added_bundles():
 
 def create_list_file(bundles):
     got = set()
+    logger.info("Creating {}".format(SOURCES_LIST_FILE))
     with open(SOURCES_LIST_FILE, "w") as listFile:
         print("# This file is managed by the command line tool '{}'. DON'T EDIT IT MANUALLY!".format(PROGNAME), file=listFile)
         l_bundles = list(sorted(bundles))
@@ -47,69 +101,11 @@ def create_list_file(bundles):
         logger.warning("The following bundles could not be added: " + ", ".join(sorted(miss)))
 
 
-def setup_logging(loglevel):
-    '''
-       Initializing logging and set log-level
-    '''
-    kwargs = {
-        'format': '%(levelname)s[%(name)s]: %(message)s',
-        'level': loglevel,
-        'stream': sys.stderr
-    }
-    logging.basicConfig(**kwargs)
-    logging.getLogger("urllib3").setLevel(logging.ERROR)
-    logging.getLogger("apt_repos").setLevel(logging.ERROR)
-
-
-def get_dynamic_bundle_list(mainUrl, outDir):
-    dynamic_bundles_url = urljoin(mainUrl, "bundle.repos")
-    http = urllib3.PoolManager()
-    try:
-        req = http.request('GET', dynamic_bundles_url)
-        bundles = json.loads(req.data)
-    except json.decoder.JSONDecodeError as e:
-        logger.warn("Failed to parse bundle.repos from URL '{}': {}".format(dynamic_bundles_url, e))
-        sys.exit(1)
-
-    for dist in bundles:
-        rollout_bundles = []
-        for bundle in dist.get('Suites', []):
-            if isinstance(bundle, dict) and "rollout" in bundle.get('Tags', []):
-                rollout_bundles.append(bundle)
-                dist['Suites'] = rollout_bundles
-
-    with open(os.path.join(outDir, "bundle_dyn.repos"), "w") as out:
-        print(json.dumps(bundles, indent=4, sort_keys=True), file=out)
-        logger.info("Received bundle.repos with {} bundles tagged as 'rollout'".format(len(rollout_bundles)))
-
-
-def get_bundle_repos_main_urls():
-    res = set()
-    with open(BUNDLE_REPOS) as repos:
-        conf = json.load(repos)
-        for dist in conf:
-            url = dist.get("Url")
-            if url:
-                res.add(url)
-    return res
-
-
-def get_bundle_suites_from_server(baseUrl):
-    tmpDir = tempfile.mkdtemp()
-    logger.debug("temporary Directory: {}".format(tmpDir))
-    shutil.copyfile(BUNDLE_REPOS, os.path.join(tmpDir, "bundle.repos"))
-    get_dynamic_bundle_list(baseUrl, tmpDir)
-    apt_repos.setAptReposBaseDir(tmpDir)
-    res = set(apt_repos.getSuites(":"))
-    shutil.rmtree(tmpDir)
-    return res
-
-
-def main():
+def main(tmpDir):
     parser = argparse.ArgumentParser(description=__doc__, prog=PROGNAME, add_help=True)
-    parser.add_argument("-d", "--debug", action="store_true", help="""
+    parser.add_argument("--debug", action="store_true", help="""
                         Show debug messages""")
-    parser.add_argument("-r", "--remove", action="store_true", help="""
+    parser.add_argument("-r", "-d", "--remove", "--delete", action="store_true", help="""
                         Remove the named bundle(s) from the list (instead of adding them)""")
     parser.add_argument("-l", "--list", action="store_true", help="""
                         (Finally) List all bundles that are currently added""")
@@ -121,34 +117,45 @@ def main():
     
     setup_logging(logging.INFO if not args.debug else logging.DEBUG)
 
-    bundle_suites = set()
-    for baseUrl in sorted(get_bundle_repos_main_urls()):
-        logger.info("Getting bundles from server {} …".format(baseUrl))
-        res = get_bundle_suites_from_server(baseUrl)
-        logger.info("Got {} bundles".format(len(res)))
-        bundle_suites = bundle_suites.union(res)
+    logger.debug("Configuring temporary apt-repos directory: {}".format(tmpDir))
+    create_apt_repos_config(tmpDir)
+    apt_repos.setAptReposBaseDir(tmpDir)
 
     if args.available:
-        for suite in sorted(bundle_suites):
+        logger.info("Scanning bundles…")
+        res = set(apt_repos.getSuites(":"))
+        for suite in sorted(res):
             print(suite)
-        return
+        return 0
 
     bundles = get_added_bundles()
-    update = False
+    newBundles = set(bundles)
     for name in args.bundleName:
-        update = True
         bundleName = name if name.startswith("bundle:") else "bundle:{}".format(name)
         if not args.remove:
-            bundles.add(bundleName)
+            newBundles.add(bundleName)
         else:
-            bundles.remove(bundleName)
-    if update:
-        create_list_file(bundles)
-    if args.list:
-        print("\n".join(sorted(bundles)))
-        sys.exit(0)
+            if bundleName in newBundles:
+                newBundles.remove(bundleName)
+    if not bundles == newBundles:
+        create_list_file(newBundles)
+        subprocess.check_call(["apt", "update"])
 
+    if args.list:
+        print("\n".join(sorted(get_added_bundles())))
+        return 0
 
 
 if __name__ == "__main__":
-    main()
+    tmpDir = None
+    ret = 0
+    try:
+        tmpDir = tempfile.mkdtemp()
+        ret = main(tmpDir)
+    except Exception as e:
+        ret = 1
+        logger.error(e)
+    finally:
+        if tmpDir:
+            shutil.rmtree(tmpDir)
+    sys.exit(ret)
