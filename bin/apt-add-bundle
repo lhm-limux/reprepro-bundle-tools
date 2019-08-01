@@ -145,8 +145,10 @@ def main(tmpDir):
         else:
             if bundleName in newBundles:
                 newBundles.remove(bundleName)
-    if not bundles == newBundles:
+    if bundles != newBundles:
         create_list_file(newBundles)
+
+    if bundles != get_added_bundles():
         subprocess.check_call(["apt", "update"])
 
     if args.list:
