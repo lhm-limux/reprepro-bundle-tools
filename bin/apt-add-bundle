@@ -1,4 +1,12 @@
 #!/usr/bin/python3
+'''
+   This small tool allows to add or remove a bundle to the systems apt sources.list-configuration
+   just by specifying bundle-names - no need to manually find out the details of the sources.list
+   entries required to use the bundle in the local system.
+   This tool is also able to list all bundles available on the bundle server and
+   to show the bundles already added to the system. If the sources.list-config
+   changes by that command, "apt update" is called to ensure the new configuration is really used.
+'''
 
 import subprocess
 import logging
