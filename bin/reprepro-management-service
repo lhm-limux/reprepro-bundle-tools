@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# wrapper for calling the reprepro-management-service
+#
+HERE=$(dirname $(realpath $0))
+if [ -d $HERE/../reprepro_management_service ]; then
+  export PYTHONPATH="$(realpath $HERE/..)"
+fi
+
+exec python3 -m reprepro_management_service.app_server $@
