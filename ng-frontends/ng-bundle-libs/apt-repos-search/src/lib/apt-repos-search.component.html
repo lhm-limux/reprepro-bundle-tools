@@ -1,28 +1,35 @@
-<div class="wrapper">
-
-  <nav id="sidebar">
+<div>
+  <input #box (keyup.enter)="onEnter(box.value)">
+  <p>{{searchValue}}</p>
+  <div class="wrapper">
+    <nav id="sidebar">
       <div class="sidebar-header">
-          <h3>Suites</h3>
+        <h3>Suites</h3>
       </div>
 
-      <div *ngFor="let s of suites; let i = index" data-index="i">
-        <button (click)="display(i)" type="button" class="suiteButton">{{s.name}}</button>
+      <div *ngFor="let s of suites">
+        <button (click)="display(s.name)" type="button" class="suiteButton">
+            <input type="checkbox" [checked]="checkActiveSuites(s.name)">
+            {{s.name}}
+          </button>
       </div>
-  </nav>
+    </nav>
 
-  <div id="content" class="content">
-    <div class="sidebar-header">
-        <h3>Components</h3>
-    </div>
+    <div id="content" class="content">
+      <div class="sidebar-header">
+        <h3>Packages</h3>
+      </div>
 
-    <div *ngFor="let s of suites; let i = index" data-index="i">
-      <div *ngIf="activeSuites[i]" class="suiteBorder">
-        <label class="contentElement suiteLabel">{{s.name}}</label>
-        <div *ngFor="let c of s.components" class="contentElement">
-            <label class="contentName">{{c}}</label>
+      <div *ngFor="let s of suites">
+        <div *ngIf="checkActiveSuites(s.name)" class="suiteBorder">
+          <label class="contentElement suiteLabel">{{s.name}}</label>
+          <div *ngFor="let package of packages">
+            <div class="contentElement">
+              <label class="contentName">{{package.name}}</label>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-

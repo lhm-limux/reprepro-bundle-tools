@@ -37,6 +37,7 @@ import git
 import git.exc
 from git.exc import GitCommandError
 import subprocess
+import apt_repos
 from urllib.parse import urlparse
 import reprepro_bundle_compose
 from reprepro_bundle_compose import \
@@ -45,6 +46,7 @@ from reprepro_bundle_compose import \
         getTracConfig, getGitRepoConfig, git_commit, \
         ensure_clean_git_repo, GitNotCleanException
 from reprepro_bundle_appserver import common_app_server, common_interfaces
+from apt_repos import RepoSuite, PackageField, QueryResult
 
 
 progname = "bundle-compose-app"
@@ -66,13 +68,44 @@ publishedCommitsLastHead = None
 
 ppe = None # ProcessPoolExecutor set in main
 
+async def handle_get_suites(request):
+    res = []
+    workingDir=PROJECT_DIR
 
-async def handle_get_all_suites(request):
+    searchString = json.loads(request.rel_url.query['suiteTag'])
+    print(searchString)
+
+    apt_repos.setAptReposBaseDir(os.path.join(str(workingDir), ".apt-repos"))
+    for suite in sorted(apt_repos.getSuites([searchString])):
+        res.append(common_interfaces.Suite(suite))
+    return web.json_response(res)
+
+async def handle_get_default_packages(request):
+    res = []
+    workingDir=PROJECT_DIR
+    apt_repos.setAptReposBaseDir(os.path.join(str(workingDir), ".apt-repos"))
+    for suite in sorted(apt_repos.getSuites(["default:"])):
+        requestFields = PackageField.getByFieldsString("pvsaSC")
+        suite.scan(True)
+        packagesPerSuite = suite.queryPackages(["git"], True, None, None, requestFields)
+        #TODO has to find all packages "." instead of "git"
+        for package in packagesPerSuite:
+            (packageName, version, packageSuite, architecture, section, source) = package.getData()
+            res.append(common_interfaces.Package(packageName, version, packageSuite, architecture, section, source))
+    return web.json_response(res)
+
+async def handle_get_custom_packages(request):
+    tail = str(request.url).split("getCustomPackages/", 1)[1]
     res = []
     workingDir=PROJECT_DIR
     apt_repos.setAptReposBaseDir(os.path.join(str(workingDir), ".apt-repos"))
     for suite in sorted(apt_repos.getSuites([":"])):
-        res.append(common_interfaces.Suite(suite))
+        requestFields = PackageField.getByFieldsString("pvsaSC")
+        suite.scan(True)
+        packagesPerSuite = suite.queryPackages([tail], True, None, None, requestFields)
+        for package in packagesPerSuite:
+            (packageName, version, packageSuite, architecture, section, source) = package.getData()
+            res.append(common_interfaces.Package(packageName, version, packageSuite, architecture, section, source))
     return web.json_response(res)
 
 async def handle_required_auth(request):
@@ -669,7 +702,9 @@ def sessionExpired(session):
 def registerRoutes(args, app):
     app.router.add_routes([
         # api routes
-        web.get('/api/getAllSuites', handle_get_all_suites),
+        web.get('/api/getSuites', handle_get_suites),
+        web.get('/api/getDefaultPackages', handle_get_default_packages),
+        web.get('/api/getCustomPackages/{tail:.*}', handle_get_custom_packages),
         web.get('/api/workflowMetadata', handle_get_workflow_metadata),
         web.get('/api/configuredStages', handle_get_configured_stages),
         web.get('/api/configuredTargets', handle_get_configured_targets),

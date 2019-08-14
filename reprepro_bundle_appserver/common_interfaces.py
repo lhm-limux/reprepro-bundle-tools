@@ -131,6 +131,16 @@ def Suite(suite):
         'sourcesList': suite.getSourcesList() #str
     }
 
+def Package(packageName, version, packageSuite, architecture, section, source):
+    return {
+        'name': packageName,
+        'version': version,
+        'suite': str(packageSuite),
+        'architecture': architecture,
+        'section': section,
+        'sourcePackageName': source
+    }
+
 def WorkflowMetadata(status):
     return {
         'ord': status.value.get('ord'),
