@@ -73,36 +73,24 @@ async def handle_get_suites(request):
     workingDir=PROJECT_DIR
 
     searchString = json.loads(request.rel_url.query['suiteTag'])
-    print(searchString)
 
     apt_repos.setAptReposBaseDir(os.path.join(str(workingDir), ".apt-repos"))
     for suite in sorted(apt_repos.getSuites([searchString])):
         res.append(common_interfaces.Suite(suite))
     return web.json_response(res)
 
-async def handle_get_default_packages(request):
-    res = []
-    workingDir=PROJECT_DIR
-    apt_repos.setAptReposBaseDir(os.path.join(str(workingDir), ".apt-repos"))
-    for suite in sorted(apt_repos.getSuites(["default:"])):
-        requestFields = PackageField.getByFieldsString("pvsaSC")
-        suite.scan(True)
-        packagesPerSuite = suite.queryPackages(["git"], True, None, None, requestFields)
-        #TODO has to find all packages "." instead of "git"
-        for package in packagesPerSuite:
-            (packageName, version, packageSuite, architecture, section, source) = package.getData()
-            res.append(common_interfaces.Package(packageName, version, packageSuite, architecture, section, source))
-    return web.json_response(res)
-
 async def handle_get_custom_packages(request):
-    tail = str(request.url).split("getCustomPackages/", 1)[1]
     res = []
     workingDir=PROJECT_DIR
+
+    searchStringSuites = json.loads(request.rel_url.query['suiteTag'])
+    searchStringPackages = json.loads(request.rel_url.query['searchString'])
+
     apt_repos.setAptReposBaseDir(os.path.join(str(workingDir), ".apt-repos"))
-    for suite in sorted(apt_repos.getSuites([":"])):
+    for suite in sorted(apt_repos.getSuites([searchStringSuites])):
         requestFields = PackageField.getByFieldsString("pvsaSC")
         suite.scan(True)
-        packagesPerSuite = suite.queryPackages([tail], True, None, None, requestFields)
+        packagesPerSuite = suite.queryPackages([searchStringPackages], True, None, None, requestFields)
         for package in packagesPerSuite:
             (packageName, version, packageSuite, architecture, section, source) = package.getData()
             res.append(common_interfaces.Package(packageName, version, packageSuite, architecture, section, source))
@@ -704,7 +692,7 @@ def registerRoutes(args, app):
         # api routes
         web.get('/api/getSuites', handle_get_suites),
         web.get('/api/getDefaultPackages', handle_get_default_packages),
-        web.get('/api/getCustomPackages/{tail:.*}', handle_get_custom_packages),
+        web.get('/api/getCustomPackages', handle_get_custom_packages),
         web.get('/api/workflowMetadata', handle_get_workflow_metadata),
         web.get('/api/configuredStages', handle_get_configured_stages),
         web.get('/api/configuredTargets', handle_get_configured_targets),

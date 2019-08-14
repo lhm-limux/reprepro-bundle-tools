@@ -58,17 +58,22 @@ export class AptReposSearchComponent implements OnInit {
         }
       );
 
-      /*this.http
-      .get<Package[]>(this.config.getApiUrl("getDefaultPackages"))
+      params = new HttpParams()
+      .set("suiteTag", JSON.stringify("default:"))
+      .set("searchString", JSON.stringify("git")) //TODO: should eventually search for all packages not only git ones
+
+      this.http
+      .get<Package[]>(this.config.getApiUrl("getCustomPackages"), {
+        params: params
+      })
       .subscribe(
         (data: Package[]) => {
           this.packages = data;
-          console.log(this.packages);
         },
         errResp => {
           console.error("Error loading packages list", errResp);
         }
-      );*/
+      );
   }
 
   display(name) {
@@ -89,10 +94,14 @@ export class AptReposSearchComponent implements OnInit {
   }
 
   onEnter(value: String) {
-    this.searchValue = value;
+    let params = new HttpParams()
+      .set("suiteTag", JSON.stringify(":"))
+      .set("searchString", JSON.stringify(value))
 
     this.http
-      .get<Package[]>(this.config.getApiUrl("getCustomPackages/" + this.searchValue))
+      .get<Package[]>(this.config.getApiUrl("getCustomPackages"), {
+        params: params
+      })
       .subscribe(
         (data: Package[]) => {
           this.packages = data;
