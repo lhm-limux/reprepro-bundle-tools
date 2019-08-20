@@ -20,9 +20,8 @@
    This is the reprepro-management-service typically run on a
    reprepro-management server.
 
-   Tested with 'curl -G -H @headerfile http://127.0.0.1:8080/api/execute'
-   and headerfile: 'X-Gitlab-Token: <secretToken>'
-   where <secretToken> is the content of the .secretToken file.
+   Tested with 'bin/reprepro-management-service-execute'.
+   But first, you once have to run 'bin/createSecretToken'.
 '''
 
 import logging

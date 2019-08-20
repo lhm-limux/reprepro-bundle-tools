@@ -1,6 +1,7 @@
 *.pyc
 .*.swp
 .secretToken
+.allowedTokenHashes
 /.angulardoc.json
 /build
 /.pybuild

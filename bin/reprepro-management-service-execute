@@ -1,0 +1,7 @@
+#!/bin/bash
+
+HOST=127.0.0.1
+PORT=8080
+
+sec=$(cat .secretToken)
+curl -G -H "X-Gitlab-Token: ${sec}" "http://${HOST}:${PORT}/api/execute?cmd=$1"
