@@ -16,10 +16,13 @@ RUN apt update && apt install -y \
 
 COPY *.deb /
 
+COPY entrypoint.sh /
+
 RUN dpkg -i *.deb && \
     mkdir /reprepro-management && \
     useradd --create-home --shell=/bin/bash --uid=1024 repoman && \
-    chown repoman:repoman /reprepro-management
+    chown repoman:repoman /reprepro-management && \
+    chmod 755 /entrypoint.sh
 
 VOLUME /reprepro-management
 
@@ -28,5 +31,7 @@ WORKDIR /reprepro-management
 USER repoman
 
 EXPOSE 8080
+
+ENTRYPOINT [ "/entrypoint.sh" ]
 
 CMD [ "reprepro-management-service", "--no-open-url", "--host=0.0.0.0" ]
