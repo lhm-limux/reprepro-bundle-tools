@@ -36,10 +36,19 @@ debian-build-in-buildenv:
 	cp ../*.changes deb/
 	@echo -e "\nDebian-Build finished SUCCESSFULLY! Find Build-Results in folder ./deb/\n"
 
+#backend: debian-build
+backend:
+	cp ../*apt-repos*.deb docker-backend/
+	cp deb/*.deb docker-backend/
+	$(DOCKER_COMPOSE) -f docker-backend/docker-compose.yml build backend
+	touch docker-backend/.backend.built
+
 clean:
 	make -C ng-frontends/ng-bundle clean
 	make -C ng-frontends/ng-bundle-compose clean
 	rm -Rf .npm .npm-packages .config \
+		docker-backend/.backend.built \
+		docker-backend/*.deb \
 		docker-buildenv/.buildenv.built \
 		docker-buildenv/.buildenv-debian.built \
 		docker-buildenv/*apt-repos*.deb \

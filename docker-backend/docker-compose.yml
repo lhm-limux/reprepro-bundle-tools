@@ -1,0 +1,15 @@
+version: '2.0'
+
+services:
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: reprepro-management-backend
+    volumes:
+      - ..:/reprepro-management/
+    ports:
+      - 127.0.0.1:8080:8080
+    user: repoman
+    restart: "no"

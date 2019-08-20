@@ -23,7 +23,12 @@ settings = dict(
     name = 'reprepro-bundle-tools',
     version = version,
 
-    packages = ['reprepro_bundle', 'reprepro_bundle_compose', 'reprepro_bundle_appserver'],
+    packages = [
+        'reprepro_bundle',
+        'reprepro_bundle_compose',
+        'reprepro_bundle_appserver',
+        'reprepro_management_service'
+    ],
 
     author = 'Christoph Lutz',
     author_email = 'christoph.lutz@interface-ag.de',
