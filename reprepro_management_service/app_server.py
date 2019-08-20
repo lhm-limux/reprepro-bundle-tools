@@ -37,6 +37,7 @@ import shutil
 import subprocess
 import hashlib
 import traceback
+import re
 from urllib.parse import urlparse
 import reprepro_management_service
 from reprepro_bundle_appserver import common_app_server
@@ -48,6 +49,7 @@ logger = logging.getLogger("reprepro_bundle_appserver.reprepro_management_servic
 tpe = None # ThreadPoolExecutor set in main
 
 ALLOWED_TOKEN_HASHES = '.allowedTokenHashes'
+CMD_PATTERN = re.compile(r"^[a-zA-Z0-9_\-]{1,50}$")
 
 def getAllowedTokenHashes():
     res = dict()
@@ -77,17 +79,25 @@ def validateToken(request):
 
 
 async def handle_execute(request):
-    logger.info("Handling 'execute'")
+    logger.debug("Handling 'execute'")
     userinfo = None
     try:
         userinfo = validateToken(request)
     except Exception as e:
         traceback.print_exc()
         return web.Response(text="Invalid Access-Token: {}".format(e), status=401)
-
+    cmd = request.rel_url.query['cmd']
+    if not CMD_PATTERN.match(cmd):
+        return web.Response(text="Illegal Arguments Provided: cmd", status=400)
+    logger.info("Handling 'execute' with cmd='{}' for user {}".format(cmd, userinfo))
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
-        logger.info("Executing nothing special with userinfo '{}'".format(userinfo))
+        logger.debug("Calling 'make {}' now".format(cmd))
+        try:
+            ret = subprocess.check_output(["make", cmd], stderr=subprocess.STDOUT)
+            logger.info(ret.decode('utf-8'))
+        except subprocess.CalledProcessError as e:
+            logger.error("Execute failed with returncode {}:\n{}".format(e.returncode, e.output.decode('utf-8')))
         res = logs.toBackendLogEntryList()
     response = web.json_response(res)
     return response
