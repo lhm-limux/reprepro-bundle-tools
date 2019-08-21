@@ -11,6 +11,8 @@ if [ "$1" = 'reprepro-management-service' ]; then
 	git submodule init
     fi
     git submodule update
+    test -z "${GIT_EMAIL}" || git config --global --add user.email "${GIT_EMAIL}"
+    test -z "${GIT_USERNAME}" || git config --global --add user.name "${GIT_USERNAME}"
 fi
 
 exec "$@"

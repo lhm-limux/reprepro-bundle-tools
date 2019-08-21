@@ -5,6 +5,8 @@ services:
   worker-service:
     environment:
       GIT_REPO_URL: https://github.com/chrlutz/bundle-test
+      GIT_USERNAME: Reprepro Management Service
+      GIT_EMAIL:    repoman@my-own-bionic-distri.org
     build:
       context: .
       dockerfile: Dockerfile
