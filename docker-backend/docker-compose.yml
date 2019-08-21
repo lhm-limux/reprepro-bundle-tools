@@ -2,16 +2,30 @@ version: '2.0'
 
 services:
 
-  backend:
+  worker-service:
     environment:
       GIT_REPO_URL: https://github.com/chrlutz/bundle-test
     build:
       context: .
       dockerfile: Dockerfile
-    image: reprepro-management-backend
-    #volumes:
-    #  - ..:/reprepro-management/
+    image: reprepro-management-worker-service
+    volumes:
+      - reprepro-management-data:/reprepro-management/
     ports:
       - 127.0.0.1:8080:8080
     user: repoman
     restart: "no"
+
+  webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile-webserver
+    image: reprepro-management-webserver
+    volumes:
+      - reprepro-management-data:/reprepro-management/
+    ports:
+      - 127.0.0.1:80:80
+    restart: "no"
+
+volumes:
+  reprepro-management-data:

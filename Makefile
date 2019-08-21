@@ -40,7 +40,7 @@ debian-build-in-buildenv:
 backend:
 	cp ../*apt-repos*.deb docker-backend/
 	cp deb/*.deb docker-backend/
-	$(DOCKER_COMPOSE) -f docker-backend/docker-compose.yml build backend
+	$(DOCKER_COMPOSE) -f docker-backend/docker-compose.yml build
 	touch docker-backend/.backend.built
 
 clean:

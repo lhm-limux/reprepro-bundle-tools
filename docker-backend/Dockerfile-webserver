@@ -1,0 +1,7 @@
+FROM httpd:latest
+
+RUN mkdir /reprepro-management && \
+    rm -Rf /usr/local/apache2/htdocs && \
+    ln -s /reprepro-management/public-html /usr/local/apache2/htdocs
+
+VOLUME /reprepro-management

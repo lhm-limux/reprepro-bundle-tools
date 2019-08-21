@@ -22,7 +22,8 @@ RUN dpkg -i *.deb && \
     mkdir /reprepro-management && \
     useradd --create-home --shell=/bin/bash --uid=1024 repoman && \
     chown repoman:repoman /reprepro-management && \
-    chmod 755 /entrypoint.sh
+    chmod 755 /entrypoint.sh && \
+    rm -f /etc/apt/apt.conf.d/docker-*
 
 VOLUME /reprepro-management
 
