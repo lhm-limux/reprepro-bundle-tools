@@ -20,6 +20,7 @@
         <h3>Packages</h3>
       </div>
 
+      <!-- Die suiteBorder-Ebene sollte m.E. entfallen und statt dessen nur die ganze Paketliste mit mehr Details (package Name + weitere Paketeigenschaften) angezeigt werden -->
       <div *ngFor="let s of suites">
         <div *ngIf="checkActiveSuites(s.name)" class="suiteBorder">
           <label class="contentElement suiteLabel">{{s.name}}</label>

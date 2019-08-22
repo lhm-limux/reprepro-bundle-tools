@@ -22,6 +22,7 @@ export class AptReposSearchComponent implements OnInit {
     let params = new HttpParams()
       .set("suiteTag", JSON.stringify(":"))
 
+    // CL --> TODO: diese Logik sollte in den apt-repos-search.service rein, nicht in die component
     this.http
     .get<Suite[]>(this.config.getApiUrl("getSuites"), {
       params: params
@@ -59,7 +60,7 @@ export class AptReposSearchComponent implements OnInit {
       );
 
       params = new HttpParams()
-      .set("suiteTag", JSON.stringify("default:"))
+      .set("suiteTag", JSON.stringify("default:")) // CL --> TODO: sollte activeSuites sein und mit nach jeder Änderung der activeSuites erneut aufgerufen werden.
       .set("searchString", JSON.stringify("git")) //TODO: should eventually search for all packages not only git ones
 
       this.http
@@ -77,6 +78,7 @@ export class AptReposSearchComponent implements OnInit {
   }
 
   display(name) {
+    // CL --> vielleicht wäre das mit einem Set anstatt einer Liste performanter und einfacher zu lesen.
     if(this.activeSuites.indexOf(name) !== -1){
       let index = this.activeSuites.indexOf(name)
       this.activeSuites.splice(index, 1)
@@ -95,7 +97,7 @@ export class AptReposSearchComponent implements OnInit {
 
   onEnter(value: String) {
     let params = new HttpParams()
-      .set("suiteTag", JSON.stringify(":"))
+      .set("suiteTag", JSON.stringify(":")) // CL --> hier sollte es auch nur activeSuites sein statt ":"
       .set("searchString", JSON.stringify(value))
 
     this.http
