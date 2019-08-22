@@ -69,32 +69,48 @@ publishedCommitsLastHead = None
 ppe = None # ProcessPoolExecutor set in main
 
 async def handle_get_suites(request):
-    res = []
-    workingDir=PROJECT_DIR
-
+    try:
+        unused_session, cwd = validateSession(request)
+    except Exception as e:
+        return web.Response(text="Invalid Session: {}".format(e), status=401)
     searchString = json.loads(request.rel_url.query['suiteTag'])
-
-    apt_repos.setAptReposBaseDir(os.path.join(str(workingDir), ".apt-repos"))
-    for suite in sorted(apt_repos.getSuites([searchString])):
-        res.append(common_interfaces.Suite(suite))
+    logger.info("Handling get_suites(suiteTag='{}')".format(searchString))
+    res = await asyncio.wrap_future(ppe.submit(apt_repos_get_suites, [searchString], cwd = cwd))
+    logger.debug("Handling get_suites finished")
     return web.json_response(res)
+
+def apt_repos_get_suites(suiteSelectors, cwd=PROJECT_DIR):
+    res = []
+    apt_repos.setAptReposBaseDir(os.path.join(cwd, ".apt-repos"))
+    for suite in sorted(apt_repos.getSuites(suiteSelectors)):
+        res.append(common_interfaces.Suite(suite))
+    return res
 
 async def handle_get_custom_packages(request):
     res = []
-    workingDir=PROJECT_DIR
-
+    try:
+        unused_session, cwd = validateSession(request)
+    except Exception as e:
+        return web.Response(text="Invalid Session: {}".format(e), status=401)
     searchStringSuites = json.loads(request.rel_url.query['suiteTag'])
     searchStringPackages = json.loads(request.rel_url.query['searchString'])
-
-    apt_repos.setAptReposBaseDir(os.path.join(str(workingDir), ".apt-repos"))
-    for suite in sorted(apt_repos.getSuites([searchStringSuites])):
-        requestFields = PackageField.getByFieldsString("pvsaSC")
-        suite.scan(True)
-        packagesPerSuite = suite.queryPackages([searchStringPackages], True, None, None, requestFields)
-        for package in packagesPerSuite:
-            (packageName, version, packageSuite, architecture, section, source) = package.getData()
-            res.append(common_interfaces.Package(packageName, version, packageSuite, architecture, section, source))
+    logger.info("Handling get_custom_packages(suiteTag='{}', searchString='{}')".format(searchStringSuites, searchStringPackages))
+    res = await asyncio.wrap_future(ppe.submit(apt_repos_query_packages, [searchStringSuites], [searchStringPackages], cwd = cwd))
+    logger.debug("Mark for target finished")
     return web.json_response(res)
+
+def apt_repos_query_packages(suiteSelectors, searchStrings, cwd = PROJECT_DIR):
+    apt_repos.setAptReposBaseDir(os.path.join(cwd, ".apt-repos"))
+    requestFields = PackageField.getByFieldsString("pvsaSC")
+    packages = []
+    for suite in sorted(apt_repos.getSuites(suiteSelectors)):
+        suite.scan(True)
+        packages.extend(suite.queryPackages(searchStrings, True, None, None, requestFields))
+    res = []
+    for package in sorted(packages):
+        (packageName, version, packageSuite, architecture, section, source) = package.getData()
+        res.append(common_interfaces.Package(packageName, version, packageSuite, architecture, section, source))
+    return res
 
 async def handle_required_auth(request):
     res = list()
@@ -691,7 +707,6 @@ def registerRoutes(args, app):
     app.router.add_routes([
         # api routes
         web.get('/api/getSuites', handle_get_suites),
-        web.get('/api/getDefaultPackages', handle_get_default_packages),
         web.get('/api/getCustomPackages', handle_get_custom_packages),
         web.get('/api/workflowMetadata', handle_get_workflow_metadata),
         web.get('/api/configuredStages', handle_get_configured_stages),
