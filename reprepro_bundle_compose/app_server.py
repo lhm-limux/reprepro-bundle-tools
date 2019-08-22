@@ -79,37 +79,37 @@ async def handle_required_auth(request):
                 "Please enter your {CredentialType} authentication data in order to clone the GIT Reposiory!"
             ))
         elif actionId == "bundleSync":
-            workingDir = None
+            cwd = None
             try:
-                unused_session, workingDir = validateSession(request)
+                unused_session, cwd = validateSession(request)
             except Exception as e:
                 return web.Response(text="Invalid Session: {}".format(e), status=401)
             res.extend(getRequiredAuthForConfig(
                 availableRefs,
-                getTracConfig(workingDir=workingDir),
+                getTracConfig(cwd=cwd),
                 "TracUrl",
                 "Please enter your {CredentialType} authentication data to sync with Trac!"
             ))
         elif actionId == "gitPullRebase":
-            workingDir = None
+            cwd = None
             try:
-                unused_session, workingDir = validateSession(request)
+                unused_session, cwd = validateSession(request)
             except Exception as e:
                 return web.Response(text="Invalid Session: {}".format(e), status=401)
             res.extend(getRequiredAuthForConfig(
                 availableRefs,
-                getGitRepoConfig(workingDir=workingDir),
+                getGitRepoConfig(cwd=cwd),
                 "RepoUrl",
                 "Please enter your {CredentialType} authentication data to pull changes from the Git-Server!"
             ))
         elif actionId == "publishChanges":
             try:
-                unused_session, workingDir = validateSession(request)
+                unused_session, cwd = validateSession(request)
             except Exception as e:
                 return web.Response(text="Invalid Session: {}".format(e), status=401)
             res.extend(getRequiredAuthForConfig(
                 availableRefs,
-                getGitRepoConfig(workingDir=workingDir),
+                getGitRepoConfig(cwd=cwd),
                 "RepoUrl",
                 "Please enter your {CredentialType} authentication data to publish changes to GIT!"
             ))
@@ -175,7 +175,7 @@ async def handle_login(request):
 
 async def handle_logout(request):
     try:
-        session, unused_workingDir = validateSession(request)
+        session, unused_cwd = validateSession(request)
         common_app_server.expire_session(session)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
@@ -183,13 +183,13 @@ async def handle_logout(request):
 
 
 async def handle_latest_published_change(request):
-    workingDir = None
+    cwd = None
     try:
-        unused_session, workingDir = validateSession(request)
+        unused_session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
-    repo = git.Repo(workingDir)
+    repo = git.Repo(cwd)
     tracking = repo.head.ref.tracking_branch()
     if tracking:
         res = common_interfaces.VersionedChange(tracking.commit, True)
@@ -198,14 +198,14 @@ async def handle_latest_published_change(request):
 
 
 async def handle_list_changes(request):
-    session, workingDir = None, None
+    session, cwd = None, None
     try:
-        session, workingDir = validateSession(request)
+        session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
     res = []
-    repo = git.Repo(workingDir)
+    repo = git.Repo(cwd)
     published = getPublishedCommits(repo, session)
     count = MAX_GIT_LIST_CHANGES
     c = repo.head.commit
@@ -235,9 +235,9 @@ def getPublishedCommits(repo, session):
 
 
 async def handle_undo_last_change(request):
-    workingDir = None
+    cwd = None
     try:
-        unused_session, workingDir = validateSession(request)
+        unused_session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
@@ -245,7 +245,7 @@ async def handle_undo_last_change(request):
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
-            repo = git.Repo(workingDir)
+            repo = git.Repo(cwd)
             ensure_clean_git_repo(repo)
             repo.git.reset('--hard', "HEAD^1")
             logger.info("Undoing last Change was successfull")
@@ -259,9 +259,9 @@ async def handle_undo_last_change(request):
 
 
 async def handle_publish_changes(request):
-    workingDir = None
+    cwd = None
     try:
-        unused_session, workingDir = validateSession(request)
+        unused_session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
@@ -269,7 +269,7 @@ async def handle_publish_changes(request):
 
     repoUrl, credType, useAuthentication = None, None, None
     try:
-        config = getGitRepoConfig(required=True, workingDir=workingDir)
+        config = getGitRepoConfig(required=True, cwd=cwd)
         repoUrl = config["RepoUrl"]
         credType = config.get("CredentialType", "").upper()
         useAuthentication = len(credType) > 0
@@ -286,7 +286,7 @@ async def handle_publish_changes(request):
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
-            repo = git.Repo(workingDir)
+            repo = git.Repo(cwd)
             if useAuthentication:
                 configureGitCredentialHelper(repo, repoUrl, user, password)
             repo.git.push()
@@ -299,9 +299,9 @@ async def handle_publish_changes(request):
 
 
 async def handle_mark_for_status(request):
-    workingDir = None
+    cwd = None
     try:
-        unused_session, workingDir = validateSession(request)
+        unused_session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
@@ -311,10 +311,10 @@ async def handle_mark_for_status(request):
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
-            repo = git.Repo(workingDir)
+            repo = git.Repo(cwd)
             ensure_clean_git_repo(repo)
-            bundles = await parseBundlesAsync(tpe, workingDir=workingDir)
-            await markBundlesForStatusAsync(tpe, bundles, set(ids), status, force=True, checkOwnSuite=False, workingDir=workingDir)
+            bundles = await parseBundlesAsync(tpe, cwd=cwd)
+            await markBundlesForStatusAsync(tpe, bundles, set(ids), status, force=True, checkOwnSuite=False, cwd=cwd)
             msg = "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids)))
             if len(ids) == 1:
               msg = "MARKED {} for status '{}'".format("".join(ids), status)
@@ -327,9 +327,9 @@ async def handle_mark_for_status(request):
 
 
 async def handle_set_target(request):
-    workingDir = None
+    cwd = None
     try:
-        unused_session, workingDir = validateSession(request)
+        unused_session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
@@ -342,10 +342,10 @@ async def handle_set_target(request):
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
-            repo = git.Repo(workingDir)
+            repo = git.Repo(cwd)
             ensure_clean_git_repo(repo)
-            bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe, ids, workingDir=workingDir), workingDir=workingDir)
-            markBundlesForTarget(bundles, set(ids), target, workingDir, ignoreTargetFromInfoFile)
+            bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe, ids, cwd=cwd), cwd=cwd)
+            markBundlesForTarget(bundles, set(ids), target, cwd, ignoreTargetFromInfoFile)
             msg = "MARKED for target '{}'\n\n - {}".format(target, "\n - ".join(sorted(ids)))
             if len(ids) == 1:
               msg = "MARKED {} for target '{}'".format("".join(ids), target)
@@ -358,9 +358,9 @@ async def handle_set_target(request):
 
 
 async def handle_git_pull_rebase(request):
-    workingDir = None
+    cwd = None
     try:
-        unused_session, workingDir = validateSession(request)
+        unused_session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
@@ -368,7 +368,7 @@ async def handle_git_pull_rebase(request):
 
     repoUrl, credType, useAuthentication = None, None, None
     try:
-        config = getGitRepoConfig(required=True, workingDir=workingDir)
+        config = getGitRepoConfig(required=True, cwd=cwd)
         repoUrl = config["RepoUrl"]
         credType = config.get("CredentialType", "").upper()
         useAuthentication = len(credType) > 0
@@ -385,7 +385,7 @@ async def handle_git_pull_rebase(request):
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
-            repo = git.Repo(workingDir)
+            repo = git.Repo(cwd)
             if useAuthentication:
                 configureGitCredentialHelper(repo, repoUrl, user, password)
             repo.git.fetch()
@@ -403,14 +403,14 @@ async def handle_git_pull_rebase(request):
 
 
 async def handle_update_bundles(request):
-    workingDir = None
+    cwd = None
     try:
-        unused_session, workingDir = validateSession(request)
+        unused_session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
     logger.info("Handling 'Update Bundles'")
-    config = getTracConfig(workingDir=workingDir)
+    config = getTracConfig(cwd=cwd)
     tracUrl  = config.get("TracUrl")
     credType = config.get("CredentialType", "").upper()
     parentTicketsField = config.get('UseParentTicketsFromInfoField')
@@ -424,7 +424,7 @@ async def handle_update_bundles(request):
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
-            repo = git.Repo(workingDir)
+            repo = git.Repo(cwd)
             ensure_clean_git_repo(repo)
             tracApi = None
             try:
@@ -435,7 +435,7 @@ async def handle_update_bundles(request):
                     common_app_server.invalidate_credentials(ssId)
             except KeyError as e:
                 logger.warn("Missing Key {} in local trac configuration --> no synchronization with trac will be done!".format(e))
-            updateBundles(tracApi, parentTicketsField=parentTicketsField, workingDir=workingDir)
+            updateBundles(tracApi, parentTicketsField=parentTicketsField, cwd=cwd)
             git_commit(repo, [BUNDLES_LIST_FILE], "UPDATED {}".format(BUNDLES_LIST_FILE))
         except GitNotCleanException as e:
             logger.error(e)
@@ -448,17 +448,17 @@ async def handle_update_bundles(request):
 
 
 async def handle_get_managed_bundles(request):
-    workingDir = None
+    cwd = None
     try:
-        unused_session, workingDir = validateSession(request)
+        unused_session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
     # faster (doesn't need to query apt-repos and resolve info file)
     logger.debug("handle_get_managed_bundles called")
     res = list()
-    bundles = await parseBundlesAsync(tpe, workingDir=workingDir)
-    tracUrl = getTracConfig(workingDir=workingDir).get('TracUrl')
+    bundles = await parseBundlesAsync(tpe, cwd=cwd)
+    tracUrl = getTracConfig(cwd=cwd).get('TracUrl')
     for (unused_id, bundle) in sorted(bundles.items()):
         res.append(common_interfaces.ManagedBundle(bundle, tracBaseUrl = tracUrl))
     logger.debug("handle_get_managed_bundles finished")
@@ -466,9 +466,9 @@ async def handle_get_managed_bundles(request):
 
 
 async def handle_get_managed_bundle_infos(request):
-    workingDir = None
+    cwd = None
     try:
-        unused_session, workingDir = validateSession(request)
+        unused_session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
@@ -476,12 +476,12 @@ async def handle_get_managed_bundle_infos(request):
     logger.debug("handle_get_managed_bundle_infos called")
     ids = common_interfaces.BundleIDs_validate(json.loads(request.rel_url.query['bundles']))
     logger.debug("requested bundle ids: '{}'".format("', '".join(ids)))
-    repoSuites = await getBundleRepoSuitesAsync(tpe, ids, workingDir=workingDir)
-    bundles = await parseBundlesAsync(tpe, repoSuites, selectIds=[str(s) for s in repoSuites], workingDir=workingDir)
+    repoSuites = await getBundleRepoSuitesAsync(tpe, ids, cwd=cwd)
+    bundles = await parseBundlesAsync(tpe, repoSuites, selectIds=[str(s) for s in repoSuites], cwd=cwd)
     if len(bundles) == 0:
         logger.debug("handle_get_managed_bundle_infos finished with empty result")
         return web.json_response([])
-    tracUrl = getTracConfig(workingDir=workingDir).get('TracUrl')
+    tracUrl = getTracConfig(cwd=cwd).get('TracUrl')
     futures = [ asyncio.wrap_future(tpe.submit(common_interfaces.ManagedBundleInfo, bundle, tracBaseUrl = tracUrl))
                 for bundle in bundles.values() ]
     (done, _) = await asyncio.wait(futures, return_when=asyncio.ALL_COMPLETED)
@@ -491,15 +491,15 @@ async def handle_get_managed_bundle_infos(request):
 
 
 async def handle_get_configured_stages(request):
-    workingDir = None
+    cwd = None
     try:
-        unused_session, workingDir = validateSession(request)
+        unused_session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
     res = list()
     for stage in sorted(BundleStatus.getAvailableStages()):
-        targets = getTargetRepoSuites(stage, workingDir=workingDir)
+        targets = getTargetRepoSuites(stage, cwd=cwd)
         if len(targets) > 0:
             res.append(stage)
     return web.json_response(res)
@@ -507,7 +507,7 @@ async def handle_get_configured_stages(request):
 
 async def handle_get_configured_targets(request):
     try:
-        unused_session, unused_workingDir = validateSession(request)
+        unused_session, unused_cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
@@ -522,7 +522,7 @@ async def handle_get_configured_targets(request):
 
 async def handle_get_workflow_metadata(request):
     try:
-        unused_session, _workingDir = validateSession(request)
+        unused_session, _cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
@@ -534,7 +534,7 @@ async def handle_get_workflow_metadata(request):
 
 async def handle_validate_session(request):
     try:
-        session, unused_workingDir = validateSession(request)
+        session, unused_cwd = validateSession(request)
         return web.json_response(common_interfaces.SessionInfo(session['RepoUrl'], session['Branch']))
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
@@ -572,26 +572,26 @@ def validateSession(request):
     session = common_app_server.get_session(sid)
     if not session:
         raise Exception("Invalid Session")
-    workingDir = session.get('workingDir')
-    if not workingDir or not os.path.exists(workingDir):
+    cwd = session.get('cwd')
+    if not cwd or not os.path.exists(cwd):
         raise Exception("Session has no working directory")
-    return session, workingDir
+    return session, cwd
 
 
-def createSession(workingDir):
+def createSession(cwd):
     session = common_app_server.create_session(sessionExpired)
-    session['workingDir'] = workingDir
+    session['cwd'] = cwd
     return session
 
 
 def sessionExpired(session):
-    workingDir = session.get('workingDir')
+    cwd = session.get('cwd')
     # checking existence of ".apt-repos" to not incidentely remove a wrong folder
-    if workingDir and os.path.exists(workingDir) and os.path.exists(os.path.join(workingDir, ".apt-repos")):
+    if cwd and os.path.exists(cwd) and os.path.exists(os.path.join(cwd, ".apt-repos")):
         try:
-            shutil.rmtree(workingDir)
+            shutil.rmtree(cwd)
         except OSError as e:
-            logger.warn("Could not remove {}: {}".format(workingDir, e))
+            logger.warn("Could not remove {}: {}".format(cwd, e))
 
 
 def registerRoutes(args, app):
