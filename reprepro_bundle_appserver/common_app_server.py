@@ -125,21 +125,28 @@ def create_session(expireSessionCallback=None):
 
 def get_session(sid):
     '''
-        This method cleans up expired sessions and returns the session for session id `sid`
-        or None, if there is no such valid session. It also updates the 'touchedTime' attribute
-        of the session to the datetime.datetime.now().
+        This method first calls __gc_expired_session() and then returns the session for session
+        id `sid` or None, if there is no such valid session.
+        It also updates the 'touchedTime' attribute of the session to the datetime.datetime.now().
+    '''
+    __gc_expired_session()
+    global __sessions
+    session = __sessions.get(sid)
+    if session:
+        session['touchedTime'] = datetime.datetime.now()
+    return session
+
+
+def __gc_expired_session():
+    '''
+        This method garbage-collects timed-out sessions and expires them.
     '''
     global __sessions
-    # cleanup expired Sessions
     keys = list(__sessions.keys())
     for sid in keys:
         session = __sessions.get(sid)
         if session and (datetime.datetime.now() - session['touchedTime']).seconds > SESSION_TIMEOUT_S:
             expire_session(session)
-    session = __sessions.get(sid)
-    if session:
-        session['touchedTime'] = datetime.datetime.now()
-    return session
 
 
 def expire_session(session):

@@ -632,6 +632,7 @@ def validateSession(request):
     cwd = session.get('cwd')
     if not cwd or not os.path.exists(cwd):
         raise Exception("Session has no working directory")
+    logger.debug("Session info: cwd={}, sid={}".format(cwd, sid))
     return session, cwd
 
 
