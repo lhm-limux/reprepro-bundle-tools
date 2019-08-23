@@ -41,9 +41,9 @@ from urllib.parse import urlparse
 import reprepro_bundle_compose
 from reprepro_bundle_compose import \
         BUNDLES_LIST_FILE, BundleStatus, getTargetRepoSuites, \
-        getBundleRepoSuitesAsync, parseBundlesAsync, updateBundles, trac_api, \
-        getTracConfig, getGitRepoConfig, markBundlesForStatusAsync, \
-        markBundlesForTarget, git_commit, ensure_clean_git_repo, GitNotCleanException
+        getBundleRepoSuites, parseBundles, trac_api, \
+        getTracConfig, getGitRepoConfig, git_commit, \
+        ensure_clean_git_repo, GitNotCleanException
 from reprepro_bundle_appserver import common_app_server, common_interfaces
 
 
@@ -58,7 +58,7 @@ MAX_GIT_LIST_CHANGES = 200
 publishedCommitsCache = set()
 publishedCommitsLastHead = None
 
-tpe = None # ThreadPoolExecutor set in main
+ppe = None # ProcessPoolExecutor set in main
 
 
 async def handle_required_auth(request):
@@ -154,12 +154,7 @@ async def handle_login(request):
         try:
             tmpDir = tempfile.mkdtemp()
             logger.debug("Cloning '{}' to '{}'".format(repoUrl, tmpDir))
-            repo = git.Repo.init(tmpDir)
-            repo.create_remote("origin", url=repoUrl)
-            if useAuthentication:
-                configureGitCredentialHelper(repo, repoUrl, user, password)
-            repo.git.fetch("origin", branch)
-            repo.git.checkout(branch)
+            await asyncio.wrap_future(ppe.submit(git_clone_repository, repoUrl, branch, tmpDir, useAuthentication, user, password))
             logger.info("Successfully cloned {} to a (temporary) local working directory, branch '{}'.".format(repoUrl, branch))
             session = createSession(tmpDir)
             session["RepoUrl"] = repoUrl
@@ -171,6 +166,15 @@ async def handle_login(request):
     response = web.json_response(res)
     emitOrCleanSessionCookie(response, session)
     return response
+
+
+def git_clone_repository(repoUrl, branch, tmpDir, useAuthentication, user, password):
+    repo = git.Repo.init(tmpDir)
+    repo.create_remote("origin", url=repoUrl)
+    if useAuthentication:
+        configureGitCredentialHelper(repo, repoUrl, user, password)
+    repo.git.fetch("origin", branch)
+    repo.git.checkout(branch)
 
 
 async def handle_logout(request):
@@ -203,17 +207,24 @@ async def handle_list_changes(request):
         session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
-
-    res = []
     repo = git.Repo(cwd)
     published = getPublishedCommits(repo, session)
+    logger.debug("Handling 'List Changes'")
+    res = await asyncio.wrap_future(ppe.submit(list_changes, published, cwd))
+    logger.debug("Handling 'List Changes' finished")
+    return web.json_response(res)
+
+
+def list_changes(publishedCommits, cwd):
+    res = []
     count = MAX_GIT_LIST_CHANGES
+    repo = git.Repo(cwd)
     c = repo.head.commit
     while c and count > 0:
-        res.append(common_interfaces.VersionedChange(c, c.hexsha in published))
+        res.append(common_interfaces.VersionedChange(c, c.hexsha in publishedCommits))
         c = c.parents[0] if len(c.parents) > 0 else None
         count-=1
-    return web.json_response(res)
+    return res
 
 
 def getPublishedCommits(repo, session):
@@ -242,6 +253,12 @@ async def handle_undo_last_change(request):
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
     logger.info("Handling 'Undo last Change'")
+    res = await asyncio.wrap_future(ppe.submit(undo_last_change, cwd))
+    logger.debug("Handling 'Undo last Change' finished")
+    return web.json_response(res)
+
+
+def undo_last_change(cwd):
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
@@ -255,7 +272,7 @@ async def handle_undo_last_change(request):
             logger.error(e)
         finally:
             res = logs.toBackendLogEntryList()
-    return web.json_response(res)
+    return res
 
 
 async def handle_publish_changes(request):
@@ -264,8 +281,6 @@ async def handle_publish_changes(request):
         unused_session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
-
-    logger.info("Handling 'Publish Changes'")
 
     repoUrl, credType, useAuthentication = None, None, None
     try:
@@ -282,8 +297,17 @@ async def handle_publish_changes(request):
             (user, password, ssId) = common_app_server.get_credentials(request, credType)
     except Exception as e:
         return web.Response(text="Illegal Arguments Provided: {}".format(e), status=400)
+    logger.info("Handling 'Publish Changes'")
+    res, auth_ok = await asyncio.wrap_future(ppe.submit(publish_changes, repoUrl, useAuthentication, user, password, cwd))
+    if not auth_ok:
+        common_app_server.invalidate_credentials(ssId)
+    logger.debug("Handling 'Publish Changes' finished")
+    return web.json_response(res)
 
+
+def publish_changes(repoUrl, useAuthentication, user, password, cwd):
     res = []
+    auth_ok = True
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
             repo = git.Repo(cwd)
@@ -293,9 +317,9 @@ async def handle_publish_changes(request):
             logger.info("Successfully published Changes")
         except (Exception, GitCommandError) as e:
             logger.error("Publishing Changes failed:\n{}".format(e))
-            common_app_server.invalidate_credentials(ssId)
+            auth_ok = False
         res = logs.toBackendLogEntryList()
-    return web.json_response(res)
+    return res, auth_ok
 
 
 async def handle_mark_for_status(request):
@@ -308,22 +332,28 @@ async def handle_mark_for_status(request):
     status = BundleStatus.getByName(request.rel_url.query['status'])
     ids = json.loads(request.rel_url.query['bundles'])
     logger.info("Mark for status: {} --> {}".format(ids, status))
+    res = await asyncio.wrap_future(ppe.submit(mark_bundles_for_status, ids, status, cwd))
+    logger.debug("Mark for status finished")
+    return web.json_response(res)
+
+
+def mark_bundles_for_status(bundleIds, status, cwd):
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
             repo = git.Repo(cwd)
             ensure_clean_git_repo(repo)
-            bundles = await parseBundlesAsync(tpe, cwd=cwd)
-            await markBundlesForStatusAsync(tpe, bundles, set(ids), status, force=True, checkOwnSuite=False, cwd=cwd)
-            msg = "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(ids)))
-            if len(ids) == 1:
-              msg = "MARKED {} for status '{}'".format("".join(ids), status)
+            bundles = parseBundles(cwd=cwd)
+            reprepro_bundle_compose.markBundlesForStatus(bundles, bundleIds, status, force=True, checkOwnSuite=False, cwd=cwd)
+            msg = "MARKED for status '{}'\n\n - {}".format(status, "\n - ".join(sorted(bundleIds)))
+            if len(bundleIds) == 1:
+                msg = "MARKED {} for status '{}'".format("".join(bundleIds), status)
             git_commit(repo, [BUNDLES_LIST_FILE], msg)
         except GitNotCleanException as e:
             logger.error(e)
         finally:
             res = logs.toBackendLogEntryList()
-    return web.json_response(res)
+    return res
 
 
 async def handle_set_target(request):
@@ -339,22 +369,28 @@ async def handle_set_target(request):
     if ignoreTargetFromInfoFile:
         ignoreTargetFromInfoFile = (ignoreTargetFromInfoFile.lower() == "true")
     logger.info("Mark for target: {} --> {}".format(ids, target))
+    res = await asyncio.wrap_future(ppe.submit(mark_bundles_for_target, set(ids), target, ignoreTargetFromInfoFile, cwd))
+    logger.debug("Mark for target finished")
+    return web.json_response(res)
+
+
+def mark_bundles_for_target(bundleIds, target, ignoreTargetFromInfoFile, cwd):
     res = []
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
             repo = git.Repo(cwd)
             ensure_clean_git_repo(repo)
-            bundles = await parseBundlesAsync(tpe, await getBundleRepoSuitesAsync(tpe, ids, cwd=cwd), cwd=cwd)
-            markBundlesForTarget(bundles, set(ids), target, cwd, ignoreTargetFromInfoFile)
-            msg = "MARKED for target '{}'\n\n - {}".format(target, "\n - ".join(sorted(ids)))
-            if len(ids) == 1:
-              msg = "MARKED {} for target '{}'".format("".join(ids), target)
+            bundles = parseBundles(getBundleRepoSuites(bundleIds, cwd=cwd), cwd=cwd)
+            reprepro_bundle_compose.markBundlesForTarget(bundles, bundleIds, target, cwd, ignoreTargetFromInfoFile)
+            msg = "MARKED for target '{}'\n\n - {}".format(target, "\n - ".join(sorted(bundleIds)))
+            if len(bundleIds) == 1:
+              msg = "MARKED {} for target '{}'".format("".join(bundleIds), target)
             git_commit(repo, [BUNDLES_LIST_FILE], msg)
         except GitNotCleanException as e:
             logger.error(e)
         finally:
             res = logs.toBackendLogEntryList()
-    return web.json_response(res)
+    return res
 
 
 async def handle_git_pull_rebase(request):
@@ -381,8 +417,15 @@ async def handle_git_pull_rebase(request):
             (user, password, ssId) = common_app_server.get_credentials(request, credType)
     except Exception as e:
         return web.Response(text="Illegal Arguments Provided: {}".format(e), status=400)
+    res, auth_ok = await asyncio.wrap_future(ppe.submit(git_pull_rebase, repoUrl, useAuthentication, user, password, cwd))
+    if not auth_ok:
+        common_app_server.invalidate_credentials(ssId)
+    return web.json_response(res)
 
+
+def git_pull_rebase(repoUrl, useAuthentication, user, password, cwd):
     res = []
+    auth_ok = True
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
             repo = git.Repo(cwd)
@@ -397,9 +440,9 @@ async def handle_git_pull_rebase(request):
             logger.info("Successfully pulled changes and rebased your repository")
         except (Exception, GitCommandError) as e:
             logger.error("Updating git-repository from the git-server failed:\n{}".format(e))
-            common_app_server.invalidate_credentials(ssId)
+            auth_ok = False
         res = logs.toBackendLogEntryList()
-    return web.json_response(res)
+    return res, auth_ok
 
 
 async def handle_update_bundles(request):
@@ -409,7 +452,6 @@ async def handle_update_bundles(request):
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
-    logger.info("Handling 'Update Bundles'")
     config = getTracConfig(cwd=cwd)
     tracUrl  = config.get("TracUrl")
     credType = config.get("CredentialType", "").upper()
@@ -421,7 +463,18 @@ async def handle_update_bundles(request):
             (user, password, ssId) = common_app_server.get_credentials(request, credType)
     except Exception as e:
         '''Credentials are not mandatory for update_bundles - so just pass'''
+
+    logger.info("Handling 'Update Bundles'")
+    res, auth_ok = await asyncio.wrap_future(ppe.submit(update_bundles, useAuthentication, user, password, tracUrl, parentTicketsField, cwd))
+    if not auth_ok:
+        common_app_server.invalidate_credentials(ssId)
+    logger.debug("Handling 'Update Bundles' finished")
+    return web.json_response(res)
+
+
+def update_bundles(useAuthentication, user, password, tracUrl, parentTicketsField, cwd):
     res = []
+    auth_ok = True
     with common_app_server.logging_redirect_for_webapp() as logs:
         try:
             repo = git.Repo(cwd)
@@ -432,19 +485,19 @@ async def handle_update_bundles(request):
                     tracApi = trac_api.TracApi(tracUrl, user, password)
                 else:
                     logger.warn("Skipping synchronisation with trac as there are no/empty credentials specified.")
-                    common_app_server.invalidate_credentials(ssId)
+                    auth_ok = False
             except KeyError as e:
                 logger.warn("Missing Key {} in local trac configuration --> no synchronization with trac will be done!".format(e))
-            updateBundles(tracApi, parentTicketsField=parentTicketsField, cwd=cwd)
+            reprepro_bundle_compose.updateBundles(tracApi, parentTicketsField=parentTicketsField, cwd=cwd)
             git_commit(repo, [BUNDLES_LIST_FILE], "UPDATED {}".format(BUNDLES_LIST_FILE))
         except GitNotCleanException as e:
             logger.error(e)
         except Exception as e:
-            common_app_server.invalidate_credentials(ssId)
+            auth_ok = False
             logger.error(e)
         finally:
             res = logs.toBackendLogEntryList()
-    return web.json_response(res)
+    return res, auth_ok
 
 
 async def handle_get_managed_bundles(request):
@@ -456,13 +509,18 @@ async def handle_get_managed_bundles(request):
 
     # faster (doesn't need to query apt-repos and resolve info file)
     logger.debug("handle_get_managed_bundles called")
+    res = await asyncio.wrap_future(ppe.submit(get_managed_bundles, cwd))
+    logger.debug("handle_get_managed_bundles finished")
+    return web.json_response(res)
+
+
+def get_managed_bundles(cwd):
     res = list()
-    bundles = await parseBundlesAsync(tpe, cwd=cwd)
+    bundles = parseBundles(cwd=cwd)
     tracUrl = getTracConfig(cwd=cwd).get('TracUrl')
     for (unused_id, bundle) in sorted(bundles.items()):
         res.append(common_interfaces.ManagedBundle(bundle, tracBaseUrl = tracUrl))
-    logger.debug("handle_get_managed_bundles finished")
-    return web.json_response(res)
+    return res
 
 
 async def handle_get_managed_bundle_infos(request):
@@ -473,21 +531,20 @@ async def handle_get_managed_bundle_infos(request):
         return web.Response(text="Invalid Session: {}".format(e), status=401)
 
     # slower (as it needs to resolve info files)
-    logger.debug("handle_get_managed_bundle_infos called")
     ids = common_interfaces.BundleIDs_validate(json.loads(request.rel_url.query['bundles']))
-    logger.debug("requested bundle ids: '{}'".format("', '".join(ids)))
-    repoSuites = await getBundleRepoSuitesAsync(tpe, ids, cwd=cwd)
-    bundles = await parseBundlesAsync(tpe, repoSuites, selectIds=[str(s) for s in repoSuites], cwd=cwd)
-    if len(bundles) == 0:
-        logger.debug("handle_get_managed_bundle_infos finished with empty result")
-        return web.json_response([])
-    tracUrl = getTracConfig(cwd=cwd).get('TracUrl')
-    futures = [ asyncio.wrap_future(tpe.submit(common_interfaces.ManagedBundleInfo, bundle, tracBaseUrl = tracUrl))
-                for bundle in bundles.values() ]
-    (done, _) = await asyncio.wait(futures, return_when=asyncio.ALL_COMPLETED)
-    res = [await f for f in done]
+    logger.debug("handle_get_managed_bundle_infos called, ids='{}'".format("', '".join(ids)))
+    res = await asyncio.wrap_future(ppe.submit(get_managed_bundle_infos, set(ids), cwd=cwd))
     logger.debug("handle_get_managed_bundle_infos finished")
     return web.json_response(res)
+
+
+def get_managed_bundle_infos(bundleIds, cwd):
+    repoSuites = getBundleRepoSuites(bundleIds, cwd=cwd)
+    bundles = parseBundles(repoSuites, selectIds=[str(s) for s in repoSuites], cwd=cwd)
+    tracUrl = getTracConfig(cwd=cwd).get('TracUrl')
+    res = [ common_interfaces.ManagedBundleInfo(bundle, tracBaseUrl = tracUrl)
+        for bundle in bundles.values() ]
+    return res
 
 
 async def handle_get_configured_stages(request):
@@ -628,8 +685,12 @@ def registerRoutes(args, app):
 
 if __name__ == "__main__":
     try:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-            tpe = executor
+        # We need a ProcessPoolExecutor to run blocking code asynchronously.
+        # A ProcessPoolExecutor is required (instead of ThreadPoolExecutor)
+        # because apt-repo's suite.scan() uses global scope and only the
+        # ProcessPoolExecutor separates these global scopes correctly.
+        with concurrent.futures.ProcessPoolExecutor(max_workers=5) as __ppe:
+            ppe = __ppe
             common_app_server.mainLoop(
                 progname = progname,
                 description =  __doc__,

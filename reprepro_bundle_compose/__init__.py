@@ -29,7 +29,6 @@ import git
 import re
 import git.exc
 from git.exc import GitCommandError
-import asyncio
 from reprepro_bundle_compose.bundle_status import BundleStatus
 from reprepro_bundle_compose.managed_bundle import ManagedBundle
 from reprepro_bundle_compose.distribution import Distribution
@@ -163,13 +162,6 @@ def parseBundlesListFile(bundlesListFile, repoSuites=None, selectIds=None):
     return res
 
 
-async def parseBundlesAsync(executor, repoSuites=None, selectIds=None, cwd=PROJECT_DIR):
-    '''
-        This method calls parseBundles(repoSuites) asynchronously in the provided ThreadPoolExecutor executor.
-    '''
-    return await asyncio.wrap_future(executor.submit(parseBundles, repoSuites, selectIds, cwd))
-
-
 def storeBundles(bundlesDict, cwd=PROJECT_DIR):
     '''
         Expects a dict of ID to ManagedBundle-Objects and stores it's content in alpabetical
@@ -191,13 +183,6 @@ def getBundleRepoSuites(ids=["bundle:"], cwd=PROJECT_DIR):
     for suite in sorted(apt_repos.getSuites(ids)):
         res[suite.getSuiteName()] = suite
     return res
-
-
-async def getBundleRepoSuitesAsync(executor, ids=["bundle:"], cwd=PROJECT_DIR):
-    '''
-        This method calls getBundleRepoSuites() asynchronously in the provided ThreadPoolExecutor executor.
-    '''
-    return await asyncio.wrap_future(executor.submit(getBundleRepoSuites, ids, cwd))
 
 
 def getTargetRepoSuites(stage=None, cwd=PROJECT_DIR):
@@ -293,7 +278,8 @@ def splitReleasenotes(info):
     return (subject, text)
 
 
-def markBundlesForStatus(bundles, ids, status, force=False, checkOwnSuite=True, cwd=PROJECT_DIR):
+def markBundlesForStatus(bundles, bundleIds, status, force=False, checkOwnSuite=True, cwd=PROJECT_DIR):
+    ids = set(bundleIds)
     changed = False
     for (bid, bundle) in sorted(bundles.items()):
         if not bid in ids:
@@ -320,15 +306,8 @@ def markBundlesForStatus(bundles, ids, status, force=False, checkOwnSuite=True, 
         storeBundles(bundles, cwd=cwd)
 
 
-async def markBundlesForStatusAsync(executor, bundles, ids, status, force=False, checkOwnSuite=True, cwd=PROJECT_DIR):
-    '''
-        This method calls markBundlesForStatus(bundles, ids, status, force, checkOwnSuite) asyncronously in the
-        provided ThreadPoolExecutor executor.
-    '''
-    await asyncio.wrap_future(executor.submit(markBundlesForStatus, bundles, ids, status, force, checkOwnSuite, cwd))
-
-
-def markBundlesForTarget(bundles, ids, target, cwd=PROJECT_DIR, ignoreTargetFromInfoFile=None):
+def markBundlesForTarget(bundles, bundleIds, target, cwd=PROJECT_DIR, ignoreTargetFromInfoFile=None):
+    ids = set(bundleIds)
     changed = False
     for (bid, bundle) in sorted(bundles.items()):
         if not bid in ids:
