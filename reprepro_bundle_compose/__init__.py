@@ -64,7 +64,6 @@ def updateBundles(tracApi=None, parentTicketsField=None, cwd=PROJECT_DIR):
         except subprocess.CalledProcessError as e:
             logger.warning("Hook execution failed with return code {}:\n{}".format(e.returncode, e.output.decode('utf-8')))
 
-    # TODO: apt_repos.setAptReposBaseDir() - Achtung wir sind hier nicht threadsafe, verwenden aber potentiell Threads!
     repo_suites = getBundleRepoSuites(cwd=cwd)
     managed_bundles = parseBundles(cwd=cwd)
     ids = set(repo_suites.keys()).union(managed_bundles.keys())
@@ -176,9 +175,11 @@ def getBundleRepoSuites(ids=["bundle:"], cwd=PROJECT_DIR):
     '''
        This method uses apt-repos to get a list of all currently available (rolled out)
        bundles as a dict of ID to apt_repos.RepoSuite Objects
+
+       WARNING: This method modifies the global apt-repos base directory and therefore must
+                not be used in a multithreaded environment!
     '''
     res = dict()
-    # TODO: apt_repos.setAptReposBaseDir() - Achtung wir sind hier nicht threadsafe, verwenden aber potentiell Threads!
     apt_repos.setAptReposBaseDir(os.path.join(cwd, ".apt-repos"))
     for suite in sorted(apt_repos.getSuites(ids)):
         res[suite.getSuiteName()] = suite
@@ -190,9 +191,11 @@ def getTargetRepoSuites(stage=None, cwd=PROJECT_DIR):
        This method uses apt-repos to get a list of all currently available target
        repositories/suites. If `stage` is specified, only target suites for this
        stage are returned. The result is a dict of ID to apt_repos.RepoSuite Objects.
+
+       WARNING: This method modifies the global apt-repos base directory and therefore must
+                not be used in a multithreaded environment!
     '''
     res = dict()
-    # TODO: apt_repos.setAptReposBaseDir() - Achtung wir sind hier nicht threadsafe, verwenden aber potentiell Threads!
     apt_repos.setAptReposBaseDir(os.path.join(cwd, ".apt-repos"))
     for suite in sorted(apt_repos.getSuites(["bundle-compose-target:"])):
         if not stage or "bundle-stage.{}".format(stage) in suite.getTags():
