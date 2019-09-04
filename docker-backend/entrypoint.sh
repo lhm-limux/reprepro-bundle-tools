@@ -3,6 +3,19 @@ set -e
 
 if [ "$1" = 'reprepro-management-service' ]; then
 
+    # create and use a fake user's homedir and nss-entries as the underlying
+    # contaner system (e.g. OpenShift) might use an arbitrary uid which has
+    # no assigned username
+    uid=$(id -u)
+    gid=$(id -g)
+    export HOME="/tmp/home_$uid"
+    test -d "$HOME" || mkdir -p "$HOME"
+    echo "repoman::$uid:$gid::$HOME:" >"$HOME/fakePwd"
+    echo "repoman::$gid:" >"$HOME/fakeGrp"
+    export NSS_WRAPPER_PASSWD=$HOME/fakePwd
+    export NSS_WRAPPER_GROUP=$HOME/fakeGrp
+    export LD_PRELOAD=libnss_wrapper.so
+
     # apply provided .ssh-settings
     mkdir -p ~/.ssh
     ssh_private=$(echo "${SSH_PRIVATE_KEY}" | base64 -d || true)
