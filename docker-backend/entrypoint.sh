@@ -16,14 +16,18 @@ if [ "$1" = 'reprepro-management-service' ]; then
     export NSS_WRAPPER_GROUP=$HOME/fakeGrp
     export LD_PRELOAD=libnss_wrapper.so
 
-    # apply provided .ssh-settings
+    # copy provided credentials, ssh- and gnupg-settings to it's place
+    # - variant 1: provided via mount to /etc/credentials/ssh and /etc/credentials/gnupg
+    CRED=/etc/credentials
     mkdir -p ~/.ssh
-    ssh_private=$(echo "${SSH_PRIVATE_KEY}" | base64 -d || true)
-    ssh_public=$(echo "${SSH_PUBLIC_KEY}" | base64 -d || true)
-    ssh_known_hosts=$(echo "${SSH_KNOWN_HOSTS}" | base64 -d || true)
-    test -z "${ssh_private}" || { echo "${ssh_private}" >~/.ssh/id_rsa; chmod 600 ~/.ssh/id_rsa; }
-    test -z "${ssh_public}" || echo "${ssh_public}" >~/.ssh/id_rsa.pub
-    test -z "${ssh_known_hosts}" || echo "${ssh_known_hosts}" >~/.ssh/known_hosts
+    test -x ${CRED}/ssh && cp -a ${CRED}/ssh/* ~/.ssh/
+    mkdir -p ~/.gnupg; chmod 700 ~/.gnupg
+    test -x ${CRED}/gnupg && cp -a ${CRED}/gnupg/* ~/.gnupg/
+    # - variant 2: provided via environment variables
+    test -z "${SSH_PRIVATE_KEY}" || { echo "${SSH_PRIVATE_KEY}" >~/.ssh/id_rsa; chmod 600 ~/.ssh/id_rsa; }
+    test -z "${SSH_PUBLIC_KEY}" || echo "${SSH_PUBLIC_KEY}" >~/.ssh/id_rsa.pub
+    test -z "${SSH_KNOWN_HOSTS}" || echo "${SSH_KNOWN_HOSTS}" >~/.ssh/known_hosts
+    test -z "${GPG_KEYS}" || { echo "${GPG_KEYS}" | gpg --import; }
 
     # ensure that provided git-settings are used and the local repo is up to date
     # (even if the git repo already exists in the persistent storage)

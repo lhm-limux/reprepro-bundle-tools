@@ -1,6 +1,6 @@
 SHELL:=/bin/bash
 PRJDIR:=$(CURDIR)
-DOCKER_COMPOSE:=source ./setup_env.sh && docker-compose
+DOCKER_COMPOSE:=docker-compose
 
 build: docker-buildenv/.buildenv.built
 	$(DOCKER_COMPOSE) -f docker-buildenv/docker-compose.yml run --rm buildenv make -C /build build-in-buildenv
@@ -36,20 +36,14 @@ debian-build-in-buildenv:
 	cp ../*.changes deb/
 	@echo -e "\nDebian-Build finished SUCCESSFULLY! Find Build-Results in folder ./deb/\n"
 
-#backend: debian-build
 backend:
-	cp ../*apt-repos*.deb docker-backend/
-	cp deb/*.deb docker-backend/
-	test -x docker-backend/local_settings.env || touch docker-backend/local_settings.env
-	$(DOCKER_COMPOSE) -f docker-backend/docker-compose.yml build
-	touch docker-backend/.backend.built
+	make -C docker-backend
 
 clean:
 	make -C ng-frontends/ng-bundle clean
 	make -C ng-frontends/ng-bundle-compose clean
+	make -C docker-backend clean
 	rm -Rf .npm .npm-packages .config \
-		docker-backend/.backend.built \
-		docker-backend/*.deb \
 		docker-buildenv/.buildenv.built \
 		docker-buildenv/.buildenv-debian.built \
 		docker-buildenv/*apt-repos*.deb \

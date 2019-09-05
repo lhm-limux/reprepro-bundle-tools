@@ -3,17 +3,25 @@ version: '2.0'
 services:
 
   worker-service:
-    env_file:
-      - default_settings.env
-      - local_settings.env
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      GIT_REPO_URL: "${GIT_REPO_URL}"
+      GIT_BRANCH: "${GIT_BRANCH}"
+      GIT_USERNAME: "${GIT_USERNAME}"
+      GIT_EMAIL: "${GIT_EMAIL}"
+      HOST_IP: "${HOST_IP}"
+      HOST_NAME: "${HOST_NAME}"
+      SSH_PRIVATE_KEY: "${SSH_PRIVATE_KEY}"
+      SSH_PUBLIC_KEY: "${SSH_PUBLIC_KEY}"
+      SSH_KNOWN_HOSTS: "${SSH_KNOWN_HOSTS}"
+      GPG_KEYS: "${GPG_KEYS}"
     image: reprepro-management-worker-service
     volumes:
       - reprepro-management-data:/reprepro-management/
     ports:
-      - 0.0.0.0:8080:8080
+      - ${HOST_IP}:8080:8080
     user: "1024"
     restart: "no"
 
@@ -21,11 +29,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-webserver
+    environment:
+      HOST_NAME: "${HOST_NAME}"
     image: reprepro-management-webserver
     volumes:
       - reprepro-management-data:/reprepro-management/
     ports:
-      - 0.0.0.0:80:80
+      - ${HOST_IP}:80:80
     restart: "no"
 
 volumes:
