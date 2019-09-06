@@ -1,20 +1,21 @@
 #!/bin/bash
 set -e
 
-if [ "$1" = 'reprepro-management-service' ]; then
+# create and use a fake user's homedir and nss-entries as the underlying
+# contaner system (e.g. OpenShift) might use an arbitrary uid which has
+# no assigned username
+uid=$(id -u)
+gid=$(id -g)
+export HOME="/tmp/home_$uid"
+test -d "$HOME" || mkdir -p "$HOME"
+echo "repoman::$uid:$gid::$HOME:" >"$HOME/.fakePwd"
+echo "repoman::$gid:" >"$HOME/.fakeGrp"
+export NSS_WRAPPER_PASSWD=$HOME/.fakePwd
+export NSS_WRAPPER_GROUP=$HOME/.fakeGrp
+export LD_PRELOAD=libnss_wrapper.so
 
-    # create and use a fake user's homedir and nss-entries as the underlying
-    # contaner system (e.g. OpenShift) might use an arbitrary uid which has
-    # no assigned username
-    uid=$(id -u)
-    gid=$(id -g)
-    export HOME="/tmp/home_$uid"
-    test -d "$HOME" || mkdir -p "$HOME"
-    echo "repoman::$uid:$gid::$HOME:" >"$HOME/fakePwd"
-    echo "repoman::$gid:" >"$HOME/fakeGrp"
-    export NSS_WRAPPER_PASSWD=$HOME/fakePwd
-    export NSS_WRAPPER_GROUP=$HOME/fakeGrp
-    export LD_PRELOAD=libnss_wrapper.so
+
+if [ "$1" = 'reprepro-management-service' ]; then
 
     # copy provided credentials, ssh- and gnupg-settings to it's place
     mkdir -p ~/.ssh
