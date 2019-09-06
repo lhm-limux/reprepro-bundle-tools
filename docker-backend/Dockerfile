@@ -21,14 +21,11 @@ COPY entrypoint.sh /
 
 RUN dpkg -i *.deb && \
     mkdir /reprepro-management && \
-    mkdir -p /etc/credentials && \
     chmod 777 /reprepro-management && \
-    chmod 755 /etc/credentials && \
     chmod 755 /entrypoint.sh && \
     rm -f /etc/apt/apt.conf.d/docker-*
 
 VOLUME /reprepro-management
-VOLUME /etc/credentials
 
 WORKDIR /reprepro-management
 

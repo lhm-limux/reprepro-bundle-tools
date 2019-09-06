@@ -17,13 +17,8 @@ if [ "$1" = 'reprepro-management-service' ]; then
     export LD_PRELOAD=libnss_wrapper.so
 
     # copy provided credentials, ssh- and gnupg-settings to it's place
-    # - variant 1: provided via mount to /etc/credentials/ssh and /etc/credentials/gnupg
-    CRED=/etc/credentials
     mkdir -p ~/.ssh
-    test -x ${CRED}/ssh && cp -a ${CRED}/ssh/* ~/.ssh/
     mkdir -p ~/.gnupg; chmod 700 ~/.gnupg
-    test -x ${CRED}/gnupg && cp -a ${CRED}/gnupg/* ~/.gnupg/
-    # - variant 2: provided via environment variables
     test -z "${SSH_PRIVATE_KEY}" || { echo "${SSH_PRIVATE_KEY}" >~/.ssh/id_rsa; chmod 600 ~/.ssh/id_rsa; }
     test -z "${SSH_PUBLIC_KEY}" || echo "${SSH_PUBLIC_KEY}" >~/.ssh/id_rsa.pub
     test -z "${SSH_KNOWN_HOSTS}" || echo "${SSH_KNOWN_HOSTS}" >~/.ssh/known_hosts
