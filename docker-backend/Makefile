@@ -18,6 +18,9 @@ stop:
 restart: stop .backend.built start
 	$(DOCKER_COMPOSE) logs -f
 
+image.tgz: .backend.built
+	docker save reprepro-management-worker-service | gzip >../../reprepro-management-worker-service.tar.gz
+
 clean:
 	rm -Rf .backend.built *.deb
 	$(DOCKER_COMPOSE) rm -f || true
