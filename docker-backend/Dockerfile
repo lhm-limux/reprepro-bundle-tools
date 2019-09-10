@@ -1,7 +1,8 @@
 FROM ubuntu:bionic
 
-RUN apt update && apt install -y \
+RUN apt-get update && apt-get install -y \
 	libnss-wrapper \
+	locales \
 	python3 \
 	python3-apt \
 	python3-git \
@@ -24,6 +25,13 @@ RUN dpkg -i *.deb && \
     chmod 777 /reprepro-management && \
     chmod 755 /entrypoint.sh && \
     rm -f /etc/apt/apt.conf.d/docker-*
+
+# Fix locales not well configured in ubuntu:bionic
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 
 VOLUME /reprepro-management
 
