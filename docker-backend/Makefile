@@ -5,6 +5,7 @@ main: restart
 
 .backend.built: Dockerfile Dockerfile-webserver docker-compose.yml Makefile entrypoint.sh setup_env.sh setup_env.local.sh
 	cp ../../*apt-repos*.deb ../deb/*.deb .
+	docker pull ubuntu:bionic
 	$(DOCKER_COMPOSE) build
 	touch .backend.built
 
