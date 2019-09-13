@@ -8,10 +8,10 @@
       </div>
 
       <div *ngFor="let s of suites">
-        <button (click)="display(s.name)" type="button" class="suiteButton">
-            <input type="checkbox" [checked]="checkActiveSuites(s.name)">
-            {{s.name}}
-          </button>
+        <button (click)="switchActiveSuite(s.name)" type="button" class="suiteButton">
+          <input type="checkbox" [checked]="checkActiveSuites(s.name)">
+          {{s.name}}
+        </button>
       </div>
     </nav>
 
@@ -20,15 +20,9 @@
         <h3>Packages</h3>
       </div>
 
-      <!-- Die suiteBorder-Ebene sollte m.E. entfallen und statt dessen nur die ganze Paketliste mit mehr Details (package Name + weitere Paketeigenschaften) angezeigt werden -->
-      <div *ngFor="let s of suites">
-        <div *ngIf="checkActiveSuites(s.name)" class="suiteBorder">
-          <label class="contentElement suiteLabel">{{s.name}}</label>
-          <div *ngFor="let package of packages">
-            <div class="contentElement">
-              <label class="contentName">{{package.name}}</label>
-            </div>
-          </div>
+      <div *ngFor="let package of packages">
+        <div class="contentElement">
+          <label class="contentName">{{package.name}}</label>
         </div>
       </div>
     </div>

@@ -73,9 +73,9 @@ async def handle_get_suites(request):
         unused_session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
-    searchString = json.loads(request.rel_url.query['suiteTag'])
-    logger.info("Handling get_suites(suiteTag='{}')".format(searchString))
-    res = await asyncio.wrap_future(ppe.submit(apt_repos_get_suites, [searchString], cwd = cwd))
+    searchStringArray = json.loads(request.rel_url.query['suiteTag'])
+    logger.info("Handling get_suites(suiteTag='{}')".format(searchStringArray))
+    res = await asyncio.wrap_future(ppe.submit(apt_repos_get_suites, searchStringArray, cwd = cwd))
     logger.debug("Handling get_suites finished")
     return web.json_response(res)
 
@@ -92,10 +92,10 @@ async def handle_get_custom_packages(request):
         unused_session, cwd = validateSession(request)
     except Exception as e:
         return web.Response(text="Invalid Session: {}".format(e), status=401)
-    searchStringSuites = json.loads(request.rel_url.query['suiteTag'])
-    searchStringPackages = json.loads(request.rel_url.query['searchString'])
-    logger.info("Handling get_custom_packages(suiteTag='{}', searchString='{}')".format(searchStringSuites, searchStringPackages))
-    res = await asyncio.wrap_future(ppe.submit(apt_repos_query_packages, [searchStringSuites], [searchStringPackages], cwd = cwd))
+    searchStringArraySuites = json.loads(request.rel_url.query['suiteTag'])
+    searchStringArrayPackages = json.loads(request.rel_url.query['searchString'])
+    logger.info("Handling get_custom_packages(suiteTag='{}', searchString='{}')".format(searchStringArraySuites, searchStringArrayPackages))
+    res = await asyncio.wrap_future(ppe.submit(apt_repos_query_packages, searchStringArraySuites, searchStringArrayPackages, cwd = cwd))
     logger.debug("Mark for target finished")
     return web.json_response(res)
 
