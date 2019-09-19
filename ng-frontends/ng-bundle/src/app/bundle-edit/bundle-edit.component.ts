@@ -33,7 +33,6 @@ export class BundleEditComponent implements OnInit {
   bundle: Bundle = null;
   basedOn: string;
   releasenotes: string;
-  latestUpdateRef = 0;
 
   @ViewChild("targetSelect")
   targetSelect;
@@ -65,20 +64,12 @@ export class BundleEditComponent implements OnInit {
   }
 
   valuesChanged() {
-    const updateRef = this.latestUpdateRef + 1;
-    this.latestUpdateRef = updateRef;
-    of("")
-      .pipe(delay(1000))
-      .subscribe(x => {
-        if (this.latestUpdateRef === updateRef) {
-          const meta: BundleMetadata = {
-            bundle: this.bundle,
-            basedOn: this.basedOn,
-            releasenotes: this.releasenotes
-          };
-          this.bundleMetadataService.setMetadata(this.bundle.name, meta);
-        }
-      });
+    const meta: BundleMetadata = {
+      bundle: this.bundle,
+      basedOn: this.basedOn,
+      releasenotes: this.releasenotes
+    };
+    this.bundleMetadataService.setMetadataDebounced(meta);
   }
 
   selectTarget($event): void {
