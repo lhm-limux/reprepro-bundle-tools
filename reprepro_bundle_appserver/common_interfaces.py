@@ -21,12 +21,12 @@
 '''
 from urllib.parse import urljoin
 import re
-bundleRe = re.compile(r"bundle:(\w+)\/(\d+)")
+bundleRe = re.compile(r"(bundle:)?(\w+)\/(\d+)")
 
 def BundleID_validate(data):
     match = bundleRe.match(data)
     if match:
-        return match.group(1), match.group(2)
+        return match.group(2), match.group(3)
     raise TypeError("invalid bundleID")
 
 def BundleIDs_validate(data):
@@ -47,6 +47,20 @@ def Bundle(bundle):
         'creator': info.get("Creator", "unknown")
     }
 
+def Bundle_validate(data):
+    if isinstance(data, dict):
+      dist, bnum = BundleID_validate(data['name'])
+      return {
+          'name': 'bundle:{}/{}'.format(dist, bnum),
+          'distribution': data['distribution'],
+          'target': data['target'],
+          'distribution': data['distribution'],
+          'subject': data['subject'],
+          'readonly': data['readonly'],
+          'creator': data['creator']
+      }
+    raise TypeError("invalid AuthRequired")
+
 def BundleMetadata(bundle):
     info = bundle.getInfo() or dict()
     rnParts = info.get("Releasenotes", "").split("\n", 2)
@@ -55,6 +69,15 @@ def BundleMetadata(bundle):
         'basedOn': info.get("BasedOn"),
         'releasenotes': rnParts[2] if (len(rnParts) == 3) else "",
     }
+
+def BundleMetadata_validate(data):
+    if isinstance(data, dict):
+      return {
+          'bundle': Bundle_validate(data['bundle']),
+          'basedOn': data['basedOn'],
+          'releasenotes': data['releasenotes']
+      }
+    raise TypeError("invalid BundleMetadata")
 
 def ManagedBundle(bundle, tracBaseUrl=None):
     ticket = ""

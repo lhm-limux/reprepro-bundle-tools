@@ -26,6 +26,7 @@
 import logging
 import os
 import sys
+import json
 from reprepro_bundle_appserver import common_app_server, common_interfaces
 from aiohttp import web
 from reprepro_bundle.BundleCLI import scanBundles
@@ -42,6 +43,13 @@ async def handle_get_bundleList(request):
     res = list()
     for bundle in sorted(scanBundles()):
         res.append(common_interfaces.Bundle(bundle))
+    return web.json_response(res)
+
+
+async def handle_set_metadata(request):
+    res = list()
+    metadata = common_interfaces.BundleMetadata_validate(json.loads(request.rel_url.query['metadata']))
+    print(metadata)
     return web.json_response(res)
 
 
@@ -65,7 +73,7 @@ def registerRoutes(args, app):
         # api routes
         web.get('/api/bundleList', handle_get_bundleList),
         web.get('/api/getBundleMetadata', handle_get_metadata),
-        #web.get('/api/setBundleMetadata', handle_get_metadata),
+        web.get('/api/setBundleMetadata', handle_set_metadata),
     ])
     if not args.no_static_files:
         app.router.add_routes([
