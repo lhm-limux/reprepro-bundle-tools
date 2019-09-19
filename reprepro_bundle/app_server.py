@@ -64,7 +64,8 @@ def registerRoutes(args, app):
     app.router.add_routes([
         # api routes
         web.get('/api/bundleList', handle_get_bundleList),
-        web.get('/api/bundleMetadata', handle_get_metadata),
+        web.get('/api/getBundleMetadata', handle_get_metadata),
+        #web.get('/api/setBundleMetadata', handle_get_metadata),
     ])
     if not args.no_static_files:
         app.router.add_routes([

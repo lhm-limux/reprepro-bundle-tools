@@ -18,20 +18,37 @@
 
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { BundleMetadata } from "shared";
+import { HttpClient, HttpParams, HttpErrorResponse } from "@angular/common/http";
+import { BundleMetadata, MessagesService, BackendLogEntry } from "shared";
 import { ConfigService } from "shared";
 
 @Injectable({
   providedIn: "root"
 })
 export class BundleMetadataService {
-  constructor(private config: ConfigService, private http: HttpClient) {}
+  constructor(private config: ConfigService, private messages : MessagesService, private http: HttpClient) {}
 
   getMetadata(bundlename): Observable<BundleMetadata> {
     const params = new HttpParams().set("bundlename", bundlename);
-    return this.http.get<BundleMetadata>(this.config.getApiUrl("bundleMetadata"), {
+    return this.http.get<BundleMetadata>(this.config.getApiUrl("getBundleMetadata"), {
       params: params
     });
+  }
+
+  setMetadata(bundlename: string, metadata: BundleMetadata) {
+    console.log("Updating Metadata...");
+    const sp = this.messages.addSpinner("Updating Metadata…");
+    const params = new HttpParams().set("bundlename", bundlename).set("metadata", JSON.stringify(metadata));
+    return this.http.get<BackendLogEntry[]>(this.config.getApiUrl("setBundleMetadata"), {
+      params: params
+    }).subscribe(
+      (data: BackendLogEntry[]) => {
+        this.messages.unsetSpinner(sp);
+      },
+      (errResp: HttpErrorResponse) => {
+        this.messages.unsetSpinner(sp);
+        this.messages.setErrorResponse("Updating Metadata failed", errResp);
+      }
+    );
   }
 }

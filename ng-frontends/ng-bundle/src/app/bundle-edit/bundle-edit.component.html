@@ -14,7 +14,7 @@
         </div>
         <div class="form-group row">
           <label for="target" class="col-sm-2 col-form-label">Zielrepository</label>
-          <select #targetSelect class="col-sm-2 form-control mx-3" ngModel="targetItem" (change)="selectTarget($event)"
+          <select #targetSelect class="col-sm-2 form-control mx-3" ngModel="targetItem" (change)="selectTarget($event); valuesChanged();"
             [disabled]="bundle.readonly">
             <option value="plus">Standard (Plus)</option>
             <option value="unattended">Unattended Security</option>
@@ -23,7 +23,7 @@
         <div class="form-group row">
           <label for="subject" class="col-sm-2 col-form-label">Subject</label>
           <div class="col mr-3">
-            <input #inpSub type="text" class="form-control form-control-lg" id="subject" placeholder="Subject" (keyup)="bundle.subject = inpSub.value"
+            <input #inpSub type="text" class="form-control form-control-lg" id="subject" placeholder="Subject" (keyup)="bundle.subject = inpSub.value; valuesChanged();"
               [value]="bundle.subject" [readonly]="bundle.readonly">
           </div>
         </div>
@@ -31,7 +31,7 @@
           <label for="releasenotes" class="col-sm-2 col-form-label">Releasenotes</label>
           <div class="col mr-3">
             <textarea #inpRel type="text" class="form-control" id="releasenotes" placeholder="Releasenotes" rows=15
-              (keyup)="releasenotes = inpRel.value" [value]="releasenotes" [readonly]="bundle.readonly"></textarea>
+              (keyup)="releasenotes = inpRel.value; valuesChanged();" [value]="releasenotes" [readonly]="bundle.readonly"></textarea>
           </div>
         </div>
       </div>
