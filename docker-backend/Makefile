@@ -3,6 +3,10 @@ DOCKER_COMPOSE:=source ./setup_env.sh && docker-compose
 
 main: restart
 
+setup_env.local.sh:
+	touch setup_env.local.sh
+	chmod u+x setup_env.local.sh
+
 .backend.built: Dockerfile Dockerfile-webserver docker-compose.yml Makefile entrypoint.sh setup_env.sh setup_env.local.sh
 	cp ../../*apt-repos*.deb ../deb/*.deb .
 	docker pull ubuntu:bionic

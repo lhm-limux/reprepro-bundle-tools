@@ -48,7 +48,7 @@ Build
 
 * Run `make debian-build` to create all debian packages for backend,
   frontend and command line tools. Please find the resulting artefacts
-  in the `./deb` folder
+  in the `./deb` folder. Note: Get youself some coffee - this needs time!
 
 * (after that) Run `make backend` to create the docker-images for the
   backend. The backend is also started locally for tests in this step.
