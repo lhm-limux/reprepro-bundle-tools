@@ -15,11 +15,13 @@ Prerequisites
 
 * Ensure your user is allowed to use docker (see https://docs.docker.com/install/linux/linux-postinstall/):
 
-    ```sudo groupadd docker
-    sudo usermod -aG docker $USER
-    sudo su - $USER
-    id # should contain 'docker' in Groups
-    docker run hello-world # to verify you can run docker-containers```
+```
+sudo groupadd docker
+sudo usermod -aG docker $USER
+sudo su - $USER
+id # should contain 'docker' in Groups
+docker run hello-world # to verify you can run docker-containers
+```
 
 * This repository needs to be cloned to your local machine: 
   `git clone https://github.com/lhm-limux/reprepro-bundle-tools`
