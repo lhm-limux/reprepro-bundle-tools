@@ -1,9 +1,23 @@
 This page descibes the steps necessary to build this project
 
-Prerequesites
+Prerequisites
 =============
 
-* This repository needs to be cloned to your local machine
+* Ensure, the following software is installed on your system:
+
+  * git
+  * docker
+  * docker-compose
+  * make
+
+  On a ubuntu (bionic) system this can for example be done using:
+  `sudo apt install git docker.io docker-compose make`
+
+* Ensure your user is allowed to use docker (see https://docs.docker.com/install/linux/linux-postinstall/):
+  `sudo groupadd docker; sudo usermod -aG docker $USER`
+
+* This repository needs to be cloned to your local machine: 
+  `git clone https://github.com/lhm-limux/reprepro-bundle-tools`
 
 * apt-repos needs to be already built - we expect the following deb-files to
   be provided in the parent folder of the reprepro-bundle-tools projects
@@ -13,11 +27,6 @@ Prerequesites
   * apt-repos_<Version>_all.deb
   * python3-apt-repos_<Version>_all.deb
 
-* Ensure, the following software is installed on your system:
-
-  * docker
-  * docker-compose
-  * make
 
 
 Build
