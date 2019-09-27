@@ -180,10 +180,12 @@ This folder contains angular 6 frontend code for the following frontent-projects
 
 * ng-bundle-libs: common angular libraries used by any of the previously mentioned projects.
 
-### docker-buildenv
+### *debian*-folder and docker-buildenv
 
-This project comes with a docker configuration for building the project with
-minimum requirements to your build machine. Please find more info about this
+These folders contain control information needed to build the complete
+project and to create debian packages (.deb-files) containing the software. Therefore
+this project comes with a docker configuration for building the project with
+minimum requirements to your local build machine. Please find more info about this
 in the [Building-Instructions](docs/Building.md).
 
 ### docker-backend
@@ -191,6 +193,13 @@ in the [Building-Instructions](docs/Building.md).
 The folder docker-backend contains a ready to use configured docker setup
 to run the backend. It could be used to test the backend on you local machine
 and even to deploy to a container platform.
+
+
+How to create Debian-Packages
+-----------------------------
+
+Please read the [Building-Instructions](docs/Building.md).
+
 
 Usage Of The Command-Line-Tools `bundle` and `bundle-compose`
 -------------------------------------------------------------
