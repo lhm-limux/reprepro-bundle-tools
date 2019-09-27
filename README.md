@@ -37,8 +37,9 @@ system. With bundles it is possible:
   assurance process.
 
 Another benefit is that all **changes to your distribution can be versioned
-inside a GIT-Repository**, so that developers can always use means of git to
-inspect the change history of the distribution.
+inside a GIT-Repository** (we call it "your own *reprepro-management* project),
+so that developers can always use means of git to inspect the change history of
+the distribution.
 
 Managing debian packages in the context of a *bundle* means to add or
 change debian **source package versions** and just implied all their derived binary
@@ -94,13 +95,21 @@ Each of the mentioned examples needs to be configured somewhere. To provide a
 created. It contains all static configuration files, dynamic configuration files,
 status files and may be helpfull tools in one GIT-Repository. This allows you
 to control all changes to your distribution in a single place with a version
-history. We give advice how to setup a *reprepro-management* project later.
+history.
 
+There's an example reprepro-managment project provided at https://github.com/chrlutz/bundle-test that could be used and adjusted for your own needs.
+
+In the [Setup_Your_Own_reprepro-management_Project_Tutorial](docs/Setup_Your_Own_reprepro-management_Project_Tutorial.md) there's also a tutorial that gives
+advice how to create an own *reprepro-managment* project (nearly from scratch).
+
+But now let's come back to this git repository:
 
 Content of this repository
 --------------------------
 
-This repository consists of the following parts:
+This repository contains the reprepro-bundle-tools (the software that you
+could use to manage your own *reprepro-management* project) which consists
+of the following parts:
 
 ### bin
 
@@ -173,13 +182,18 @@ This folder contains angular 6 frontend code for the following frontent-projects
 
 ### docker-buildenv
 
-This project comes with a docker configuration for building the project
+This project comes with a docker configuration for building the project with
+minimum requirements to your build machine. Please find more info about this
+in the [Building-Instructions](docs/Building.md).
 
+### docker-backend
+
+The folder docker-backend contains a ready to use configured docker setup
+to run the backend. It could be used to test the backend on you local machine
+and even to deploy to a container platform.
 
 Usage Of The Command-Line-Tools `bundle` and `bundle-compose`
 -------------------------------------------------------------
-
-Sorry, ther's currently not the time for writing detailled usage information.
 
 Please look at the (well maintained) command line help provided with each tool:
 
@@ -188,8 +202,6 @@ Please look at the (well maintained) command line help provided with each tool:
 
 Please also have a look at [the_testsuite's_Makefile](test/Makefile) for more usage examples of
 *bundle* and *bundle-compose*.
-
-And of course look at the above chapter "First Steps".
 
 
 Enhanced Customization
