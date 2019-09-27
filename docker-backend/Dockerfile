@@ -39,6 +39,8 @@ WORKDIR /reprepro-management
 
 EXPOSE 8080
 
+USER 1000
+
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 CMD [ "reprepro-management-service", "--no-open-url", "--host=0.0.0.0" ]
