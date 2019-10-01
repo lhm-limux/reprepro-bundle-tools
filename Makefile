@@ -1,6 +1,6 @@
 SHELL:=/bin/bash
 PRJDIR:=$(CURDIR)
-DOCKER_COMPOSE:=docker-compose
+DOCKER_COMPOSE:=CURRENT_USER=$$(id -u) docker-compose
 
 build: docker-buildenv/.buildenv.built
 	$(DOCKER_COMPOSE) -f docker-buildenv/docker-compose.yml run --rm buildenv make -C /build build-in-buildenv
