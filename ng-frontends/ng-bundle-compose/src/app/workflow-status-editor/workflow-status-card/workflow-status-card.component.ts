@@ -25,7 +25,11 @@ import {
 } from "@angular/core";
 import { Subscription } from "rxjs";
 import { WorkflowMetadata, ManagedBundle } from "shared";
-import { ManagedBundleService, BundleAndInfo } from "./../../services/managed-bundle.service";
+import { ngCopy } from "angular-6-clipboard";
+import {
+  ManagedBundleService,
+  BundleAndInfo
+} from "./../../services/managed-bundle.service";
 
 @Component({
   selector: "app-workflow-status-card",
@@ -106,5 +110,13 @@ export class WorkflowStatusCardComponent implements OnChanges {
       stage: newStatus,
       bundles: this.managedBundles.map(i => i.bundle.id)
     });
+  }
+
+  bundleNamesToClipboard() {
+    const names = this.managedBundles
+      .map(i => i.bundle.id)
+      .sort()
+      .join("\n");
+    ngCopy("\n" + names);
   }
 }

@@ -50,17 +50,6 @@
     <div class="row">
       <div class="col-sm">
         <h5 class="card-title">{{ status.comment }}</h5>
-
-        <div *ngIf="candidateForStages.length > 0">
-          <div *ngFor="let newStatus of candidateForStages">
-            <button class="btn btn-primary" (click)="markForStage(newStatus)">
-              <b
-                >Mark All These Candidates for Stage
-                {{ newStatus.stage | uppercase }}</b
-              >
-            </button>
-          </div>
-        </div>
       </div>
       <div class="col-sm-1">
         <div *ngIf="validStage" class="float-right" style="font-size:larger">
@@ -84,5 +73,24 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="card-footer" *ngIf="showContent && managedBundles.length > 0">
+    <span *ngIf="candidateForStages.length > 0">
+      <span *ngFor="let newStatus of candidateForStages">
+        <button class="btn btn-primary" (click)="markForStage(newStatus)">
+          <b
+            >Mark All These Candidates for Stage
+            {{ newStatus.stage | uppercase }}</b
+          >
+        </button>
+      </span>
+    </span>
+    <button
+      class="btn btn-secondary ml-2 float-right"
+      (click)="bundleNamesToClipboard()"
+      title="Copy Bundle-Names to Clipboard"
+    >
+      <i class="fa fa-copy"></i> Bundle-Names
+    </button>
   </div>
 </div>
