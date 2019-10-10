@@ -19,6 +19,8 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
   activeSuites: Set<String> = new Set();
   suites: Suite[] = [];
   packages: Package[] = [];
+  searchPackages: Package[] = [];
+  
 
   constructor(private config: ConfigService, private http: HttpClient, public aptReposSearchService: AptReposSearchService) { }
 
@@ -73,6 +75,25 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
   onEnter(value: String) {
     let values = value.split(" ");
     this.aptReposSearchService.loadPackages(Array.from(this.activeSuites), values)
+  }
+
+  onChange(value: string) {
+    if(value.length !== 0){
+      let values = value.split(" ");
+      let sPack = new Set();
+      for (let v of values) {
+        if(v != "") {
+          //sPack.add(this.packages.filter(p => p.name.includes(v) === true))
+          this.packages.filter(p => p.name.includes(v) === true).forEach(p => sPack.add(p));
+        }
+      }
+      this.searchPackages = Array.from(sPack);
+      //console.log(Array.from(sPack))
+      console.log(this.searchPackages)
+      console.log(this.suites)
+    } else {
+      this.searchPackages = [];
+    }
   }
 
   ngOnDestroy() {

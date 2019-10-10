@@ -38,6 +38,10 @@
   display: inline-block;
 }
 
+.card-body {
+  height: 100%;
+}
+
 .card-body-inactive:hover {
   background-color: #efefef;
 }

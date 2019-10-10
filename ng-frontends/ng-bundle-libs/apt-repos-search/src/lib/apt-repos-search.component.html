@@ -1,6 +1,5 @@
 <div>
-  <input #box (keyup.enter)="onEnter(box.value)">
-  <p>{{searchValue}}</p>
+  <input [(ngModel)]="searchValue" #box (keyup.enter)="onEnter(box.value)" (keyup)="onChange(box.value)">
   <div class="wrapper">
     <nav id="sidebar">
       <div class="sidebar-header">
@@ -46,7 +45,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let package of packages">
+          <tr [hidden]="searchPackages.length !== 0" *ngFor="let package of packages">
+            <td>{{package.name}}</td>
+            <td>{{package.suite}}</td>
+            <td>{{package.version}}</td>
+            <td>{{package.architecture}}</td>
+            <td>{{package.section}}</td>
+          </tr>
+          <tr [hidden]="searchPackages.length === 0" *ngFor="let package of searchPackages">
             <td>{{package.name}}</td>
             <td>{{package.suite}}</td>
             <td>{{package.version}}</td>
