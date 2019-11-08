@@ -4,13 +4,14 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Suite } from './Suite';
 import { Package } from './Package';
 import { Subject } from 'rxjs';
+import { MessagesService } from 'shared'
 
 @Injectable({
   providedIn: 'root'
 })
 export class AptReposSearchService {
 
-  constructor(private config: ConfigService, private http: HttpClient) { }
+  constructor(private config: ConfigService, private messages: MessagesService, private http: HttpClient) { }
   private changedAllSuites = new Subject();
   castDefaultSuites = this.changedAllSuites.asObservable();
   private changedDefaultSuites = new Subject();
@@ -23,6 +24,8 @@ export class AptReposSearchService {
   packages: Package[] = [];
 
   loadSuites(value: String[]): void {
+    const sp = this.messages.addSpinner("Loading Suites…");
+
     let params = new HttpParams()
       .set("suiteTag", JSON.stringify(value))
 
@@ -34,6 +37,7 @@ export class AptReposSearchService {
         (data: Suite[]) => {
           const last = this.suites;
           this.suites = data;
+          this.messages.unsetSpinner(sp);
 
           if(value.indexOf("default:") > -1){
             this.changedDefaultSuites.next();
@@ -44,6 +48,7 @@ export class AptReposSearchService {
         },
         errResp => {
           console.error("Error loading suites list", errResp);
+          this.messages.unsetSpinner(sp);
         }
       );
       
@@ -51,6 +56,8 @@ export class AptReposSearchService {
   }
 
   loadPackages(activeSuites:String[], value: String[]): void {
+    const sp = this.messages.addSpinner("Loading Packages…");
+
     let params = new HttpParams()
       .set("suiteTag", JSON.stringify(activeSuites))
       .set("searchString", JSON.stringify(value))
@@ -64,11 +71,13 @@ export class AptReposSearchService {
           const last = this.packages;
           this.packages = data;
           console.log(this.packages);
+          this.messages.unsetSpinner(sp);
 
           this.changedPackages.next();
         },
         errResp => {
           console.error("Error loading packages list", errResp);
+          this.messages.unsetSpinner(sp);
         }
       );
 

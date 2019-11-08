@@ -61,3 +61,24 @@
 .no-margin {
   margin: unset;
 }
+
+.right-top-corner {
+  position: absolute;
+  right: 1rem;
+}
+
+.a{
+  color: #007bff;
+}
+
+.page-link {
+  color: #007bff;
+}
+
+.page-item:hover {
+  cursor: pointer;
+}
+
+.page-item.disabled:hover {
+  cursor: unset;
+}

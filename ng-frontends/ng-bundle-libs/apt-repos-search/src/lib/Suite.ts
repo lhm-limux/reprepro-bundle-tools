@@ -12,4 +12,5 @@ export class Suite {
   trustedGPG: string;
   aptConf: string;
   sourcesList: string;
+  description: string;
 }

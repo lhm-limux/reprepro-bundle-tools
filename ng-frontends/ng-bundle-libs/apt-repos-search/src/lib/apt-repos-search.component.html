@@ -1,39 +1,68 @@
 <div>
-  <input [(ngModel)]="searchValue" #box (keyup.enter)="onEnter(box.value)" (keyup)="onChange(box.value)">
   <div class="wrapper">
     <nav id="sidebar">
+      <button class="btn btn-primary" (click)="unselectAllSuites()">
+        <b>Unselect All Suites</b>
+      </button>
       <div class="sidebar-header">
         <h3>Suites</h3>
       </div>
 
       <div class="row no-margin">
-      <div *ngFor="let s of suites" class="inline-grid">
-        <div *ngIf="checkActiveSuites(s.name)" class="card bg-secondary text-white">
-          <div class="card-body card-body-active" (click)="switchActiveSuite(s.name)" style="cursor: pointer;">
-            <h4 class="card-title">{{s.name}}</h4>
-            <h5 class="card-subtitle">{{s.repoUrl}}</h5>
+        <div *ngFor="let s of suites" class="inline-grid">
+          <div *ngIf="checkActiveSuites(s.name)" class="card bg-secondary text-white">
+            <div class="card-body card-body-active" (click)="switchActiveSuite(s.name)" style="cursor: pointer;">
+              <input type="checkbox" class="right-top-corner" checked>
+              <h4 class="card-title">{{s.name}}</h4>
+              <h5 class="card-subtitle">{{s.description}}</h5>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="row upper-border no-margin">
-      <div *ngFor="let s of suites" class="inline-grid">
-        <div *ngIf="!checkActiveSuites(s.name)" class="card">
-          <div class="card-body card-body-inactive" (click)="switchActiveSuite(s.name)" style="cursor: pointer;">
-            <h4 class="card-title">{{s.name}}</h4>
-            <h5 class="card-subtitle">{{s.repoUrl}}</h5>
+      <div class="row upper-border no-margin">
+        <div *ngFor="let s of suites" class="inline-grid">
+          <div *ngIf="!checkActiveSuites(s.name)" class="card">
+            <div class="card-body card-body-inactive" (click)="switchActiveSuite(s.name)" style="cursor: pointer;">
+              <input type="checkbox" class="right-top-corner">
+              <h4 class="card-title">{{s.name}}</h4>
+              <h5 class="card-subtitle">{{s.description}}</h5>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </nav>
 
     <div id="content" class="content">
+      <input [(ngModel)]="searchValue" #box (keyup.enter)="onEnter(box.value)" (keyup)="onChange(box.value)"
+        placeholder="Search Packages...">
       <div class="sidebar-header">
         <h3>Packages</h3>
       </div>
 
+      <ul class="pagination justify-content-center">
+          <li [class.disabled]="page == 1" class="page-item">
+            <a class="page-link" (click)="page = 1" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <li [class.disabled]="page == 1" class="page-item">
+            <a class="page-link" (click)="page = page - 1" aria-label="Previous">
+              <span aria-hidden="true">&lsaquo;</span>
+            </a>
+          </li>
+          <li [class.disabled]="p === '...'" [class.active]="page === p" *ngFor="let p of generatePages()" class="page-item"><a class="page-link" (click)="page = p">{{p}}</a></li>
+          <li [class.disabled]="page == amountPages" class="page-item">
+            <a class="page-link" (click)="page = page + 1" aria-label="Next">
+              <span aria-hidden="true">&rsaquo;</span>
+            </a>
+          </li>
+          <li [class.disabled]="page == amountPages" class="page-item">
+            <a class="page-link" (click)="page = amountPages" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
       <table class="table table-striped table-bordered">
         <thead class="thead-light">
           <tr>
@@ -45,14 +74,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr [hidden]="searchPackages.length !== 0" *ngFor="let package of packages">
-            <td>{{package.name}}</td>
-            <td>{{package.suite}}</td>
-            <td>{{package.version}}</td>
-            <td>{{package.architecture}}</td>
-            <td>{{package.section}}</td>
-          </tr>
-          <tr [hidden]="searchPackages.length === 0" *ngFor="let package of searchPackages">
+          <tr *ngFor="let package of filteredPackages() | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize">
             <td>{{package.name}}</td>
             <td>{{package.suite}}</td>
             <td>{{package.version}}</td>

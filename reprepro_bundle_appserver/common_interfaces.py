@@ -117,6 +117,11 @@ def ManagedBundleInfo(bundle, tracBaseUrl=None):
     }
 
 def Suite(suite):
+    desc = ""
+    try:
+        desc = suite.getDescription() #str
+    except:
+        pass
     return {
         'name': suite.getSuiteName(), #str
         'tags': suite.getTags(), #list
@@ -128,7 +133,8 @@ def Suite(suite):
         'hasSources': suite.hasSources(), #bool
         'trustedGPG': str(suite.getTrustedGPG()), #str
         'aptConf': suite.getAptConf(), #str
-        'sourcesList': suite.getSourcesList() #str
+        'sourcesList': suite.getSourcesList(), #str
+        'description': desc
     }
 
 def Package(packageName, version, packageSuite, architecture, section, source):

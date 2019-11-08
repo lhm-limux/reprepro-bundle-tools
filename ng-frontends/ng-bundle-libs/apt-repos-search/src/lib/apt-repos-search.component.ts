@@ -15,16 +15,21 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
   searchValue: String = "";
+  searchValues: string[] = [];
 
   activeSuites: Set<String> = new Set();
   suites: Suite[] = [];
   packages: Package[] = [];
   searchPackages: Package[] = [];
-  
+
+  page = 1;
+  pageSize = 500;
+  amountPages = 0;
 
   constructor(private config: ConfigService, private http: HttpClient, public aptReposSearchService: AptReposSearchService) { }
 
   ngOnInit() {
+
     this.subscriptions.push(
       this.aptReposSearchService.castDefaultSuites.subscribe(() => this.initDefaultSuitesAndPackages())
     );
@@ -40,18 +45,18 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
     this.aptReposSearchService.loadSuites([":"]);
   }
 
-  initDefaultSuitesAndPackages(){
+  initDefaultSuitesAndPackages() {
     this.suites = this.aptReposSearchService.getSuites()
     this.suites.forEach(e => this.activeSuites.add(e.name))
 
     //this.aptReposSearchService.loadPackages(Array.from(this.activeSuites), ["."]);
   }
 
-  initAllSuites(){
+  initAllSuites() {
     this.suites = this.aptReposSearchService.getSuites()
   }
 
-  updatePackages(){
+  updatePackages() {
     this.packages = this.aptReposSearchService.getPackages()
   }
 
@@ -60,8 +65,9 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
       this.activeSuites.delete(name)
     } else {
       this.activeSuites.add(name)
-      this.aptReposSearchService.loadPackages(Array.from(this.activeSuites), [((this.searchValue=="") ? "." : this.searchValue)])
+      this.aptReposSearchService.loadPackages(Array.from(this.activeSuites), [((this.searchValue == "") ? "." : this.searchValue)])
     }
+    this.updateAmountPages()
   }
 
   checkActiveSuites(name) {
@@ -78,21 +84,54 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
   }
 
   onChange(value: string) {
-    if(value.length !== 0){
-      let values = value.split(" ");
-      let sPack = new Set();
-      for (let v of values) {
-        if(v != "") {
-          //sPack.add(this.packages.filter(p => p.name.includes(v) === true))
-          this.packages.filter(p => p.name.includes(v) === true).forEach(p => sPack.add(p));
+    this.searchValues = value.split(" ");
+  }
+
+  unselectAllSuites() {
+    this.activeSuites.clear();
+  }
+
+  filteredPackages() {
+    if (this.searchValues.length === 0) {
+      return this.packages
+    } else {
+      return this.packages.filter(p => { for (let v of this.searchValues) { if (p.name.includes(v) === true) return true; } return false; });
+    }
+  }
+
+  generatePages() {
+    this.updateAmountPages()
+    let allPages: any = [...Array(this.amountPages+1).keys()].slice(1)
+    if(allPages.length > 5){
+      if(this.page === 1){
+        allPages = allPages.slice(this.page-1, this.page+4)
+        allPages.push("...")
+      }else if(this.page === 2){
+        allPages = allPages.slice(this.page-2, this.page+3)
+        allPages.push("...")
+      }else if(this.page === allPages.length){
+        allPages = allPages.slice(this.page-5, this.page)
+        allPages.unshift("...")
+      }else if(this.page === allPages.length-1){
+        allPages = allPages.slice(this.page-4, this.page+1)
+        allPages.unshift("...")
+      }else{
+        allPages = allPages.slice(this.page-3, this.page+2)
+        if(this.page !== 3){
+          allPages.unshift("...")
+        }
+        if(this.page !== this.amountPages-3){
+          allPages.push("...")
         }
       }
-      this.searchPackages = Array.from(sPack);
-      //console.log(Array.from(sPack))
-      console.log(this.searchPackages)
-      console.log(this.suites)
-    } else {
-      this.searchPackages = [];
+    }
+    return allPages
+  }
+
+  updateAmountPages() {
+    this.amountPages = 1+Math.floor(this.filteredPackages().length/this.pageSize)
+    if(this.page > this.amountPages){
+      this.page = this.amountPages;
     }
   }
 
