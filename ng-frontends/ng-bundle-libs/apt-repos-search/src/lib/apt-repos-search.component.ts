@@ -120,7 +120,7 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
         if(this.page !== 3){
           allPages.unshift("...")
         }
-        if(this.page !== this.amountPages-3){
+        if(this.page !== this.amountPages-2){
           allPages.push("...")
         }
       }
