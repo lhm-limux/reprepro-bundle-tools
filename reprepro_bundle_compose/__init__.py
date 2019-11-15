@@ -146,7 +146,8 @@ def parseBundlesListFile(bundlesListFile, repoSuites=None, selectIds=None):
     file_bundles = apt_pkg.TagFile(bundlesListFile)
     try:
         for section in file_bundles:
-            bundle = ManagedBundle(section)
+            try:
+                bundle = ManagedBundle(section)
                 if selectIds != None and not bundle.getID() in selectIds:
                     continue
                 if repoSuites and bundle.getID() in repoSuites:
