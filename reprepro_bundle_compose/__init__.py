@@ -145,15 +145,15 @@ def parseBundlesListFile(bundlesListFile, repoSuites=None, selectIds=None):
         return res
     file_bundles = apt_pkg.TagFile(bundlesListFile)
     try:
-        file_bundles.jump(0)
         for section in file_bundles:
-            try:
-                bundle = ManagedBundle(section)
+            bundle = ManagedBundle(section)
                 if selectIds != None and not bundle.getID() in selectIds:
                     continue
                 if repoSuites and bundle.getID() in repoSuites:
                     bundle.setRepoSuite(repoSuites[bundle.getID()])
                 res[bundle.getID()] = bundle
+                if section == new in file_bundles:
+                    continue
             except KeyError as e:
                 logger.warning("Skipping invalid section in bundles file ending at offset {}: Missing Key {} in\n{}".format(file_bundles.offset(), e, str(section).rstrip()))
     finally:
