@@ -152,8 +152,6 @@ def parseBundlesListFile(bundlesListFile, repoSuites=None, selectIds=None):
                 if repoSuites and bundle.getID() in repoSuites:
                     bundle.setRepoSuite(repoSuites[bundle.getID()])
                 res[bundle.getID()] = bundle
-                if section == new in file_bundles:
-                    continue
             except KeyError as e:
                 logger.warning("Skipping invalid section in bundles file ending at offset {}: Missing Key {} in\n{}".format(file_bundles.offset(), e, str(section).rstrip()))
     finally:
