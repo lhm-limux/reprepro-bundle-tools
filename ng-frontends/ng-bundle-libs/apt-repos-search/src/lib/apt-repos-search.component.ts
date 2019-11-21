@@ -51,7 +51,7 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
     this.suites = this.aptReposSearchService.getSuites()
     this.suites.forEach(e => this.activeSuites.add(e.name))
 
-    //this.aptReposSearchService.loadPackages(Array.from(this.activeSuites), ["."]);
+    this.aptReposSearchService.loadPackages(Array.from(this.activeSuites), ["."]);
   }
 
   initAllSuites() {
@@ -67,6 +67,10 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
       this.activeSuites.delete(name)
     } else {
       this.activeSuites.add(name)
+    }
+    if (this.activeSuites.size < 1) {
+      this.packages = []
+    } else {
       this.aptReposSearchService.loadPackages(Array.from(this.activeSuites), [((this.searchValue == "") ? "." : this.searchValue)])
     }
     this.updateAmountPages()
@@ -91,13 +95,21 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
 
   unselectAllSuites() {
     this.activeSuites.clear();
+    this.packages = [];
   }
 
   filteredPackages() {
     if (this.searchValues.length === 0) {
       return this.packages
     } else {
-      return this.packages.filter(p => { for (let v of this.searchValues) { if (p.name.includes(v) === true) return true; } return false; });
+      return this.packages.filter(p => { 
+        var flag = false;
+        for (let v of this.searchValues) 
+        { 
+          if (p.name.includes(v) === true) flag = true; else return false;
+        } 
+        if (flag) return true; else return false;
+      });
     }
   }
 

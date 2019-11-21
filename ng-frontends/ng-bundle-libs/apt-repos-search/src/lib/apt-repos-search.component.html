@@ -67,19 +67,21 @@
         <thead class="thead-light">
           <tr>
             <th scope="col">Name</th>
-            <th scope="col">Suite</th>
             <th scope="col">Version</th>
+            <th scope="col">Suite</th>
             <th scope="col">Architecture</th>
             <th scope="col">Section</th>
+            <th scope="col">Source</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let package of filteredPackages() | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize">
             <td>{{package.name}}</td>
-            <td>{{package.suite}}</td>
             <td>{{package.version}}</td>
+            <td>{{package.suite}}</td>
             <td>{{package.architecture}}</td>
             <td>{{package.section}}</td>
+            <td>{{package.sourcePackageName}}</td>
           </tr>
         </tbody>
       </table>

@@ -70,7 +70,7 @@ export class AptReposSearchService {
         (data: Package[]) => {
           const last = this.packages;
           this.packages = data;
-          console.log(this.packages);
+          //console.log(this.packages);
           this.messages.unsetSpinner(sp);
 
           this.changedPackages.next();
