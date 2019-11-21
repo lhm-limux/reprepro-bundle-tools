@@ -41,7 +41,9 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
     );
 
     this.aptReposSearchService.loadSuites(["default:"]);
+  }
 
+  ngAfterViewInit() {
     this.aptReposSearchService.loadSuites([":"]);
   }
 

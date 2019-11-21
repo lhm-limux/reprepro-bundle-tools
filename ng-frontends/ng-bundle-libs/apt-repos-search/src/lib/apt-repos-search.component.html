@@ -37,7 +37,7 @@
       <input [(ngModel)]="searchValue" #box (keyup.enter)="onEnter(box.value)" (keyup)="onChange(box.value)"
         placeholder="Search Packages...">
       <div class="sidebar-header">
-        <h3>Packages</h3>
+        <h3>{{filteredPackages().length}} Packages</h3>
       </div>
 
       <ul class="pagination justify-content-center">

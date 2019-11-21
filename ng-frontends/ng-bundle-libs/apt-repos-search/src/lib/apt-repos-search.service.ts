@@ -13,9 +13,9 @@ export class AptReposSearchService {
 
   constructor(private config: ConfigService, private messages: MessagesService, private http: HttpClient) { }
   private changedAllSuites = new Subject();
-  castDefaultSuites = this.changedAllSuites.asObservable();
+  castAllSuites = this.changedAllSuites.asObservable();
   private changedDefaultSuites = new Subject();
-  castAllSuites = this.changedDefaultSuites.asObservable();
+  castDefaultSuites = this.changedDefaultSuites.asObservable();
   private changedPackages = new Subject();
   castPackages = this.changedPackages.asObservable();
   isInitialized: boolean = false;
