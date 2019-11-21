@@ -67,10 +67,6 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
       this.activeSuites.delete(name)
     } else {
       this.activeSuites.add(name)
-    }
-    if (this.activeSuites.size < 1) {
-      this.packages = []
-    } else {
       this.aptReposSearchService.loadPackages(Array.from(this.activeSuites), [((this.searchValue == "") ? "." : this.searchValue)])
     }
     this.updateAmountPages()
@@ -99,10 +95,13 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
   }
 
   filteredPackages() {
+    var activePackages = this.packages.filter(p => {
+      return this.activeSuites.has(p.suite)
+    })
     if (this.searchValues.length === 0) {
-      return this.packages
+      return activePackages
     } else {
-      return this.packages.filter(p => { 
+      return activePackages.filter(p => { 
         var flag = false;
         for (let v of this.searchValues) 
         { 
