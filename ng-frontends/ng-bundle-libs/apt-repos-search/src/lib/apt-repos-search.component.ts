@@ -16,9 +16,12 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   searchValue: String = "";
   searchValues: string[] = [];
+  searchValuesSuites: string[] = [];
 
   activeSuites: Set<String> = new Set();
+  activeTags: Set<String> = new Set();
   suites: Suite[] = [];
+  tags: String[] = [];
   packages: Package[] = [];
   searchPackages: Package[] = [];
 
@@ -56,10 +59,25 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
 
   initAllSuites() {
     this.suites = this.aptReposSearchService.getSuites()
+    var allTags: Set<String> = new Set();
+    for (let suite of this.suites){
+      for(let tag of suite.tags){
+        allTags.add(tag)
+      }
+    }
+    this.tags = Array.from(allTags)
   }
 
   updatePackages() {
     this.packages = this.aptReposSearchService.getPackages()
+  }
+
+  switchActiveTag(tag) {
+    if (this.activeTags.has(tag)) {
+      this.activeTags.delete(tag)
+    } else {
+      this.activeTags.add(tag)
+    }
   }
 
   switchActiveSuite(name) {
@@ -86,12 +104,38 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
   }
 
   onChange(value: string) {
-    this.searchValues = value.split(" ");
+    this.searchValuesSuites = value.split(" ");
+  }
+
+  onChangeSuites(value: string) {
+    this.searchValuesSuites = value.split(" ");
   }
 
   unselectAllSuites() {
     this.activeSuites.clear();
     this.packages = [];
+  }
+
+  filteredSuites() {
+    var taggedSuites = this.suites.filter(s => {
+      for(let suiteTag of s.tags) {
+        if (this.activeTags.has(suiteTag)) {
+          return true
+        }
+      }
+    })
+    if (taggedSuites.length === 0){
+      return this.suites
+    }
+    if (this.searchValuesSuites.length === 0) {
+      return taggedSuites
+    } else {
+      return taggedSuites.filter(s => {
+        for (let v of this.searchValuesSuites){
+          if (s.name.includes(v) === true) return true; else return false;
+        }
+      })
+    }
   }
 
   filteredPackages() {
@@ -105,7 +149,11 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
         var flag = false;
         for (let v of this.searchValues) 
         { 
-          if (p.name.includes(v) === true) flag = true; else return false;
+          if (v.substring(0, 4) === "src:") {
+            if (p.sourcePackageName.includes(v.substring(4)) === true) flag = true; else return false;
+          } else {
+            if (p.name.includes(v) === true) flag = true; else return false;
+          }
         } 
         if (flag) return true; else return false;
       });

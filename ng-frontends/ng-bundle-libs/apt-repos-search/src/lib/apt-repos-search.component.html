@@ -1,15 +1,22 @@
 <div>
   <div class="wrapper">
     <nav id="sidebar">
-      <button class="btn btn-primary" (click)="unselectAllSuites()">
+        <input [(ngModel)]="searchValuesSuites" #boxSuites (keyup)="onChange(boxSuites.value)"
+        placeholder="Search Suites...">
+      <button class="btn btn-primary btn-margin-left" (click)="unselectAllSuites()">
         <b>Unselect All Suites</b>
       </button>
+      <div *ngFor="let t of tags" class="badge-pill mx-2 badge-light tag-spacing" [ngStyle]="{'background-color': activeTags.has(t) ? 'seagreen' : 'red'}" style="cursor: pointer;">
+        <div (click)="switchActiveTag(t)">
+          <p class="tag-text">{{t}}</p>
+        </div>
+      </div>
       <div class="sidebar-header">
         <h3>Suites</h3>
       </div>
 
       <div class="row no-margin">
-        <div *ngFor="let s of suites" class="inline-grid">
+        <div *ngFor="let s of filteredSuites()" class="inline-grid">
           <div *ngIf="checkActiveSuites(s.name)" class="card bg-secondary text-white">
             <div class="card-body card-body-active" (click)="switchActiveSuite(s.name)" style="cursor: pointer;">
               <input type="checkbox" class="right-top-corner" checked>
@@ -21,7 +28,7 @@
       </div>
 
       <div class="row upper-border no-margin">
-        <div *ngFor="let s of suites" class="inline-grid">
+        <div *ngFor="let s of filteredSuites()" class="inline-grid">
           <div *ngIf="!checkActiveSuites(s.name)" class="card">
             <div class="card-body card-body-inactive" (click)="switchActiveSuite(s.name)" style="cursor: pointer;">
               <input type="checkbox" class="right-top-corner">

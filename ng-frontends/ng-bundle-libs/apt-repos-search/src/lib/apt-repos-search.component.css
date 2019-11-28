@@ -82,3 +82,17 @@
 .page-item.disabled:hover {
   cursor: unset;
 }
+
+.btn-margin-left {
+  margin-left: 30%;
+}
+
+.tag-text {
+  margin: 0px;
+}
+
+.tag-spacing {
+  display: inline-block;
+  margin: 0.3rem;
+  color: white;
+}
