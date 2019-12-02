@@ -96,3 +96,8 @@
   margin: 0.3rem;
   color: white;
 }
+
+.tag-group{
+  max-height: 9em;
+  overflow:scroll;
+}

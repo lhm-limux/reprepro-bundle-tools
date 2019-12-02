@@ -6,9 +6,11 @@
       <button class="btn btn-primary btn-margin-left" (click)="unselectAllSuites()">
         <b>Unselect All Suites</b>
       </button>
-      <div *ngFor="let t of sortedTags()" class="badge-pill mx-2 badge-light tag-spacing" [ngStyle]="{'background-color': activeTags.has(t) ? 'seagreen' : 'red'}" style="cursor: pointer;">
-        <div (click)="switchActiveTag(t)">
-          <p class="tag-text">{{t}}</p>
+      <div class="tag-group">
+        <div *ngFor="let t of sortedTags()" class="badge-pill mx-2 badge-light tag-spacing" [ngStyle]="{'background-color': activeTags.has(t) ? 'seagreen' : 'red'}" style="cursor: pointer;">
+          <div (click)="switchActiveTag(t)">
+            <p class="tag-text">{{t}}</p>
+          </div>
         </div>
       </div>
       <div class="sidebar-header">
