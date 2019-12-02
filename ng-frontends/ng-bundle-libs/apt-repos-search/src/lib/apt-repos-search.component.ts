@@ -145,19 +145,35 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
     if (this.searchValues.length === 0) {
       return activePackages
     } else {
-      return activePackages.filter(p => { 
+      return activePackages.filter(p => {
         var flag = false;
-        for (let v of this.searchValues) 
-        { 
+        for (let v of this.searchValues)
+        {
           if (v.substring(0, 4) === "src:") {
             if (p.sourcePackageName.includes(v.substring(4)) === true) flag = true; else return false;
           } else {
             if (p.name.includes(v) === true) flag = true; else return false;
           }
-        } 
+        }
         if (flag) return true; else return false;
       });
     }
+  }
+
+  sortedTags(): String[] {
+    return this.tags.sort((a: String, b: String) => {
+      const replPattern = /([^a-zA-Z]+|\s+)/g;
+      const partsA = a.replace(replPattern, " ").split(" ");
+      const partsB = b.replace(replPattern, " ").split(" ");
+      console.log(partsA);
+      if(partsA.length < partsB.length) {
+        return -1;
+      }
+      if(partsA.length > partsB.length) {
+        return 1;
+      }
+      return a.toString().localeCompare(b.toString());
+    });
   }
 
   generatePages() {
