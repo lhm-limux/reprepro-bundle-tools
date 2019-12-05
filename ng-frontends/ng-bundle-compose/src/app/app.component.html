@@ -56,7 +56,14 @@
       </div>
     </div>
   </div>
-  <div><a class="m-3 text-dark" [routerLink]="['/workflow-status-editor']">Workflow-Status-Editor</a> <a class="m-3 text-dark" [routerLink]="['/apt-repos-search']">Repository-Search</a></div>
+  <div *ngIf="sessionInfo">
+    <a class="m-3 text-dark" [routerLink]="['/workflow-status-editor']"
+      >Workflow-Status-Editor</a
+    >
+    <a class="m-3 text-dark" [routerLink]="['/apt-repos-search']"
+      >Repository-Search</a
+    >
+  </div>
 </div>
 
 <lib-messages-logs></lib-messages-logs>
