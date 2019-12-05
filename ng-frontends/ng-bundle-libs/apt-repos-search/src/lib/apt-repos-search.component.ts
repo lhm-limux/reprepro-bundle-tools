@@ -5,6 +5,7 @@ import { ConfigService } from "./config.service";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { AptReposSearchService } from './apt-repos-search.service'
 import { Subscription } from 'rxjs';
+import { MessagesService } from 'shared';
 
 @Component({
   selector: 'lib-apt-repos-search',
@@ -29,10 +30,10 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
   pageSize = 500;
   amountPages = 0;
 
-  constructor(private config: ConfigService, private http: HttpClient, public aptReposSearchService: AptReposSearchService) { }
+  constructor(private config: ConfigService, private http: HttpClient, private aptReposSearchService: AptReposSearchService, private messages: MessagesService) { }
 
   ngOnInit() {
-
+    this.messages.clear();
     this.subscriptions.push(
       this.aptReposSearchService.castDefaultSuites.subscribe(() => this.initDefaultSuitesAndPackages())
     );
@@ -44,9 +45,6 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
     );
 
     this.aptReposSearchService.loadSuites(["default:"]);
-  }
-
-  ngAfterViewInit() {
     this.aptReposSearchService.loadSuites([":"]);
   }
 
