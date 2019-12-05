@@ -4,8 +4,9 @@ import { Package } from './Package';
 import { ConfigService } from "./config.service";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { AptReposSearchService } from './apt-repos-search.service'
-import { Subscription } from 'rxjs';
 import { MessagesService } from 'shared';
+import { Subscription, BehaviorSubject } from 'rxjs';
+import { delay, debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'lib-apt-repos-search',
@@ -15,6 +16,8 @@ import { MessagesService } from 'shared';
 export class AptReposSearchComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
+  private searchStringPackages = new BehaviorSubject<String>(null);
+  private searchStringSuites = new BehaviorSubject<String>(null);
   searchValue: String = "";
   searchValues: string[] = [];
   searchValuesSuites: string[] = [];
@@ -30,7 +33,20 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
   pageSize = 500;
   amountPages = 0;
 
-  constructor(private config: ConfigService, private http: HttpClient, private aptReposSearchService: AptReposSearchService, private messages: MessagesService) { }
+  constructor(private config: ConfigService, private http: HttpClient, private aptReposSearchService: AptReposSearchService, private messages: MessagesService) {
+    this.searchStringPackages.asObservable().pipe(debounceTime(500)).subscribe((s: String) => {
+      if(s != null) {
+        this.searchValues = s.split(" ");
+        console.log(this.searchValues)
+      }
+    });
+    this.searchStringSuites.asObservable().pipe(debounceTime(500)).subscribe((s: String) => {
+      if(s != null) {
+        this.searchValuesSuites = s.split(" ");
+        console.log(this.searchValuesSuites)
+      }
+    });
+   }
 
   ngOnInit() {
     this.messages.clear();
@@ -88,6 +104,10 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
     this.updateAmountPages()
   }
 
+  getActiveSuitesLength() {
+    return Array.from(this.activeSuites).length
+  }
+
   checkActiveSuites(name) {
     if (this.activeSuites.has(name)) {
       return true;
@@ -102,11 +122,11 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
   }
 
   onChange(value: string) {
-    this.searchValues = value.split(" ");
+    this.searchStringPackages.next(value);
   }
 
   onChangeSuites(value: string) {
-    this.searchValuesSuites = value.split(" ");
+    this.searchStringSuites.next(value);
   }
 
   unselectAllSuites() {
@@ -148,7 +168,7 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
         for (let v of this.searchValues)
         {
           if (v.substring(0, 4) === "src:") {
-            if (p.sourcePackageName.includes(v.substring(4)) === true) flag = true; else return false;
+            if (p.sourcePackageName.startsWith(v.substring(4)) === true) flag = true; else return false;
           } else {
             if (p.name.includes(v) === true) flag = true; else return false;
           }
@@ -163,7 +183,6 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
       const replPattern = /([^a-zA-Z]+|\s+)/g;
       const partsA = a.replace(replPattern, " ").split(" ");
       const partsB = b.replace(replPattern, " ").split(" ");
-      console.log(partsA);
       if(partsA.length < partsB.length) {
         return -1;
       }

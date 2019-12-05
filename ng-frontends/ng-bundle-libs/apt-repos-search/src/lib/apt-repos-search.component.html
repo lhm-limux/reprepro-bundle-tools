@@ -1,11 +1,11 @@
 <div>
   <div class="wrapper">
     <nav id="sidebar">
-      <input [(ngModel)]="searchValuesSuites" #boxSuites (keyup)="onChangeSuites(boxSuites.value)"
+      <input #boxSuites (keyup)="onChangeSuites(boxSuites.value)"
         placeholder="Search Suites...">
-      <button class="btn btn-primary btn-margin-left" (click)="unselectAllSuites()">
+      <!--<button class="btn btn-primary btn-margin-left" (click)="unselectAllSuites()">
         <b>Unselect All Suites</b>
-      </button>
+      </button>-->
       <div class="tag-group">
         <div *ngFor="let t of sortedTags()" class="badge-pill mx-2 badge-light tag-spacing"
           [ngStyle]="{'background-color': activeTags.has(t) ? 'seagreen' : 'red'}" style="cursor: pointer;">
@@ -15,7 +15,7 @@
         </div>
       </div>
       <div class="sidebar-header">
-        <h3>Suites</h3>
+        <h3>{{filteredSuites().length}} Suites</h3>
       </div>
 
       <div class="row no-margin">
@@ -38,12 +38,16 @@
       Filter Binary Packages by Keywords&#13;
       Filter Source Packages by Keywords prefixed with &quot;src:&quot;&#13;
       Empty Input => Search all Packages">
-        <input [(ngModel)]="searchValue" #box (keyup.enter)="onEnter(box.value)" (keyup)="onChange(box.value)"
+        <input #box (keyup.enter)="onEnter(box.value)" (keyup)="onChange(box.value)"
           placeholder="Search Packages...">
+          <p class="display-contents"> In {{getActiveSuitesLength()}} selected Suite(s)</p>
       </div>
-      <button class="btn btn-primary btn-margin-left-small" (click)="onEnter(box.value)">
-        <b>Refresh from Servers</b>
+      <button class="btn btn-primary btn-margin-left-small" (click)="unselectAllSuites()">
+        <b>Unselect All Suites</b>
       </button>
+      <!--<button class="btn btn-primary btn-margin-left-small" (click)="onEnter(box.value)">
+        <b>Refresh from Servers</b>
+      </button>-->
       <div class="sidebar-header">
         <h3>{{filteredPackages().length}} Packages</h3>
       </div>

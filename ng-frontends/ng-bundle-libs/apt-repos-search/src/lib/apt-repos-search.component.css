@@ -162,3 +162,7 @@
 [data-tip]:hover:after {
   display:block;
 }
+
+.display-contents {
+  display: inherit;
+}
