@@ -37,13 +37,11 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
     this.searchStringPackages.asObservable().pipe(debounceTime(500)).subscribe((s: String) => {
       if(s != null) {
         this.searchValues = s.split(" ");
-        console.log(this.searchValues)
       }
     });
     this.searchStringSuites.asObservable().pipe(debounceTime(500)).subscribe((s: String) => {
       if(s != null) {
         this.searchValuesSuites = s.split(" ");
-        console.log(this.searchValuesSuites)
       }
     });
    }
