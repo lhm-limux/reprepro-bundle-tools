@@ -56,7 +56,7 @@ export class AptReposSearchService {
   }
 
   loadPackages(activeSuites:String[], value: String[]): void {
-    const sp = this.messages.addSpinner("Loading Packages…");
+    const sp = this.messages.addSpinner("Loading Packages from Servers…");
 
     let params = new HttpParams()
       .set("suiteTag", JSON.stringify(activeSuites))

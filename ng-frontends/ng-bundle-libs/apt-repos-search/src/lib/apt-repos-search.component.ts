@@ -102,7 +102,7 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
   }
 
   onChange(value: string) {
-    this.searchValuesSuites = value.split(" ");
+    this.searchValues = value.split(" ");
   }
 
   onChangeSuites(value: string) {
@@ -123,7 +123,7 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
       }
     })
     if (taggedSuites.length === 0){
-      return this.suites
+      taggedSuites = this.suites
     }
     if (this.searchValuesSuites.length === 0) {
       return taggedSuites
