@@ -64,7 +64,8 @@
 
 .right-top-corner {
   position: absolute;
-  right: 1rem;
+  right: 0.5rem;
+  top: 0.5rem;
 }
 
 .a{
