@@ -51,12 +51,12 @@ export class AptReposSearchService {
           this.messages.unsetSpinner(sp);
         }
       );
-      
-    
+
+
   }
 
   loadPackages(activeSuites:String[], value: String[]): void {
-    const sp = this.messages.addSpinner("Loading Packages from Servers…");
+    const sp = this.messages.addSpinner("Loading Package Lists from Servers…");
 
     let params = new HttpParams()
       .set("suiteTag", JSON.stringify(activeSuites))
@@ -81,7 +81,7 @@ export class AptReposSearchService {
         }
       );
 
-      
+
   }
 
   getSuites(): Suite[]{

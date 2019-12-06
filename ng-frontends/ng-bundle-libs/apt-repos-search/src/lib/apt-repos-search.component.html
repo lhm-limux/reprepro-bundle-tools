@@ -3,8 +3,8 @@
     <nav id="sidebar">
       <input #boxSuites (keyup)="onChangeSuites(boxSuites.value)"
         placeholder="Search Suites..." class="mr-3">
-      {{getActiveSuites().length}} Suite{{getActiveSuites().length === 1 ? "" : "s"}} Selected
-      <button class="btn btn-primary" (click)="unselectAllSuites()">
+      <span title="{{ getActiveSuites().sort().join('&#13;') }}"><u>{{getActiveSuites().length}} Suite{{getActiveSuites().length === 1 ? "" : "s"}} Selected</u></span>
+      <button class="ml-3 btn btn-primary" (click)="unselectAllSuites()">
         <b>Unselect All</b>
       </button>
       <div class="tag-group">
@@ -26,8 +26,8 @@
               [ngClass]="isActiveSuite(s.name) ? 'card-body-active bg-secondary text-white': 'card-body-inactive'"
               class="card-body" (click)="switchActiveSuite(s.name)" style="cursor: pointer;">
               <input type="checkbox" class="right-top-corner" [checked]="isActiveSuite(s.name)">
-              <h4 class="card-title">{{s.name}}</h4>
-              <h5 class="card-subtitle">{{s.description}}</h5>
+              <h5 class="card-title">{{s.name}}</h5>
+              <h6 class="card-subtitle">{{s.description}}</h6>
             </div>
           </div>
         </div>
