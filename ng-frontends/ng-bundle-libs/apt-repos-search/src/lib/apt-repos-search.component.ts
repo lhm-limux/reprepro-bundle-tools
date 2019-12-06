@@ -16,33 +16,27 @@ import { delay, debounceTime } from 'rxjs/operators';
 export class AptReposSearchComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
-  private searchStringPackages = new BehaviorSubject<String>(null);
-  private searchStringSuites = new BehaviorSubject<String>(null);
-  searchValue: String = "";
-  searchValues: string[] = [];
-  searchValuesSuites: string[] = [];
+  private searchStringPackages = new BehaviorSubject<String>("");
+  private searchStringSuites = new BehaviorSubject<String>("");
+  private packages: Package[] = [];
+  private suites: Suite[] = [];
+  private tags: String[] = [];
 
+  filteredPackages: Package[];
+  filteredSuites: Suite[];
   activeSuites: Set<String> = new Set();
   activeTags: Set<String> = new Set();
-  suites: Suite[] = [];
-  tags: String[] = [];
-  packages: Package[] = [];
-  searchPackages: Package[] = [];
 
   page = 1;
   pageSize = 500;
   amountPages = 0;
 
   constructor(private config: ConfigService, private http: HttpClient, private aptReposSearchService: AptReposSearchService, private messages: MessagesService) {
-    this.searchStringPackages.asObservable().pipe(debounceTime(500)).subscribe((s: String) => {
-      if(s != null) {
-        this.searchValues = s.split(" ");
-      }
+    this.searchStringPackages.asObservable().pipe(debounceTime(400)).subscribe((s: String) => {
+      this.filteredPackages = this.filterPackages();
     });
-    this.searchStringSuites.asObservable().pipe(debounceTime(500)).subscribe((s: String) => {
-      if(s != null) {
-        this.searchValuesSuites = s.split(" ");
-      }
+    this.searchStringSuites.asObservable().pipe(debounceTime(400)).subscribe((s: String) => {
+      this.filteredSuites = this.filterSuites();
     });
    }
 
@@ -82,6 +76,7 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
 
   updatePackages() {
     this.packages = this.aptReposSearchService.getPackages()
+    this.filteredPackages = this.filterPackages();
   }
 
   switchActiveTag(tag) {
@@ -90,23 +85,25 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
     } else {
       this.activeTags.add(tag)
     }
+    this.filteredSuites = this.filterSuites();
   }
 
   switchActiveSuite(name) {
     if (this.activeSuites.has(name)) {
       this.activeSuites.delete(name)
     } else {
+      const search = this.searchStringPackages.value.split(" ");
       this.activeSuites.add(name)
-      this.aptReposSearchService.loadPackages(Array.from(this.activeSuites), [((this.searchValue == "") ? "." : this.searchValue)])
+      this.aptReposSearchService.loadPackages(Array.from(this.activeSuites), (search.length === 1 && search[0] == "") ? ["."] : search)
     }
     this.updateAmountPages()
   }
 
-  getActiveSuitesLength() {
-    return Array.from(this.activeSuites).length
+  getActiveSuites() {
+    return Array.from(this.activeSuites)
   }
 
-  checkActiveSuites(name) {
+  isActiveSuite(name) {
     if (this.activeSuites.has(name)) {
       return true;
     } else {
@@ -132,7 +129,8 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
     this.packages = [];
   }
 
-  filteredSuites() {
+  private filterSuites() {
+    const search = this.searchStringSuites.value.split(" ");
     var taggedSuites = this.suites.filter(s => {
       for(let suiteTag of s.tags) {
         if (this.activeTags.has(suiteTag)) {
@@ -143,27 +141,28 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
     if (taggedSuites.length === 0){
       taggedSuites = this.suites
     }
-    if (this.searchValuesSuites.length === 0) {
+    if (search.length === 0) {
       return taggedSuites
     } else {
       return taggedSuites.filter(s => {
-        for (let v of this.searchValuesSuites){
+        for (let v of search){
           if (s.name.includes(v) === true) return true; else return false;
         }
       })
     }
   }
 
-  filteredPackages() {
+  private filterPackages(): Package[] {
+    const search = this.searchStringPackages.value.split(" ");
     var activePackages = this.packages.filter(p => {
       return this.activeSuites.has(p.suite)
     })
-    if (this.searchValues.length === 0) {
+    if (search.length === 0) {
       return activePackages
     } else {
       return activePackages.filter(p => {
         var flag = false;
-        for (let v of this.searchValues)
+        for (let v of search)
         {
           if (v.substring(0, 4) === "src:") {
             if (p.sourcePackageName.startsWith(v.substring(4)) === true) flag = true; else return false;
@@ -221,7 +220,7 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
   }
 
   updateAmountPages() {
-    this.amountPages = 1+Math.floor(this.filteredPackages().length/this.pageSize)
+    this.amountPages = 1+Math.floor(this.filteredPackages.length/this.pageSize)
     if(this.page > this.amountPages){
       this.page = this.amountPages;
     }
