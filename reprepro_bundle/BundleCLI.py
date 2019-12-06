@@ -72,6 +72,7 @@ def main():
     DEFAULT_REFERENCES = "{distribution}-reference:,bundle:{bundle}"
     DEFAULT_OWN_SUITE = "bundle:{bundle}"
     DEFAULT_HIGHLIGHTED = DEFAULT_OWN_SUITE + "," + DEFAULT_USER_REPO
+    DEFAULT_GLOBAL_BLACKLIST_FILE = "FilterList.purge-from-{distribution}"
 
     GIT_REPO_URL = getGitRepoUrl('origin', None)
     GIT_BRANCH = 'master'
@@ -172,6 +173,12 @@ def main():
                         GIT-Repository URL used to clone the repository during --clean-commit. Per default the current git tracking branch is used (if set).""")
         g.add_argument("--git-branch", default=GIT_BRANCH, help="""
                         GIT-Repository branch used to pull and push during --clean-commit. The default is '{}'.""".format(GIT_BRANCH))
+
+    for p in [parse_seal]:
+        p.add_argument("--global-blacklist-file", default=DEFAULT_GLOBAL_BLACKLIST_FILE, help="""
+                        A global blacklist file that is checked before a bundle could be sealed.
+                        We would deny 'seal', if the bundle contains a binary package mentioned there.
+                        Per default this file is {}.""".format(DEFAULT_GLOBAL_BLACKLIST_FILE))
 
     # positional argument
     for p in [parse_init, parse_edit, parse_black, parse_meta, parse_show, parse_list, parse_seal, parse_clone, parse_apply]:
@@ -322,14 +329,25 @@ def cmd_seal(args):
     '''
         Subcommand seal: Mark the bundle as ReadOnly and change a suite's tag from 'staging' to 'deploy'.
     '''
+    ## pre seal checks ##
     bundle = setupContext(args, require_own_suite=True)
-    sourcesInReprepro = set([list(p.getData())[0] for p in bundle.queryBinaryPackages(packageFields="C")])
+    packages = bundle.queryBinaryPackages(packageFields="pC")
+    binariesInReprepro = set([list(p.getData())[0] for p in packages])
+    sourcesInReprepro = set([list(p.getData())[1] for p in packages])
     if len(sourcesInReprepro) == 0:
         raise BundleError("Sorry, the bundle {} is empty and you can't seal an empty bundle!".format(bundle))
     (applied, not_applied) = bundle.getApplicationStatus()
     applied_diff = sourcesInReprepro.symmetric_difference(applied)
     if len(applied_diff) > 0 or len(not_applied) > 0:
         raise BundleError("Sorry, the sources_control.list is not (yet?) fully applied to the reprepro-repository! Differences found for " + ", ".join(sorted(applied_diff | not_applied)))
+    globalBlacklistFile = args.global_blacklist_file or ""
+    globalBlacklistFile = os.path.join(PROJECT_DIR, globalBlacklistFile.format(distribution=bundle.distribution))
+    if os.path.isfile(globalBlacklistFile):
+        globalBlacklist = parseBlacklist(globalBlacklistFile)
+        blacklistedBinaries = binariesInReprepro.intersection(globalBlacklist)
+        if len(blacklistedBinaries) > 0:
+            raise BundleError("The following binary packages contained in this bundle are blacklisted:\n\n- {}\n\nPlease adjust the file {}\nor use '{} blacklist {}' to remove those packages from the bundle!".format("\n- ".join(sorted(blacklistedBinaries)), globalBlacklistFile, reprepro_bundle.PROGNAME, bundle))
+
     with choose_commit_context(bundle, args, "SEALED bundle '{bundleName}'") as (bundle, git_add, cwd):
         infofile = edit_meta(bundle, CANCEL_REMARK.format(action="seal"))
         if not infofile:
@@ -349,6 +367,21 @@ def cmd_seal(args):
             subprocess.check_call(cmd, cwd=cwd)
         except Exception as e:
             logger.warning("Hook execution failed in folder {}: {}".format(cwd, e))
+
+
+def parseBlacklist(filename):
+    logger.info("Reading Blacklist file {}".format(filename))
+    res = set()
+    pattern = re.compile(r'^([a-zA-Z0-9-_]+)(\s+purge)?$')
+    with open(filename, 'r') as bl:
+        for line in bl:
+            line = line.strip()
+            if line.startswith('#') or len(line) == 0:
+                continue
+            match = pattern.match(line)
+            if match:
+               res.add(match.group(1))
+    return res
 
 
 def cmd_apply(args):

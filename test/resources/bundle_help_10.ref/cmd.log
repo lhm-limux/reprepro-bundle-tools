@@ -1,5 +1,6 @@
 usage: bundle seal [-h] [--own-suite OWN_SUITE] [--commit] [--clean-commit]
                    [--git-repo-url GIT_REPO_URL] [--git-branch GIT_BRANCH]
+                   [--global-blacklist-file GLOBAL_BLACKLIST_FILE]
                    bundleName
 
 Subcommand seal: Mark the bundle as ReadOnly and change a suite's tag from
@@ -23,6 +24,12 @@ optional arguments:
                         Suite-Selectors that defines the own suite (the suite
                         of this bundle). The default value is
                         'bundle:{bundle}'.
+  --global-blacklist-file GLOBAL_BLACKLIST_FILE
+                        A global blacklist file that is checked before a
+                        bundle could be sealed. We would deny 'seal', if the
+                        bundle contains a binary package mentioned there. Per
+                        default this file is FilterList.purge-
+                        from-{distribution}.
 
 additional arguments for git-commit management:
   --commit              Commit changed files to the (local) project git-
