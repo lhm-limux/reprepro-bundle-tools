@@ -38,6 +38,7 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
     this.searchStringSuites.asObservable().pipe(debounceTime(400)).subscribe((s: String) => {
       this.filteredSuites = this.filterSuites();
     });
+    this.activeTags.add("default");
    }
 
   ngOnInit() {
@@ -92,9 +93,7 @@ export class AptReposSearchComponent implements OnInit, OnDestroy {
     if (this.activeSuites.has(name)) {
       this.activeSuites.delete(name)
     } else {
-      const search = this.searchStringPackages.value.split(" ");
       this.activeSuites.add(name)
-      this.aptReposSearchService.loadPackages(Array.from(this.activeSuites), (search.length === 1 && search[0] == "") ? ["."] : search)
     }
     this.updateAmountPages()
   }
