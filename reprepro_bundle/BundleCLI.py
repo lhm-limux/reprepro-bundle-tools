@@ -372,7 +372,7 @@ def cmd_seal(args):
 def parseBlacklist(filename):
     logger.info("Reading Blacklist file {}".format(filename))
     res = set()
-    pattern = re.compile(r'^([a-zA-Z0-9-_]+)(\s+purge)?$')
+    pattern = re.compile(r'^([a-zA-Z0-9-_\.\+]+)(\s+purge)?$')
     with open(filename, 'r') as bl:
         for line in bl:
             line = line.strip()
@@ -380,7 +380,9 @@ def parseBlacklist(filename):
                 continue
             match = pattern.match(line)
             if match:
-               res.add(match.group(1))
+                res.add(match.group(1))
+            else:
+                logger.warning("Invalid line in Blacklist file {}: '{}'".format(filename, line))
     return res
 
 
