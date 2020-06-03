@@ -412,6 +412,11 @@ def cmd_apply(args):
     logger.info("Executing '{}'".format(" ".join(cmd)))
     subprocess.check_call(cmd)
     with choose_commit_context(bundle, args, "APPLIED changes on bundle '{bundleName}'") as (bundle, git_add, unused_cwd):
+        # There is no need to parse the supplier or highlighted suites.
+        # It is sufficient to parse the reference suites in order to
+        # apply changes on the sources_control_list.
+        args.supplier_suites = None
+        args.highlighted_suites = None
         git_add.append(update_sources_control_list(bundle, args))
         bundle.normalizeSourcesControlList()
         git_add.append(create_reprepro_config(bundle))
