@@ -539,7 +539,7 @@ def interactive_suite_filter(supplierSuites, refSuites, highlightedSuites):
     for n, s in enumerate(allSuites):
         print("%2d %s"%(n, s.getSuiteName()))
     print("\nSelect a suite by id or regexp. You may define multiple comma-separated selections.")
-    print("Exclusions can be defined by prepanding a minus.")
+    print("Exclusions can be defined by prepending a minus.")
     print("Example: 1,-0,bionic,^mirror,-focal")
     selections = input("--> ")
 
