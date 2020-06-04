@@ -153,6 +153,9 @@ def main():
                         suite or if the new component doesn't match the current component in the reference suite,
                         the package will not be automatically upgraded and a warning will be reported.""")
         g.add_argument("--batch", action="store_true", default=False, help="""Run in batch mode which means without user interaction.""")
+        g.add_argument("-i", "--interactive-suite-filter", action="store_true", default=False, help="""
+                        Dismiss undesired suites by defining an interactively queried filter.
+                        This option will be ignored in combination with --batch.""")
 
     for p in [parse_init, parse_edit, parse_meta, parse_black, parse_seal, parse_clone, parse_apply, parse_repos]:
         g = p.add_argument_group('additional arguments for git-commit management')
@@ -232,6 +235,9 @@ def cmd_edit(args):
     '''
         Subcommand edit: Add / Remove/ Upgrade/ Downgrade packages to/in the bundle by editing an automatically prepared list of available packages.
     '''
+    if args.batch and args.interactive_suite_filter:
+        print("Deactivating interactive-suite-filter due to batch-mode")
+        args.interactive_suite_filter = False
     bundle = setupContext(args)
     with choose_commit_context(bundle, args, "EDITED sources_control.list of bundle '{bundleName}'") as (bundle, git_add, unused_cwd):
         originCopy = tempfile.NamedTemporaryFile(delete=False).name
@@ -526,6 +532,96 @@ def setupContext(args, require_editable=True, require_own_suite=False):
     return bundle
 
 
+def interactive_suite_filter(supplierSuites, refSuites, highlightedSuites):
+    nonhighlightedSuites = list(set(supplierSuites) - set(highlightedSuites) - set(refSuites))
+    allSuites = list(set(highlightedSuites) - set(refSuites)) + nonhighlightedSuites
+    print("\nID SuiteName")
+    for n, s in enumerate(allSuites):
+        print("%2d %s"%(n, s.getSuiteName()))
+    print("\nSelect a suite by id or regexp. You may define multiple comma-separated selections.")
+    print("Exclusions can be defined by prepanding a minus.")
+    print("Example: 1,-0,bionic,^mirror,-focal")
+    selections = input("--> ")
+
+    inclusionmap = {}
+    exclusionmap = {}
+    def add_match(suite, is_exclusion, matchstring):
+        if is_exclusion:
+            matchstring = '-' + matchstring
+        matchstring = "'{}'".format(matchstring)
+        if is_exclusion:
+            exclusionmap[suite] = exclusionmap.get(s, list())
+            exclusionmap[suite].append(matchstring)
+        else:
+            inclusionmap[suite] = inclusionmap.get(s, list())
+            inclusionmap[suite].append(matchstring)
+
+    try:
+        if not selections:
+            raise ValueError("Nothing have been selected")
+        for selection in selections.split(','):
+            if selection.startswith('-'):
+                is_exclusion = True
+                selection = selection[1:]
+            else:
+                is_exclusion = False
+                selection = selection[1:] if selection.startswith('+') else selection
+            selection_type = "exclusion" if is_exclusion else "inclusion"
+            if selection.isdecimal():
+                selection = abs(int(selection))
+                if selection > len(allSuites):
+                    raise ValueError("Invalid selection '{}'".format(selection))
+                s = allSuites[selection]
+                add_match(s, is_exclusion, str(selection))
+
+            else:
+                try:
+                    pattern = re.compile(selection)
+                except:
+                    raise ValueError("Invalid pattern '{}'".format(selection))
+                match_found = False
+                for s in allSuites:
+                    if pattern.search(s.getSuiteName()):
+                        add_match(s, is_exclusion, selection)
+                        match_found = True
+                if not match_found:
+                    raise ValueError("No matches for regexp '{}' have been found".format(selection))
+
+        inclusionset = set(inclusionmap.keys())
+        exclusionset = set(exclusionmap.keys())
+
+        if not inclusionset and exclusionset:
+            inclusionset = set(allSuites)
+
+        print("=" * 50)
+        for s in allSuites:
+            if s in inclusionset and s not in exclusionset:
+                print(" --> ", end='')
+            else:
+                print("     ", end='')
+            print(s, end='')
+            if s in inclusionmap:
+                print(" inclueded by", ", ".join(inclusionmap[s]), end='')
+            if s in inclusionmap and s in exclusionmap:
+                print(" but", end='')
+            if s in exclusionmap:
+                print(" excluded by", ", ".join(exclusionmap[s]), end='')
+            print()
+
+        if not inclusionset - exclusionset:
+            raise ValueError("Nothing have been effectively selected")
+    except ValueError as e:
+        print(e)
+        print("Interactive suite selection aborted")
+    else:
+        supplierSuites = [ s for s in supplierSuites
+            if (s in inclusionset or s in refSuites) and not s in exclusionset]
+        highlightedSuites = [ s for s in highlightedSuites
+            if (s in inclusionset or s in refSuites) and not s in exclusionset]
+
+    return(supplierSuites, refSuites, highlightedSuites)
+
+
 def update_sources_control_list(bundle, args, cancel_remark=None):
     (refSuites, selector) = bundle.parseSuitesStr(args.reference_suites)
     logger.info("Setting reference-suites to '{}'".format(selector))
@@ -541,6 +637,8 @@ def update_sources_control_list(bundle, args, cancel_remark=None):
     highlightedSuites.extend(addFrom)
     sourcesDict = bundle.parseSourcesControlList()
     upgrade_keep_component = not args.no_upgrade_keep_component if "no_upgrade_keep_component" in args.__dict__ else True
+    if args.interactive_suite_filter:
+        supplierSuites, refSuites, highlightedSuites = interactive_suite_filter(supplierSuites, refSuites, highlightedSuites)
     with apt_repos.suppress_unwanted_apt_pkg_messages() as forked:
         if forked:
             bundle.updateSourcesControlList(supplierSuites, refSuites, sourcesDict, highlightedSuites, addFrom, upgradeFrom, upgrade_keep_component, args.no_apt_update, cancel_remark)
