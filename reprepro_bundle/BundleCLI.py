@@ -308,27 +308,27 @@ def cmd_list(args):
     '''
     bundle = setupContext(args, require_editable=False)
     logging.getLogger("apt_repos").setLevel(logging.ERROR)
-    wait = True
     cur = None
-    extraBr = ''
-    while wait:
+    firstrun = True
+    while firstrun or args.wait:
         try:
             bundle.setOwnSuite(args.own_suite)
         except BundleError:
             pass
         res = get_bundle_list(bundle, "")
         if cur != res:
-            if cur != None:
-                wait = False
             if len(res) > 0:
-                print("{}\n{}".format(extraBr, res))
-            cur = res
-        else:
-            wait = args.wait
-            if wait:
-                print(" waiting for change…", end='', flush=True)
-                extraBr = '\n'
-                time.sleep(5)
+                print("{}\n{}".format('' if firstrun else '\n', res))
+                if firstrun and args.wait:
+                    print("waiting for change ...", end='', flush=True)
+            if cur != None:
+                break #done
+            else:
+                cur = res
+        if args.wait:
+            time.sleep(5)
+            print(".", end='', flush=True)
+        firstrun = False
 
 
 def cmd_seal(args):
