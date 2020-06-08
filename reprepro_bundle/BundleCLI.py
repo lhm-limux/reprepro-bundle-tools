@@ -637,7 +637,7 @@ def update_sources_control_list(bundle, args, cancel_remark=None):
     highlightedSuites.extend(addFrom)
     sourcesDict = bundle.parseSourcesControlList()
     upgrade_keep_component = not args.no_upgrade_keep_component if "no_upgrade_keep_component" in args.__dict__ else True
-    if args.interactive_suite_filter:
+    if "interactive_suite_filter" in args.__dict__ and args.interactive_suite_filter:
         supplierSuites, refSuites, highlightedSuites = interactive_suite_filter(supplierSuites, refSuites, highlightedSuites)
     with apt_repos.suppress_unwanted_apt_pkg_messages() as forked:
         if forked:
