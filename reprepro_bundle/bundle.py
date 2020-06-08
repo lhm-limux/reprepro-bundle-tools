@@ -354,6 +354,7 @@ class Bundle():
         '''
         reqFields = PackageField.getByFieldsString('CvsSy')
         suites = set(supplierSuites)
+        suites = suites.union(highlightedSuites)
         suites = suites.union(refSuites)
         logger.info("Creating sources_control.list for {} suites".format(len(suites)))
 
