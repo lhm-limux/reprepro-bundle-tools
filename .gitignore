@@ -2,6 +2,7 @@
 .*.swp
 .secretToken
 .allowedTokenHashes
+.dir-locals-2.el
 /.angulardoc.json
 /build
 /.pybuild
