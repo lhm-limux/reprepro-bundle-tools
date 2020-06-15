@@ -84,7 +84,8 @@ def updateBundles(tracApi=None, parentTicketsField=None, cwd=PROJECT_DIR):
             if not bundle.ignoresTargetFromInfoFile():
                 info = bundle.getInfo()
                 if info.get("Target") != bundle.getTarget():
-                    logger.warn("Target-Fields of {} and it's info file dont't match ('{}' vs. '{}') - Please check!".format(bundle, bundle.getTarget(), info.get("Target")))
+                    if bundle.getTarget() != "unattended":
+                        logger.warn("Target-Fields of {} and it's info file dont't match ('{}' vs. '{}') - Please check!".format(bundle, bundle.getTarget(), info.get("Target")))
             suiteStatus = BundleStatus.getByTags(suite.getTags())
             if bundle.getStatus() < suiteStatus:
                 if bundle.getStatus().allowsOverride():
