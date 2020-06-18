@@ -70,6 +70,7 @@ def main():
     DEFAULT_USER_REPO = "user-{user}:{distribution}"
     DEFAULT_SUPPLIERS = "{distribution}-supplier:," + DEFAULT_USER_REPO
     DEFAULT_REFERENCES = "{distribution}-reference:,bundle:{bundle}"
+    DEFAULT_BUNDLE_TYPE = "standard"
     DEFAULT_OWN_SUITE = "bundle:{bundle}"
     DEFAULT_HIGHLIGHTED = DEFAULT_OWN_SUITE + "," + DEFAULT_USER_REPO
     DEFAULT_GLOBAL_BLACKLIST_FILE = "FilterList.purge-from-{distribution}"
@@ -129,6 +130,9 @@ def main():
     for p in [parse_init, parse_edit, parse_apply, parse_clone]:
         g = p.add_argument_group('advanced suites control parameters')
         g.add_argument("--no-apt-update", action="store_true", default=False, help="Skip download of packages list.")
+        g.add_argument("--bundle-type", "-t", action="store_true", default=DEFAULT_BUNDLE_TYPE, help="""
+                            Type of Bundle to set the correct target. Either standard or unattended.
+                            The default value is '{}'.""".format(DEFAULT_BUNDLE_TYPE))
         g.add_argument("--supplier-suites", default=DEFAULT_SUPPLIERS, help="""
                             Comma separated list of Suite-Selectors that define the supplier-suites to track.
                             The default value is '{}'.""".format(DEFAULT_SUPPLIERS))
