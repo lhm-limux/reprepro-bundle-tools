@@ -481,7 +481,8 @@ def scanBundles(cwd=PROJECT_DIR):
             continue
         for bundleId in os.listdir(distribution_path):
             bundle_path = os.path.join(distribution_path, bundleId)
-            if not os.path.isdir(bundle_path):
+            bundle_distributions_path = os.path.join(bundle_path, 'conf', 'distributions')
+            if not os.path.isfile(bundle_distributions_path):
                 continue
             try:
                 bundle = Bundle(os.path.relpath(bundle_path, cwd), basedir=cwd)
