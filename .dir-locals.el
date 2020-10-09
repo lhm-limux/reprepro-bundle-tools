@@ -1,6 +1,5 @@
 ;;; -*- mode: emacs-lisp; fill-column: 79; -*-
 ;;
-;;
 
 ((python-mode . (python-indent-offset . 4))
  (sh-mode . ((sh-basic-offset . 4)))
