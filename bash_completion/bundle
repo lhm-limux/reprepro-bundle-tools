@@ -1,0 +1,637 @@
+#!/bin/bash
+#
+# bundle bash-completion
+#
+# Some completions offer an expanded option-range, which can be unlocked by typing tab a few times
+# (by default 4 times). Usually these option-ranges are generated slowly, which can cause an anoying
+# user experience if the expanded optionset is unlocked accidentally in a regular manner.
+# By setting BUNDLE_BASHCOMPL__MENU_UNLOCK_COUNT to a value >=0 (i.e. in your ~/.bashrc) it is
+# possible to override the default value.
+#
+# To suppress help-messages, simply define the variable BUNDLE__BASHCOMPL__SUPPRESS_HELP.
+
+__bbc__help_get_bundles_display_hint_condition(){ [ -z "$cur" ]; }
+
+__bbc__reset_bundle_listing_unlock_counter()
+{
+    BUNDLE_BASHCOMPL_BUNLES_LISTING_UNLOCK_COUNTER=${BUNDLE_BASHCOMPL__MENU_UNLOCK_COUNT:-4}
+}
+
+# output: __help_get_bundles_result
+__bbc__help_get_bundles()
+{
+    local lsb_option=$1
+    local all_bundles my_bundles
+    local list_all_bundles=false
+
+    __help_get_bundles_reached=true
+
+    if [ "$1" = all ]; then
+        list_all_bundles=true
+        lsb_option=$2
+    fi
+
+    if __bbc__help_get_bundles_display_hint_condition; then
+        if ! [ "$BUNDLE_BASHCOMPL_BUNLES_LISTING_UNLOCK_COUNTER" = 0 ]; then
+            if ! ((BUNDLE_BASHCOMPL_BUNLES_LISTING_UNLOCK_COUNTER--)); then
+                __bbc__reset_bundle_listing_unlock_counter
+            fi
+        fi
+    else
+        # reset the counter if it didn't reach final state yet
+        [ "$BUNDLE_BASHCOMPL_BUNLES_LISTING_UNLOCK_COUNTER" != 0 ] && __bbc__reset_bundle_listing_unlock_counter
+    fi
+
+    if [ "$BUNDLE_BASHCOMPL_BUNLES_LISTING_UNLOCK_COUNTER" = 0 ]; then
+        list_all_bundles=true
+    fi
+
+    all_bundles=$($executable lsb $lsb_option 2>/dev/null)
+
+    if $list_all_bundles; then
+        __help_get_bundles_result=$all_bundles
+    else
+        my_bundles=$(grep -F "$USER" <<< "$all_bundles")
+
+        if [ -z "$my_bundles" ]; then
+            __help_get_bundles_result=$all_bundles
+        else
+            if __bbc__help_get_bundles_display_hint_condition; then
+                __help_get_bundles_result=$(
+                    echo "# Press tab $BUNDLE_BASHCOMPL_BUNLES_LISTING_UNLOCK_COUNTER more times to see foreign bundles too"
+                    echo "$my_bundles"
+                )
+            else
+                __help_get_bundles_result=$my_bundles
+            fi
+        fi
+    fi
+}
+
+__bbc__help_get_users()
+{
+    apt-repos -b .apt-repos/ suites -s user: 2>/dev/null |
+        # the user-tags are listed between '[]'; thus filter this content
+        sed -E 's/.*\[(.*)\]$/\1/' |
+        # throw all user-.* strings on separate lines
+        sed -E 's/(user-[^:]+):/\n\1\n/g' |
+        # filter for user-.* lines and show all unique user-repos
+        grep ^user- | sort -u
+}
+
+__bbc__full_menu_preconditions_met()
+{
+    # check if apt-repos is available
+    [ -x "$(which apt-repos)" ] || return 1
+    # check if the folder .apt-repos exist in the cwd
+    [ -d .apt-repos ]
+}
+
+__bbc__help_get_all_suites()
+{
+    local raw_output
+    raw_output=$(apt-repos -b .apt-repos/ suites 2>/dev/null)
+    (
+        # first filter out all tagnames within '[]'
+        echo "$raw_output" |
+            sed -E 's/.*\[(.*)\]$/\1/' |
+            # the tags are reparated by commas thus drop them
+            tr -d ',' |
+            # replase spaces with newlines; remove emptry lines and sort the result uniquely
+            tr ' ' '\n' | sed '/^\s*$/d' | sed '/^#$/d'
+
+        # now filter the part in front of '[]'
+        echo "$raw_output" |
+            sed -En 's/^# ([^ ]+).*/\1/p' |
+            # the result looks like this: `x:y` this is splittable into `x:` and `:y` which are also
+            # valid suitenames
+            sed -En 's/([^:]*):([^:]*)/\1:\2\n\1:\n:\2\n/p'
+    ) | sort -u
+}
+
+__bbc__smart_suite_select()
+{
+    local input=$(cat -)
+    if [ -z "$input" ]; then
+        echo : #default option if no suites are available
+        return
+    fi
+
+    if [ -z "$cur" ]; then
+        echo :
+        echo :...
+        echo "$input" | sed -e '/^:/d' -e 's/:.*/:.../g' | sort -u
+        return
+    fi
+
+    echo "$input"
+}
+
+__bbc__is_full_menu_unlocked(){ [ "$BUNDLE_BASHCOMPL_SUITES_LISTING_UNLOCK_COUNTER" = 0 ]; }
+
+__bbc__help_list_select_wrapper()
+{
+    local function_to_invoke=$1 return_var=$2
+    local cur_copy=$cur cut_away result
+    shift; shift
+
+    cur=$(sed 's/.*,//' <<< "$cur")
+    cut_away=$(sed -nE 's/(.*),.*/\1/p' <<< "$cur_copy")
+
+    if [ -z "$return_var" ]; then
+        result=$($function_to_invoke $*)
+    else
+        $function_to_invoke $*
+        result=${!return_var}
+    fi
+
+    cur=$cur_copy # restore cur
+
+    __bbc__help_manage_all_suite_options_result=$(
+        #strip potential empty lines
+        sed '/^\s*$/d' <<< "$result"
+    )
+    [ -n "$cut_away" -a -n "$result" ] && result=$(
+        local line
+        while read line; do
+            echo "$cut_away,$line"
+        done <<< "$result"
+    )
+
+    local potential_hits="$(compgen -W '$result' -- "$cur")"
+    if [ -n "$potential_hits" -a  $(wc -l <<< "$potential_hits") -eq 1 ]; then
+        #only one match left; thus add the same match with a comma as an additinoal option
+        result=$(
+            echo $potential_hits
+            echo $potential_hits,
+        )
+    fi
+
+    if [ -n "$return_var" ]; then
+        eval "$return_var"='$result'
+    else
+        echo "$result"
+    fi
+}
+
+# output: __bbc__help_manage_all_suite_options_result
+__bbc____help_manage_all_suite_options()
+{
+    local base_options="bundle user" unlock_val=${BUNDLE_BASHCOMPL__MENU_UNLOCK_COUNT:-4}
+    if [ "$1" = suite_only ]; then
+        base_options=""
+        unlock_val=0
+    fi
+    __help_manage_all_suite_options_reached=true
+
+    if ! __bbc__is_full_menu_unlocked || ! __bbc__full_menu_preconditions_met; then
+        if [ -z "$cur" ]; then
+            # try to decrement var (to unlock full menu)
+            if ! ((BUNDLE_BASHCOMPL_SUITES_LISTING_UNLOCK_COUNTER--)) 2>/dev/null; then
+                # failed to decrement (probably because the var was undefined or not an integer)
+                BUNDLE_BASHCOMPL_SUITES_LISTING_UNLOCK_COUNTER=$unlock_val
+            fi
+        else
+            BUNDLE_BASHCOMPL_SUITES_LISTING_UNLOCK_COUNTER=$unlock_val #reset
+            local matching_options matching_option_count input=$cur
+
+            matching_options=($(compgen -W '$base_options' -- "$cur"))
+            matching_option_count=${#matching_options[@]}
+
+            # if there is only one option matching the current input, threat that as input
+            [ "$matching_option_count" -eq 1 ] && input=${matching_options[0]}
+
+            case "$input" in
+            bundle*)
+                __bbc__help_get_bundles all # generates __help_get_bundles_result
+                __bbc__help_manage_all_suite_options_result=$( sed 's/^/bundle:/' <<< "$__help_get_bundles_result")
+                return
+                ;;
+            user*)
+                [ -z "$BUNDLE_BASHCOMPL_USER_LISTING" ] && BUNDLE_BASHCOMPL_USER_LISTING=$(
+                    __bbc__help_get_users
+                )
+                __bbc__help_manage_all_suite_options_result=$BUNDLE_BASHCOMPL_USER_LISTING
+                return
+                ;;
+            esac
+        fi
+    fi
+
+    if __bbc__full_menu_preconditions_met && __bbc__is_full_menu_unlocked; then
+        [ -n "$BUNDLE_BASHCOMPL_SUITES_LISTING" ] || BUNDLE_BASHCOMPL_SUITES_LISTING=$(__bbc__help_get_all_suites)
+        __bbc__help_manage_all_suite_options_result=$(
+            __bbc__smart_suite_select <<< "$BUNDLE_BASHCOMPL_SUITES_LISTING"
+        )
+    else
+        # offer all base_options
+        local option
+        __bbc__help_manage_all_suite_options_result=$(
+            [ -z "$cur" ] && __bbc__full_menu_preconditions_met && ! __bbc__is_full_menu_unlocked &&
+                echo "# Press tab $BUNDLE_BASHCOMPL_SUITES_LISTING_UNLOCK_COUNTER more times to determine all options"
+            for option in ${base_options}; do
+                echo "$option..."
+            done
+        )
+    fi
+}
+
+__bbc__gen_reply()
+{
+    local first_option=$1 content line
+    content=$(cat - | sed '/^\s*$/d')
+    [ -n "$content" ] || return
+    [ "$first_option" = single_word ] && content=$(tr ' ' '\n' <<< "$content")
+    while read line; do
+        [[ "$line" == "$cur"* ]] && COMPREPLY+=("$line")
+    done <<< "$content"
+
+    if [ "${#COMPREPLY[@]}" -eq 1 ]; then
+        COMPREPLY=$(sed 's/ .*//g' <<< $COMPREPLY)
+    fi
+
+    if [[ "$COMP_WORDBREAKS" == *:* ]]; then
+        # collons do separate words and only the last word will be adopted
+        # we need to remove all leading colon-separated words as they will be
+        # doubled into the last word otherwise
+
+        local _cur_copy=$cur _cur_snippet
+        _cur_snippet=$(sed -nE 's/^([^:]*:).*/\1/p' <<< "$_cur_copy")
+        while [ -n "$_cur_snippet" ]; do
+            __ltrim_colon_completions $_cur_snippet
+            _cur_copy=$(sed -nE 's/^[^:]*://p' <<< "$_cur_copy")
+            _cur_snippet=$(sed -nE 's/^([^:]*:).*/\1/p' <<< "$_cur_copy")
+        done
+    fi
+}
+
+__bbc__is_prev_a_valid_option()
+{
+    local valid_option is_valid=false
+    for valid_option in $all_options; do
+        if [ "$prev" = "$valid_option" ]; then
+            is_valid=true
+            break
+        fi
+    done
+    $is_valid
+}
+
+__bbc__generic_handling()
+{
+    local -A param_consuming_options
+    param_consuming_options[git_repo_url]=--git-repo-url
+    param_consuming_options[git_branch]=--git-branch
+    param_consuming_options[own_suite]=--own-suite
+    param_consuming_options[supplier_suites]=--supplier-suites
+    param_consuming_options[reference_suites]=--reference-suites
+    param_consuming_options[highlighted_suites]=--highlighted-suites
+    param_consuming_options[blacklist_file]=--global-blacklist-file
+    param_consuming_options[add_from]=--add-from
+    param_consuming_options[upgrade_from]=--upgrade-from
+    local abording_options="-h --help"
+    local param_found=false
+
+    __bbc__is_prev_a_valid_option && case $prev in
+    ${param_consuming_options[git_repo_url]})
+        return #make no suggestions on this
+        ;;
+    ${param_consuming_options[git_branch]})
+        __bbc__gen_reply <<< $(git branch --list 2>/dev/null | sed 's/^..//')
+        return
+        ;;
+    ${param_consuming_options[own_suite]}|\
+    ${param_consuming_options[supplier_suites]}|\
+    ${param_consuming_options[reference_suites]}|\
+    ${param_consuming_options[highlighted_suites]})
+        if [ "$prev" = "${param_consuming_options[own_suite]}" ]; then
+           __bbc____help_manage_all_suite_options
+        else
+            __bbc__help_list_select_wrapper  __bbc____help_manage_all_suite_options  __bbc__help_manage_all_suite_options_result
+        fi
+        __bbc__gen_reply <<< "$__bbc__help_manage_all_suite_options_result"
+        return
+        ;;
+    ${param_consuming_options[add_from]}|\
+    ${param_consuming_options[upgrade_from]})
+        __bbc__help_list_select_wrapper  __bbc____help_manage_all_suite_options  __bbc__help_manage_all_suite_options_result suite_only
+        __bbc__gen_reply <<< "$__bbc__help_manage_all_suite_options_result"
+        return
+        ;;
+
+    ${param_consuming_options[blacklist_file]})
+        compopt -o default
+        return
+        ;;
+    esac
+
+
+    if [[ "$cur" == -* ]]; then
+        # current word is an option; serve all options
+        __bbc__gen_reply_with_help ${all_options[@]}
+    fi
+
+
+    local c=$(($cmd_index+1))
+    local current_word consuming_option abording_option
+    while [ $c -lt $cword ]; do
+        current_word="${words[c]}"
+        if ! [[ "$current_word" == -* ]]; then
+            #not an option; found an outstanding param
+            param_found=true
+            break
+        fi
+        for consuming_option in "${param_consuming_options[@]}"; do
+            if [ "$current_word" = "$consuming_option" ]; then
+                ((c++)) #skip the next (consumed) word
+                break
+            fi
+        done
+        for abording_option in $abording_options; do
+            if [ "$current_word" = "$abording_option" ]; then
+                return
+            fi
+        done
+
+        ((c++))
+    done
+
+    $param_found && return
+    case "$param_type" in
+    __param_is_bundle)
+        __bbc__help_get_bundles # generates __help_get_bundles_result
+        __bbc__gen_reply <<< "$__help_get_bundles_result"
+        ;;
+    __param_is_unsieled_bundle)
+        __bbc__help_get_bundles -e # generates __help_get_bundles_result
+        __bbc__gen_reply <<< "$__help_get_bundles_result"
+        ;;
+    __param_is_dist)
+        __bbc__help_get_bundles all # generates __help_get_bundles_result
+        __bbc__gen_reply <<< $( sed 's;/.*;;' <<< "$__help_get_bundles_result" | uniq )
+        ;;
+    esac
+}
+
+__bbc__gen_reply_with_help()
+{
+    local -a suggest=($(compgen -W '$*' -- "$cur"))
+    local -a res res_help
+
+    [ ${#suggest[@]} -eq 0 ] && return
+
+    local -A helptext
+    helptext[init]="Reserves a new bundle ID and creates a new empty bundle for the given distribution"
+    helptext[edit]="Add / Remove/ Upgrade/ Downgrade packages to/in the bundle by editing an automatically prepared list of available packages."
+    helptext[blacklist]="Edit the bundle's blacklist"
+    helptext[black]=${helptext[blacklist]}
+    helptext[meta]="Edit the bundle's metadata"
+    helptext[show]="Give an overview about the bundle mata-data and it's content"
+    helptext[list]="List the content - the packages - of a bundle."
+    helptext[ls]=${helptext[list]}
+    helptext[seal]="Mark the bundle as ReadOnly and change a suite's tag from 'staging' to 'deploy'"
+    helptext[apply]="Use reprepro to update the bundle"
+    helptext[clone]="Clones the bundle bundleName into a new bundle"
+    helptext[bundles]="list available bundles"
+    helptext[lsb]=${helptext[bundles]}
+    helptext[update-repos-config]="updates the file repo/bundle/bundle.repos"
+    helptext[repos]=${helptext[update-repos-config]}
+
+    helptext[--help]="show help message and exit"
+    helptext[-h]=${helptext[--help]}
+    helptext[--debug]="Show debug messages"
+    helptext[-d]=${helptext[--debug]}
+    helptext[--no-info]="Just show warnings and errors"
+
+    helptext[--own-suite]="Suite-Selectors that defines the own suite"
+    helptext[--no-apt-update]="Skip download of packages list"
+    helptext[--supplier-suites]="Comma separated list of Suite-Selectors that define the supplier-suites to track"
+    helptext[--reference-suites]="Comma separated list of Suite-Selectors that define the reference suites which hold the current state that we refer on"
+    helptext[--highlighted-suites]="Comma separated list of Suite-Selectors that define suites whose entries should be put on top of the sources_control.list"
+    helptext[--commit]="Commit changed files to the (local) project git-repository"
+    helptext[--no-clean-commit]="operate on the local project folder without any commits"
+    helptext[--git-repo-url]="IT-Repository URL used to clone the repository during --clean-commit"
+    helptext[--git-branch]="GIT-Repository branch used to pull and push during --clean-commit"
+
+    helptext[--add-from]="Comma separated list of Suite-Selectors that define suites whose (all) packages are automatically activated for being added"
+    helptext[--upgrade-from]="..."
+    helptext[--no-upgrade-keep-component]="..."
+    helptext[--batch]="Run in batch mode which means without user interaction"
+    helptext[--interactive-suite-filter]="Dismiss undesired suites by defining an interactively queried filter"
+    helptext[-i]=${helptext[--interactive-suite-filter]}
+    helptext[--clean-commit]="Create a clone of the current git-repository into a temporary folder"
+
+    helptext[--wait]="print the list and actively wait"
+    helptext[-w]=${helptext[--wait]}
+
+    helptext[--global-blacklist-file]="file that is checked before a bundle could be sealed"
+
+    helptext[--readonly]="Just print bundles that are marked readonly"
+    helptext[-r]=${helptext[--readonly]}
+    helptext[--editable]="Just print bundles that are marked editable"
+    helptext[-e]=${helptext[--editable]}
+
+    local -i i=0 last_res different_choises=1
+    local this_help this_suggest
+    local last_help
+    local append
+    while [ "$i" -lt "${#suggest[@]}" ]; do
+        append=false
+        this_suggest=${suggest[i]}
+        this_help=${helptext[$this_suggest]}
+
+        if [ $i -gt 0 ]; then
+            [ "$this_help" = "$last_help" ] && append=true || ((different_choises++))
+        fi
+
+        if [ -z "$cur" ] && $append; then
+            last_res=$(( ${#res[@]} - 1 ))
+            res[$last_res]="${res[$last_res]}|$this_suggest"
+        else
+            res+=($this_suggest)
+            res_help+=("$this_help")
+        fi
+
+        last_help=$this_help
+        ((i++))
+    done
+
+    # if all matching choises have the same description, take the first one
+    if [ "$different_choises" -eq 1 ]; then
+        __bbc__gen_reply <<< "${res[0]}"
+        return
+    fi
+
+
+    local suppress_help=false
+    [ -v BUNDLE__BASHCOMPL__SUPPRESS_HELP ] && suppress_help=true
+    local longest_suggest_chars=$(tr ' ' '\n' <<< "${res[@]} " | wc -L)
+    local max_cols
+    [ -x "$(which tput)" ] && max_cols=$(tput cols)
+    if [ "$max_cols" -gt 0 ] 2>/dev/null; then
+        local -i min_required_width=$(( $longest_suggest_chars + 20 ))
+        if [ $max_cols -lt $min_required_width ]; then
+            # there terminal is too small to print help-messages
+            suppress_help=true
+        fi
+    else #could not determine terminal width
+        suppress_help=true
+    fi
+
+    if $suppress_help; then
+        __bbc__gen_reply <<< $(tr ' ' '\n' <<< ${res[@]})
+    else
+        local whitespace_padding
+        local max_line_chars_minus_1=$(( "$max_cols" - 1 )) # placeholder for '.'
+        local max_line_chars_minus_3=$(( "$max_cols" - 3 )) # placeholder for '...'
+        whitespace_padding=$(printf "%${max_cols}s" '')
+        __bbc__gen_reply <<< $(
+            i=0
+            while [ "$i" -lt "${#res[@]}" ]; do
+                printf "%-${longest_suggest_chars}s # %s\n" "${res[$i]}" "${res_help[$i]}" |
+                    # cut off help-msgs which are too long
+                    sed -E "s/^(.{$max_line_chars_minus_3}).*/\1.../" |
+                    # add whitespace padding to each line
+                    sed -E "s/$/$whitespace_padding/" |
+                    # short the padded line and put a dot at the end
+                    # to ensure that each suggestion is being printed on a separate line
+                    sed -E "s/^(.{$max_line_chars_minus_1}).*/\1./"
+                ((i++))
+            done
+        )
+    fi
+}
+
+
+__bbc__main()
+{
+    local __help_get_bundles_result
+    local __bbc__help_manage_all_suite_options_result
+    local executable
+    local param_type all_options
+    local i cmd_index=1 command
+    local valid_options valid_commands
+    local help_request_detected=false
+    valid_options=(-h --help -d --debug --no-info)
+    valid_commands=(init edit blacklist black meta show list ls seal apply clone bundles lsb update-repos-config repos)
+
+    # Verify that bash-completion is installed on this system, thus the following two helper-functions are defined
+    # which may be found in /usr/share/bash-completion/bash_completion
+    declare -F _get_comp_words_by_ref >/dev/null 2>&1 || return
+    declare -F __ltrim_colon_completions >/dev/null 2>&1 || return
+
+    local words cword cur priv
+    _get_comp_words_by_ref -n : cur prev words cword
+
+    executable=$(which ${words[0]})
+    [ -x "$executable" ] || return
+
+    while [ $cmd_index -lt $cword ]; do
+        i="${words[cmd_index]}"
+        case $i in
+        -h|--help)
+            help_request_detected=true
+            ;;
+        -d|--debug|--no-info)
+            : ignore all valid options
+            ;;
+        -*)
+            : catch unknown option
+            return
+            ;;
+        *)
+            command=$i
+            break
+            ;;
+        esac
+        ((cmd_index++))
+    done
+
+    if [ -n "$command" ]; then
+        case "$command" in
+        init|clone)
+            param_type=__param_is_dist
+            [ "$command" = init ] && param_type=__param_is_dist
+            [ "$command" = clone ] && param_type=__param_is_bundle
+            all_options="-h --help --own-suite --no-apt-update --supplier-suites --reference-suites "
+            all_options+="--highlighted-suites --commit --no-clean-commit --git-repo-url --git-branch"
+            ;;
+        edit)
+            param_type=__param_is_unsieled_bundle
+            all_options="-h --help --own-suite --no-apt-update --supplier-suites --reference-suites "
+            all_options+="--highlighted-suites --add-from --upgrade-from --no-upgrade-keep-component "
+            all_options+="--batch -i --interactive-suite-filter --commit --clean-commit --git-repo-url "
+            all_options+="--git-branch"
+            ;;
+        seal)
+            param_type=__param_is_unsieled_bundle
+            all_options="--git-repo-url --git-branch --own-suite --global-blacklist-file -h --help --commit --clean-commit"
+            ;;
+        apply)
+            param_type=__param_is_bundle
+            all_options="-h --help --own-suite --no-apt-update --supplier-suites --reference-suites "
+            all_options+="--highlighted-suites --commit --clean-commit --git-repo-url --git-branch"
+            ;;
+        list|ls)
+            param_type=__param_is_bundle
+            all_options="-h --help --wait -w --own-suite"
+            ;;
+        show)
+            param_type=__param_is_bundle
+            all_options="-h --help --own-suite"
+            ;;
+        lsb|bundles)
+            param_type=__none
+            all_options="-h --help -r --readonly -e --editable"
+            ;;
+        blacklist|black)
+            param_type=__param_is_bundle
+            all_options="-h --help --own-suite --commit --clean-commit --git-repo-url --git-branch"
+            ;;
+        meta)
+            param_type=__param_is_unsieled_bundle
+            all_options="-h --help --own-suite --commit --clean-commit --git-repo-url --git-branch"
+            ;;
+        update-repos-config|repos)
+            param_type=__none
+            all_options="-h --help --commit --clean-commit --git-repo-url --git-branch"
+            ;;
+        esac
+
+        $help_request_detected || __bbc__generic_handling
+        return
+    fi
+
+    # command is unknown or missing
+
+    # make no suggestions if the unknown command was defined prior to the current word
+    [ -n "$command" -a $cmd_index -lt $cword ] && return
+
+    case $cur in
+    -*)
+        __bbc__gen_reply_with_help ${valid_options[@]}
+        ;;
+    *)
+        __bbc__gen_reply_with_help ${valid_commands[@]}
+        ;;
+    esac
+}
+
+__bbc__main_wrapper()
+{
+    local __help_manage_all_suite_options_reached=false
+    local __help_get_bundles_reached=false
+
+    __bbc__main
+
+    if ! $__help_manage_all_suite_options_reached; then
+        unset BUNDLE_BASHCOMPL_SUITES_LISTING_UNLOCK_COUNTER
+        unset BUNDLE_BASHCOMPL_SUITES_LISTING
+        unset BUNDLE_BASHCOMPL_USER_LISTING
+    fi
+    if ! $__help_get_bundles_reached; then
+        unset BUNDLE_BASHCOMPL_BUNLES_LISTING_UNLOCK_COUNTER
+    fi
+}
+
+complete -o nosort -F __bbc__main_wrapper bundle
