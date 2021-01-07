@@ -419,6 +419,8 @@ __bbc__gen_reply_with_help()
     helptext[--batch]="Run in batch mode which means without user interaction"
     helptext[--interactive-suite-filter]="Dismiss undesired suites by defining an interactively queried filter"
     helptext[-i]=${helptext[--interactive-suite-filter]}
+    helptext[--force-edit]="Perform edit even though the last bundle-change have not been applied yet."
+    helptext[-f]=${helptext[--force-edit]}
     helptext[--clean-commit]="Create a clone of the current git-repository into a temporary folder"
 
     helptext[--wait]="print the list and actively wait"
@@ -560,8 +562,8 @@ __bbc__main()
             param_type=__param_is_unsieled_bundle
             all_options="-h --help --own-suite --no-apt-update --supplier-suites --reference-suites "
             all_options+="--highlighted-suites --add-from --upgrade-from --no-upgrade-keep-component "
-            all_options+="--batch -i --interactive-suite-filter --commit --clean-commit --git-repo-url "
-            all_options+="--git-branch"
+            all_options+="--batch -i --interactive-suite-filter --force-edit -f --commit "
+            all_options+="--clean-commit --git-repo-url --git-branch"
             ;;
         seal)
             param_type=__param_is_unsieled_bundle

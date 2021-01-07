@@ -160,6 +160,8 @@ def main():
         g.add_argument("-i", "--interactive-suite-filter", action="store_true", default=False, help="""
                         Dismiss undesired suites by defining an interactively queried filter.
                         This option will be ignored in combination with --batch.""")
+        g.add_argument("-f", "--force-edit", action="store_true", default=False, help="""
+                        Perform edit even though the last bundle-change have not been applied yet.""")
 
     for p in [parse_init, parse_edit, parse_meta, parse_black, parse_seal, parse_clone, parse_apply, parse_repos]:
         g = p.add_argument_group('additional arguments for git-commit management')
@@ -235,6 +237,30 @@ def cmd_init(args):
         git_add.append(updateReposConfig(cwd=cwd))
 
 
+def confirm_edit_precondition_or_exit(bundle, args):
+    '''
+        Exit execution if the most recent commit-message wich changed the bundle-related sources_control.list
+        file does not start with the word 'APPLIED' or 'INITIALIZED', which indicates that an apply-run is pendign.
+        The execution will continue if the --force-edit commandline option is given.
+    '''
+    if os.path.isfile(bundle.scl):
+        try:
+            with open(os.devnull, 'w') as DEV_NULL:
+                most_recent_commit_subject = subprocess.check_output(["git", "log", "--format=%s", bundle.scl], stderr=DEV_NULL).decode("utf-8").split("\n")[0]
+        except Exception:
+            pass
+        else:
+            if most_recent_commit_subject:
+                first_word = most_recent_commit_subject.split()[0]
+                if first_word != 'APPLIED' and first_word != 'INITIALIZED':
+                    if args.force_edit:
+                        logger.info("The most recent %s-related commit seems to be a non-apply-commit. Force-editing ...", bundle)
+                    else:
+                        logger.error("The most recent %s-related commit seems to be a non-apply-commit. "
+                            "Make sure the last change is applied or use the --force-edit commandline-option.", bundle)
+                        exit(1)
+
+
 def cmd_edit(args):
     '''
         Subcommand edit: Add / Remove/ Upgrade/ Downgrade packages to/in the bundle by editing an automatically prepared list of available packages.
@@ -243,6 +269,7 @@ def cmd_edit(args):
         print("Deactivating interactive-suite-filter due to batch-mode")
         args.interactive_suite_filter = False
     bundle = setupContext(args)
+    confirm_edit_precondition_or_exit(bundle, args)
     with choose_commit_context(bundle, args, "EDITED sources_control.list of bundle '{bundleName}'") as (bundle, git_add, unused_cwd):
         originCopy = tempfile.NamedTemporaryFile(delete=False).name
         shutil.copyfile(bundle.scl, originCopy)
