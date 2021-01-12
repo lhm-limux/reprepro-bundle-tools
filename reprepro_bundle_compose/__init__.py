@@ -84,7 +84,9 @@ def updateBundles(tracApi=None, parentTicketsField=None, cwd=PROJECT_DIR):
             if not bundle.ignoresTargetFromInfoFile():
                 info = bundle.getInfo()
                 if info.get("Target") != bundle.getTarget():
-                    if bundle.getTarget() != "unattended":
+                    if bundle.getTarget() == "unattended-applied" and info.get("Target") == "unattended":
+                        pass
+                    else:
                         logger.warn("Target-Fields of {} and it's info file dont't match ('{}' vs. '{}') - Please check!".format(bundle, bundle.getTarget(), info.get("Target")))
             suiteStatus = BundleStatus.getByTags(suite.getTags())
             if bundle.getStatus() < suiteStatus:
